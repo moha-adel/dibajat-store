@@ -421,11 +421,43 @@ function initStore(){
     if(!entries.length){showErr('لا يوجد متاجر');return;}
     let found=null;
     if(slug) found=entries.find(([k,v])=>v.slug===slug);
-    if(!found) found=entries.find(([k,v])=>v.status==='active');
-    if(!found) found=entries[0];
+    if(!slug){showHomePage();return;}
     if(!found){showErr('المتجر غير موجود');return;}
     loadMarketer(found[0], found[1]);
   });
+}
+
+function showHomePage(){
+  // إخفاء عناصر المسوق
+  const hero=document.querySelector('.fhero');
+  const filters=document.querySelector('.ffilters-wrap');
+  if(hero) hero.style.display='none';
+  if(filters) filters.style.display='none';
+
+  // تغيير العنوان
+  document.title='ديباجات — مفروشات راقية';
+
+  // عرض صفحة رئيسية بسيطة
+  document.getElementById('prodGrid').innerHTML=`
+    <div style="grid-column:1/-1;text-align:center;padding:60px 20px">
+      <div style="font-size:56px;margin-bottom:16px">🛋️</div>
+      <h1 style="font-size:28px;font-weight:900;color:var(--dark);margin-bottom:10px">ديباجات</h1>
+      <p style="font-size:15px;color:var(--gray);margin-bottom:32px;line-height:1.8">
+        منصة مفروشات راقية — تسوّق من خلال مسوقك المعتمد
+      </p>
+      <p style="font-size:13px;color:var(--gray2)">
+        إذا كان لديك رابط مسوق، استخدمه للدخول إلى متجره الخاص
+      </p>
+    </div>
+  `;
+
+  // تحديث الـ nav
+  const storeName=document.querySelector('.fnav-store-name');
+  const storeSub=document.querySelector('.fnav-store-sub');
+  const logoEl=document.querySelector('.fnav-logo');
+  if(storeName) storeName.textContent='ديباجات';
+  if(storeSub) storeSub.textContent='dibajat.store';
+  if(logoEl) logoEl.textContent='د';
 }
 
 function showErr(msg){
