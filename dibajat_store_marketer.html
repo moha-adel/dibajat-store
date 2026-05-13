@@ -242,7 +242,7 @@ function startApp(id, mkt){
 
   // تحديث Header
   document.getElementById('hdrName').textContent=mkt.name||'المسوق';
-  document.getElementById('hdrSub').textContent=mkt.slug?mkt.slug+'.mafroshatي.com':'مفروشاتي';
+  document.getElementById('hdrSub').textContent=mkt.slug?mkt.slug+'.dibajat.store':'مفروشاتي';
   if(mkt.logo){
     const av=document.getElementById('hdrAvatar');
     av.outerHTML=`<img class="header-avatar" id="hdrAvatar" src="${mkt.logo}" onerror="this.style.display='none'">`;
@@ -468,7 +468,7 @@ function renderEarnings(){
 }
 function renderStore(){
   const m=currentMarketer;
-  const storeUrl=`https://${m.slug}.mafroshatي.com`;
+  const storeUrl=`https://${m.slug}.dibajat.store`;
   return`
   <div class="section-title">🔗 رابط متجري</div>
   <div class="share-card">
