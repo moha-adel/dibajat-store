@@ -470,7 +470,7 @@ function renderHeader(){
   const navLogo=document.getElementById('nav-logo');
   navLogo.innerHTML=m.logo?`<img src="${xe(m.logo)}" alt="">`:(m.name||'م')[0];
   document.getElementById('nav-store-name').textContent=m.name||'';
-  document.getElementById('nav-store-sub').textContent=(m.slug||'')+'.mafroshatي.com';
+  document.getElementById('nav-store-sub').textContent=(m.slug||'')+'.dibajat.store';
   // HERO
   if(m.banner){
     document.getElementById('hero-banner').outerHTML=`<img id="hero-banner" class="fhero-banner" src="${xe(m.banner)}" alt="" style="width:100%;height:100%;object-fit:cover">`;
@@ -478,7 +478,7 @@ function renderHeader(){
   const av=document.getElementById('hero-avatar');
   av.innerHTML=m.logo?`<img src="${xe(m.logo)}" alt="" style="width:100%;height:100%;object-fit:cover">`:(m.name||'م')[0];
   document.getElementById('hero-store-name').textContent=m.name||'';
-  document.getElementById('hero-store-url').textContent=(m.slug||'')+'.mafroshatي.com';
+  document.getElementById('hero-store-url').textContent=(m.slug||'')+'.dibajat.store';
   document.getElementById('hero-welcome-ar').textContent=m.welcomeAr||'أهلاً بك في متجرنا';
   document.getElementById('hero-welcome-en').textContent=m.welcomeEn||'Welcome to our store';
   document.title=(m.name||'متجر')+' — مفروشاتي';
