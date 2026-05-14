@@ -183,6 +183,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
     <button class="nav-item" id="nav-marketers" onclick="goTab('marketers',this)"><span class="nav-icon">👤</span> المسوقون <span class="nav-badge" id="nb-marketers">3</span></button>
     <div class="nav-label" style="margin-top:6px">المتابعة</div>
     <button class="nav-item" id="nav-orders" onclick="goTab('orders',this)"><span class="nav-icon">📦</span> الطلبات <span class="nav-badge-red" id="nb-orders">2</span></button>
+    <button class="nav-item" id="nav-registrations" onclick="goTab('registrations',this)"><span class="nav-icon">📋</span> التسجيلات <span class="nav-badge-red" id="nb-registrations" style="display:none">0</span></button>
   </div>
   <div class="sidebar-footer">
     <div class="admin-user">
@@ -299,6 +300,19 @@ function initListeners(){
   });
 }
 
+// ===== REGISTRATIONS DATA =====
+let registrationsData = {};
+db.ref('registrations').on('value', snap => {
+  registrationsData = snap.val() || {};
+  const pending = Object.values(registrationsData).filter(r => r.status === 'pending').length;
+  const badge = document.getElementById('nb-registrations');
+  if(badge){
+    badge.textContent = pending;
+    badge.style.display = pending > 0 ? '' : 'none';
+  }
+  if(currentTab === 'registrations') render();
+});
+
 // ===== TABS =====
 const TABS={
   overview:{title:'نظرة عامة',sub:'مرحباً، كل شيء تمام 👋',btn:''},
@@ -306,6 +320,7 @@ const TABS={
   products:{title:'المنتجات',sub:'إدارة كتالوج المنتجات',btn:'<button class="btn-primary" onclick="openProduct(-1)">＋ منتج جديد</button>'},
   marketers:{title:'المسوقون',sub:'إدارة شبكة المسوقين',btn:'<button class="btn-primary" onclick="openMarketer(-1)">＋ مسوق جديد</button>'},
   orders:{title:'الطلبات',sub:'متابعة طلبات العملاء',btn:''},
+  registrations:{title:'التسجيلات',sub:'طلبات الانضمام للمنصة',btn:''},
 };
 function goTab(id,el){
   currentTab=id;
@@ -324,6 +339,50 @@ function render(){
   else if(currentTab==='products')c.innerHTML=renderProducts();
   else if(currentTab==='marketers')c.innerHTML=renderMarketers();
   else if(currentTab==='orders')c.innerHTML=renderOrders();
+  else if(currentTab==='registrations')c.innerHTML=renderRegistrations();
+}
+
+// ===== REGISTRATIONS =====
+function renderRegistrations(){
+  const regs = Object.entries(registrationsData).sort((a,b)=>b[1].date?.localeCompare(a[1].date||'')||0);
+  if(!regs.length) return `<div style="text-align:center;padding:60px;color:var(--mt)">📋 لا توجد طلبات تسجيل بعد</div>`;
+  return `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${regs.map(([id,r])=>`
+        <div style="background:var(--bg2);border:1.5px solid ${r.status==='pending'?'var(--gold)':'var(--bd)'};border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:4px">${xe(r.name||'—')}</div>
+            <div style="font-size:12px;color:var(--mt);direction:ltr;text-align:right">${xe(r.phone||'')}</div>
+            ${r.city?`<div style="font-size:11px;color:var(--mt);margin-top:2px">📍 ${xe(r.city)}</div>`:''}
+            ${r.ref?`<div style="font-size:11px;color:var(--gold);margin-top:2px">🔗 إحالة: ${xe(r.ref)}</div>`:''}
+            <div style="font-size:10px;color:var(--mt);margin-top:4px">${r.date?new Date(r.date).toLocaleString('ar-KW'):'—'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${r.status==='pending'
+              ? `<span style="padding:4px 12px;border-radius:20px;background:rgba(184,147,74,.15);color:var(--gold);font-size:11px;font-weight:800">⏳ معلق</span>
+                 <button onclick="approveReg('${id}','${xe(r.name||'')}','${xe(r.phone||'')}','${xe(r.ref||'')}')" style="padding:7px 16px;border-radius:8px;background:var(--green);color:#fff;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif">✅ قبول</button>
+                 <button onclick="rejectReg('${id}')" style="padding:7px 16px;border-radius:8px;background:var(--red);color:#fff;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif">❌ رفض</button>`
+              : `<span style="padding:4px 12px;border-radius:20px;background:${r.status==='approved'?'rgba(26,122,74,.15)':'rgba(192,57,43,.1)'};color:${r.status==='approved'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800">${r.status==='approved'?'✅ مقبول':'❌ مرفوض'}</span>`
+            }
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function approveReg(id, name, phone, ref){
+  if(!confirm('قبول طلب ' + name + '؟')) return;
+  db.ref('registrations/'+id).update({status:'approved'});
+  // فتح واتساب للتواصل
+  const msg = encodeURIComponent(`مرحباً ${name} 👋
+تم قبول طلبك في منصة ديباجات!
+سنتواصل معك قريباً لتفعيل متجرك.`);
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+
+function rejectReg(id){
+  if(!confirm('رفض هذا الطلب؟')) return;
+  db.ref('registrations/'+id).update({status:'rejected'});
 }
 
 function statusBadge(s){
