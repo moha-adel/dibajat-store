@@ -184,6 +184,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
     <div class="nav-label" style="margin-top:6px">المتابعة</div>
     <button class="nav-item" id="nav-orders" onclick="goTab('orders',this)"><span class="nav-icon">📦</span> الطلبات <span class="nav-badge-red" id="nb-orders">2</span></button>
     <button class="nav-item" id="nav-registrations" onclick="goTab('registrations',this)"><span class="nav-icon">📋</span> التسجيلات <span class="nav-badge-red" id="nb-registrations" style="display:none">0</span></button>
+    <button class="nav-item" id="nav-leaderboard" onclick="goTab('leaderboard',this)"><span class="nav-icon">🏆</span> Leaderboard</button>
   </div>
   <div class="sidebar-footer">
     <div class="admin-user">
@@ -321,6 +322,7 @@ const TABS={
   marketers:{title:'المسوقون',sub:'إدارة شبكة المسوقين',btn:'<button class="btn-primary" onclick="openMarketer(-1)">＋ مسوق جديد</button>'},
   orders:{title:'الطلبات',sub:'متابعة طلبات العملاء',btn:''},
   registrations:{title:'التسجيلات',sub:'طلبات الانضمام للمنصة',btn:''},
+  leaderboard:{title:'Leaderboard 🏆',sub:'ترتيب المسوقين حسب الأداء',btn:''},
 };
 function goTab(id,el){
   currentTab=id;
@@ -340,6 +342,7 @@ function render(){
   else if(currentTab==='marketers')c.innerHTML=renderMarketers();
   else if(currentTab==='orders')c.innerHTML=renderOrders();
   else if(currentTab==='registrations')c.innerHTML=renderRegistrations();
+  else if(currentTab==='leaderboard')c.innerHTML=renderLeaderboard();
 }
 
 // ===== REGISTRATIONS =====
@@ -795,20 +798,28 @@ function renderMarketers(){
   return`<div class="section">
     <div class="section-hd"><div class="section-title">👤 المسوقون <span class="section-count">${ma.length}</span></div></div>
     <table class="tbl">
-      <tr><th></th><th>المسوق</th><th>رابط المتجر</th><th>الثيم</th><th>PIN</th><th>الأرباح</th><th>الحالة</th><th>إجراءات</th></tr>
-      ${ma.map(m=>`<tr>
+      <tr><th></th><th>المسوق</th><th>رابط المتجر</th><th>الثيم</th><th>PIN</th><th>الإحالات</th><th>الأرباح</th><th>الحالة</th><th>إجراءات</th></tr>
+      ${ma.map(m=>{
+        const myRefs=Object.values(registrationsData).filter(r=>r.ref===m.slug);
+        const approved=myRefs.filter(r=>r.status==='approved').length;
+        return`<tr>
         <td>${m.logo?`<img src="${xe(m.logo)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid var(--bd)">`:`<div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--gold)">${xe((m.name||'م')[0])}</div>`}</td>
         <td><div class="tbl-name">${xe(m.name)}</div><div class="tbl-sub">${xe(m.phone||'')}</div></td>
         <td><span style="color:var(--blue);font-size:11px">${xe(m.slug)}.dibajat.store</span></td>
         <td><span style="font-size:11px;color:var(--mt)">${THEMES.find(t=>t.id===(m.theme||'luxury'))?.label||'فاخر'}</span></td>
         <td><span style="font-family:monospace;font-size:13px;font-weight:800;color:${m.pin?'var(--gold)':'var(--red)'};background:var(--bg3);padding:2px 8px;border-radius:6px;border:1px solid var(--bd)">${m.pin?'••••':'غير محدد'}</span></td>
+        <td><div style="display:flex;flex-direction:column;gap:2px">
+          <span style="font-weight:800;color:var(--tx)">${myRefs.length} <span style="font-size:10px;color:var(--mt);font-weight:400">إجمالي</span></span>
+          ${approved?`<span style="font-size:10px;color:var(--green)">✅ ${approved} مفعّل</span>`:''}
+          ${myRefs.length-approved?`<span style="font-size:10px;color:var(--yellow)">⏳ ${myRefs.length-approved} معلق</span>`:''}
+        </div></td>
         <td><span style="color:var(--green);font-weight:800">${m.earnings||0} KWD</span></td>
         <td>${m.status==='active'?'<span class="badge badge-active">نشط</span>':m.status==='pending'?'<span class="badge badge-pending">معلق</span>':'<span class="badge badge-suspended">محظور</span>'}</td>
         <td><div class="actions">
           <button class="act-btn act-edit" onclick="openMarketer('${m.id}')">تعديل</button>
           <button class="act-btn act-del" onclick="delMarketer('${m.id}')">حذف</button>
         </div></td>
-      </tr>`).join('')}
+      </tr>`;}).join('')}
     </table>
   </div>`;
 }
@@ -1090,6 +1101,85 @@ function _lbKey(e){
   else if(e.key==='Escape')closeLightbox();
 }
 document.getElementById('lbBg').addEventListener('click',e=>{if(e.target===document.getElementById('lbBg'))closeLightbox();});
+
+// ===== LEADERBOARD =====
+function renderLeaderboard(){
+  const ma=marketersArr().filter(m=>m.status==='active');
+  if(!ma.length)return`<div class="section"><div class="empty">لا يوجد مسوقون نشطون بعد</div></div>`;
+
+  // حساب بيانات كل مسوق
+  const rows=ma.map(m=>{
+    const myRefs=Object.values(registrationsData).filter(r=>r.ref===m.slug);
+    const myOrders=Object.values(orders||{}).filter(o=>o.marketer_id===m.id);
+    const delivered=myOrders.filter(o=>o.status==='delivered');
+    const revenue=delivered.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+    const earnings=parseFloat(m.earnings||0);
+    return{...m,myRefs,approved:myRefs.filter(r=>r.status==='approved').length,revenue,earnings,ordersCount:myOrders.length,deliveredCount:delivered.length};
+  }).sort((a,b)=>b.earnings-a.earnings);
+
+  const medals=['🥇','🥈','🥉'];
+  const top=rows[0];
+
+  return`<div class="section">
+    <!-- Stats Row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--gold)">${rows.length}</div>
+        <div style="font-size:11px;color:var(--mt)">مسوق نشط</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--green)">${rows.reduce((s,r)=>s+r.deliveredCount,0)}</div>
+        <div style="font-size:11px;color:var(--mt)">طلب مسلّم</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--blue)">${Object.values(registrationsData).filter(r=>r.status==='approved').length}</div>
+        <div style="font-size:11px;color:var(--mt)">إحالة مفعّلة</div>
+      </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:800;color:var(--gold)">🏆 ترتيب المسوقين</div>
+      <table class="tbl" style="margin:0">
+        <tr>
+          <th style="width:36px">#</th>
+          <th>المسوق</th>
+          <th>الطلبات</th>
+          <th>المبيعات</th>
+          <th>الإحالات</th>
+          <th>الأرباح</th>
+        </tr>
+        ${rows.map((m,i)=>{
+          const isTop=i===0;
+          const rowStyle=isTop?'background:rgba(201,169,110,.06);':'';
+          return`<tr style="${rowStyle}">
+            <td style="font-size:18px;text-align:center">${medals[i]||`<span style="color:var(--mt);font-size:12px">${i+1}</span>`}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px">
+                ${m.logo?`<img src="${xe(m.logo)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid var(--bd)">`
+                  :`<div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gold)">${xe((m.name||'م')[0])}</div>`}
+                <div>
+                  <div style="font-size:13px;font-weight:800;color:${isTop?'var(--gold)':'var(--tx)'}">${xe(m.name)}</div>
+                  <div style="font-size:10px;color:var(--mt)">${xe(m.slug)}.dibajat.store</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:13px;font-weight:800">${m.deliveredCount} <span style="font-size:10px;color:var(--mt);font-weight:400">مسلّم</span></div>
+              <div style="font-size:10px;color:var(--mt)">${m.ordersCount} إجمالي</div>
+            </td>
+            <td><span style="font-weight:800;color:var(--tx)">${m.revenue.toFixed(1)} KWD</span></td>
+            <td>
+              <div style="font-size:13px;font-weight:800">${m.myRefs.length} <span style="font-size:10px;color:var(--mt);font-weight:400">إجمالي</span></div>
+              ${m.approved?`<div style="font-size:10px;color:var(--green)">✅ ${m.approved} مفعّل</div>`:''}
+            </td>
+            <td><span style="font-size:14px;font-weight:900;color:var(--green)">${m.earnings} KWD</span></td>
+          </tr>`;
+        }).join('')}
+      </table>
+    </div>
+  </div>`;
+}
 </script>
 </body>
 </html>
