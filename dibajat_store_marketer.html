@@ -300,6 +300,7 @@ function startApp(id, mkt){
   // listeners
   db.ref('orders').on('value',snap=>{
     const all=snap.val()||{};
+    // فلترة طلبات هذا المسوق فقط
     const mine={};
     Object.entries(all).forEach(([k,v])=>{
       if(v.marketer_id===id)mine[k]=v;
@@ -313,17 +314,21 @@ function startApp(id, mkt){
   db.ref('brands').on('value',snap=>{
     allBrands=snap.val()||{};
   });
-
-  // نجيب الإحالات بـ once أولاً عشان نضمن البيانات موجودة قبل أول renderTab
-  db.ref('registrations').once('value',snap=>{
-    allRegistrations=snap.val()||{};
-    renderTab();
-    // بعدين نفعّل الـ listener للتحديثات اللحظية
-    db.ref('registrations').on('value',snap2=>{
-      allRegistrations=snap2.val()||{};
-      if(currentTab==='card'||currentTab==='overview'||currentTab==='stats')renderTab();
+  // نجيب بس إحالات هذا المسوق عن طريق query — مش محتاج auth
+  db.ref('registrations')
+    .orderByChild('ref')
+    .equalTo(currentMarketer.slug)
+    .once('value', snap=>{
+      allRegistrations=snap.val()||{};
+      renderTab();
+      db.ref('registrations')
+        .orderByChild('ref')
+        .equalTo(currentMarketer.slug)
+        .on('value', snap2=>{
+          allRegistrations=snap2.val()||{};
+          if(currentTab==="card"||currentTab==="overview"||currentTab==="stats")renderTab();
+        });
     });
-  });
 }
 
 // ===== TABS =====
