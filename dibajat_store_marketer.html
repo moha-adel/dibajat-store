@@ -602,6 +602,7 @@ function shareOnWa(url){
 function renderCard(){
   const m=currentMarketer;
   const storeUrl=`https://${m.slug}.dibajat.store`;
+  const refUrl=`https://dibajat.store/join.html?ref=${m.slug}`;
   const myRefs=Object.entries(allRegistrations).filter(([k,v])=>v.ref===m.slug);
   const approved=myRefs.filter(([k,v])=>v.status==='approved').length;
   const pending=myRefs.filter(([k,v])=>v.status==='pending').length;
@@ -618,12 +619,23 @@ function renderCard(){
       <div class="qr-card-brand">dibajat.store</div>
     </div>
     <div class="qr-actions">
-      <button class="qr-act-btn qr-act-share" onclick="shareCard('${xe(storeUrl)}','${xe(m.name||'')}')">📲 مشاركة</button>
-      <button class="qr-act-btn qr-act-copy" onclick="copyUrl('${xe(storeUrl)}')">📋 نسخ الرابط</button>
+      <button class="qr-act-btn qr-act-share" onclick="shareCard('${xe(storeUrl)}','${xe(m.name||'')}')">📲 مشاركة المتجر</button>
+      <button class="qr-act-btn qr-act-copy" onclick="copyUrl('${xe(storeUrl)}')">📋 نسخ رابط المتجر</button>
     </div>
   </div>
 
   <div class="section-title" style="margin-top:4px">👥 إحالاتي <span class="count-badge">${myRefs.length}</span></div>
+
+  <!-- رابط الإحالة -->
+  <div style="background:var(--bg2);border:1.5px solid rgba(88,166,255,.3);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+    <div style="font-size:11px;color:var(--blue);font-weight:800;margin-bottom:8px">🔗 رابط الإحالة — لجلب مسوقين جدد</div>
+    <div style="font-size:11px;color:var(--mt);font-family:monospace;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-bottom:10px;word-break:break-all;direction:ltr;text-align:left">${xe(refUrl)}</div>
+    <div style="display:flex;gap:8px">
+      <button class="qr-act-btn qr-act-copy" style="font-size:11px;padding:8px" onclick="copyUrl('${xe(refUrl)}')">📋 نسخ رابط الإحالة</button>
+      <button class="qr-act-btn qr-act-share" style="font-size:11px;padding:8px" onclick="shareRef('${xe(refUrl)}','${xe(m.name||'')}')">📲 مشاركة</button>
+    </div>
+  </div>
+
   <div class="ref-stat">
     <div class="ref-stat-icon">🏆</div>
     <div>
@@ -662,6 +674,14 @@ function buildQR(){
       correctLevel:QRCode.CorrectLevel.M
     });
   }catch(e){box.innerHTML='<div style="font-size:11px;color:#999">QR غير متاح</div>';}
+}
+function shareRef(url,name){
+  const text=`🛋️ انضم معي على منصة ديباجات للتسويق بالعمولة في المفروشات!\nسجّل من هنا:\n${url}`;
+  if(navigator.share){
+    navigator.share({title:'انضم لديباجات',text,url}).catch(()=>{});
+  }else{
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  }
 }
 function shareCard(url,name){
   const text=`🛋️ تسوق من متجر ${name} على ديباجات:\n${url}`;
