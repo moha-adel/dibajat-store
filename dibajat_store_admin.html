@@ -379,9 +379,7 @@ function approveReg(id, name, phone, ref){
 }
 
 function contactReg(phone, name){
-  const msg = encodeURIComponent('مرحباً ' + name + ' 👋
-تم قبول طلبك في منصة ديباجات!
-سنتواصل معك قريباً لتفعيل متجرك.');
+  const msg = encodeURIComponent('مرحباً ' + name + ' 👋\nتم قبول طلبك في منصة ديباجات!\nسنتواصل معك قريباً لتفعيل متجرك.');
   window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
 }
 
