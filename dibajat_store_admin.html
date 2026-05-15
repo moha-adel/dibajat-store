@@ -109,13 +109,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
 .cin-sm:focus{border-color:var(--gold)}
 .color-remove{background:none;border:none;color:var(--mt);cursor:pointer;font-size:16px;padding:3px;transition:color .18s;margin-right:auto}
 .color-remove:hover{color:var(--red)}
-/* صور اللون */
 .color-imgs-label{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
 .color-imgs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .color-img-thumb{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;border:1.5px solid var(--bd);background:var(--bg3);cursor:pointer}
 .color-img-thumb img{width:100%;height:100%;object-fit:cover}
-/* AUTH */
+
+/* AUTH OVERLAY */
 #authOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+
 /* LIGHTBOX */
 .lb-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9998;align-items:center;justify-content:center}
 .lb-bg.open{display:flex}
@@ -152,12 +153,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
   <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;width:min(360px,92vw);text-align:center">
     <div style="width:52px;height:52px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#0d1117;margin:0 auto 16px">م</div>
     <div style="font-size:18px;font-weight:800;margin-bottom:4px">مفروشاتي</div>
-    <div style="font-size:12px;color:var(--mt);margin-bottom:24px">لوحة التحكم</div>
+    <div style="font-size:12px;color:var(--mt);margin-bottom:24px">لوحة التحكم — Super Admin</div>
+    <input id="authEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bg3);color:var(--tx);font-size:14px;font-family:'Tajawal',sans-serif;direction:ltr;text-align:center;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('authPass').focus()">
     <input id="authPass" type="password" placeholder="كلمة المرور" style="width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bg3);color:var(--tx);font-size:14px;font-family:'Tajawal',sans-serif;direction:ltr;text-align:center;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')checkAuth()">
     <div id="authErr" style="color:var(--red);font-size:11px;margin-bottom:10px;min-height:16px"></div>
-    <button onclick="checkAuth()" style="width:100%;padding:11px;border-radius:8px;background:var(--gold);color:#0d1117;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif">دخول</button>
+    <button onclick="checkAuth()" id="authBtn" style="width:100%;padding:11px;border-radius:8px;background:var(--gold);color:#0d1117;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif">دخول</button>
   </div>
 </div>
+
 <!-- LIGHTBOX -->
 <div class="lb-bg" id="lbBg">
   <button class="lb-close" onclick="closeLightbox()">✕</button>
@@ -178,11 +181,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
   <div class="sidebar-nav">
     <div class="nav-label">القائمة الرئيسية</div>
     <button class="nav-item on" id="nav-overview" onclick="goTab('overview',this)"><span class="nav-icon">📊</span> نظرة عامة</button>
-    <button class="nav-item" id="nav-brands" onclick="goTab('brands',this)"><span class="nav-icon">🏢</span> الشركات <span class="nav-badge" id="nb-brands">4</span></button>
-    <button class="nav-item" id="nav-products" onclick="goTab('products',this)"><span class="nav-icon">🛋️</span> المنتجات <span class="nav-badge" id="nb-products">8</span></button>
-    <button class="nav-item" id="nav-marketers" onclick="goTab('marketers',this)"><span class="nav-icon">👤</span> المسوقون <span class="nav-badge" id="nb-marketers">3</span></button>
+    <button class="nav-item" id="nav-brands" onclick="goTab('brands',this)"><span class="nav-icon">🏢</span> الشركات <span class="nav-badge" id="nb-brands">0</span></button>
+    <button class="nav-item" id="nav-products" onclick="goTab('products',this)"><span class="nav-icon">🛋️</span> المنتجات <span class="nav-badge" id="nb-products">0</span></button>
+    <button class="nav-item" id="nav-marketers" onclick="goTab('marketers',this)"><span class="nav-icon">👤</span> المسوقون <span class="nav-badge" id="nb-marketers">0</span></button>
     <div class="nav-label" style="margin-top:6px">المتابعة</div>
-    <button class="nav-item" id="nav-orders" onclick="goTab('orders',this)"><span class="nav-icon">📦</span> الطلبات <span class="nav-badge-red" id="nb-orders">2</span></button>
+    <button class="nav-item" id="nav-orders" onclick="goTab('orders',this)"><span class="nav-icon">📦</span> الطلبات <span class="nav-badge-red" id="nb-orders">0</span></button>
     <button class="nav-item" id="nav-registrations" onclick="goTab('registrations',this)"><span class="nav-icon">📋</span> التسجيلات <span class="nav-badge-red" id="nb-registrations" style="display:none">0</span></button>
     <button class="nav-item" id="nav-leaderboard" onclick="goTab('leaderboard',this)"><span class="nav-icon">🏆</span> Leaderboard</button>
   </div>
@@ -190,10 +193,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
     <div class="admin-user">
       <div class="admin-avatar">S</div>
       <div style="flex:1">
-        <div class="admin-name">Super Admin</div>
+        <div class="admin-name" id="admin-email">Super Admin</div>
         <div class="admin-role">مفروشاتي · الكويت</div>
       </div>
-      <button onclick="localStorage.removeItem('maf_admin_auth');location.reload()" title="خروج" style="background:none;border:none;cursor:pointer;color:var(--mt);font-size:16px;padding:4px">🚪</button>
+      <button onclick="doAdminLogout()" title="خروج" style="background:none;border:none;cursor:pointer;color:var(--mt);font-size:16px;padding:4px">🚪</button>
     </div>
   </div>
 </div>
@@ -219,9 +222,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
   </div>
 </div>
 
-<!-- Firebase CDN (compat version — no imports needed) -->
+<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDz2PtMjNm4HlBCjS4GzuBdrVNdnMXhRNQ",
@@ -234,6 +238,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
 
 // ===== STATE =====
 let brands={}, products={}, marketers={}, orders={};
@@ -242,14 +247,12 @@ let editColors=[], currentTab='overview', _selectedTheme='luxury';
 // ===== HELPERS =====
 function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function gb(id){return brands[id]||{ar:'—',en:'—'}}
-// يجيب اسم الشركة من اسم المنتج (للأوردرات القديمة)
 function getBrandByProduct(nameAr){
   const p=Object.values(products||{}).find(p=>p.nameAr===nameAr||p.nameEn===nameAr);
   if(!p)return'';
   const b=brands[p.brand_id||p.brand];
   return b?b.ar||b.en||'':'';
 }
-// يجيب اسم الشركة من item (يدعم القديم والجديد)
 function resolveItemBrand(item){
   if(item.brandAr||item.brandEn)return item.brandAr||item.brandEn;
   return getBrandByProduct(item.product||item.nameAr||'');
@@ -288,7 +291,6 @@ function initListeners(){
   let prevOrderKeys=new Set();
   db.ref('orders').on('value',snap=>{
     const data=snap.val()||{};
-    // اكتشاف طلبات جديدة
     Object.entries(data).forEach(([k,v])=>{
       if(!prevOrderKeys.has(k) && prevOrderKeys.size>0 && v.status==='new'){
         toast('🔔 طلب جديد وصل!');
@@ -303,16 +305,64 @@ function initListeners(){
 
 // ===== REGISTRATIONS DATA =====
 let registrationsData = {};
-db.ref('registrations').on('value', snap => {
-  registrationsData = snap.val() || {};
-  const pending = Object.values(registrationsData).filter(r => r.status === 'pending').length;
-  const badge = document.getElementById('nb-registrations');
-  if(badge){
-    badge.textContent = pending;
-    badge.style.display = pending > 0 ? '' : 'none';
+function initRegistrationsListener(){
+  db.ref('registrations').on('value', snap => {
+    registrationsData = snap.val() || {};
+    const pending = Object.values(registrationsData).filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('nb-registrations');
+    if(badge){
+      badge.textContent = pending;
+      badge.style.display = pending > 0 ? '' : 'none';
+    }
+    if(currentTab === 'registrations') render();
+  });
+}
+
+// ===== FIREBASE AUTH =====
+auth.onAuthStateChanged(user => {
+  const overlay = document.getElementById('authOverlay');
+  if (user) {
+    // مسجّل دخول — أخفي الـ overlay وابدأ التطبيق
+    overlay.style.display = 'none';
+    const emailEl = document.getElementById('admin-email');
+    if (emailEl) emailEl.textContent = user.email || 'Admin';
+    document.getElementById('content').innerHTML = '<div class="empty" style="padding:60px;font-size:14px">⏳ جاري الاتصال بـ Firebase...</div>';
+    initListeners();
+    initRegistrationsListener();
+    goTab('overview', document.getElementById('nav-overview'));
+  } else {
+    // مش مسجّل — أظهر شاشة الدخول
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+      const el = document.getElementById('authEmail');
+      if (el) el.focus();
+    }, 100);
   }
-  if(currentTab === 'registrations') render();
 });
+
+window.checkAuth = function() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  const btn   = document.getElementById('authBtn');
+  const err   = document.getElementById('authErr');
+  if (!email || !pass) { err.textContent = 'أدخل البريد وكلمة المرور'; return; }
+  btn.textContent = '⏳ جاري الدخول...';
+  btn.disabled = true;
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => { err.textContent = ''; })
+    .catch(() => {
+      err.textContent = 'بيانات غير صحيحة — حاول مرة أخرى';
+      btn.textContent = 'دخول';
+      btn.disabled = false;
+      document.getElementById('authPass').value = '';
+    });
+};
+
+window.doAdminLogout = function() {
+  auth.signOut().then(() => {
+    location.reload();
+  });
+};
 
 // ===== TABS =====
 const TABS={
@@ -380,12 +430,10 @@ function approveReg(id, name, phone, ref){
   if(!confirm('قبول طلب ' + name + '؟')) return;
   db.ref('registrations/'+id).update({status:'approved'});
 }
-
 function contactReg(phone, name){
   const msg = encodeURIComponent('مرحباً ' + name + ' 👋\nتم قبول طلبك في منصة ديباجات!\nسنتواصل معك قريباً لتفعيل متجرك.');
   window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
 }
-
 function rejectReg(id){
   if(!confirm('رفض هذا الطلب؟')) return;
   db.ref('registrations/'+id).update({status:'rejected'});
@@ -582,12 +630,10 @@ function openProduct(id){
   const isNew=id===-1;
   const p=isNew?{brand_id:'',nameAr:'',nameEn:'',descAr:'',descEn:'',price:'',oldPrice:'',badge:'',emoji:'🛋️',status:'active',colors:{},sizes:[]}:{...products[id]};
   const ba=brandsArr();
-  // deep copy للألوان عشان مش تتشارك نفس الـ imgs array
   const colorsObj=p.colors||{};
   editColors=Object.keys(colorsObj).length
     ?Object.keys(colorsObj).sort().map(k=>{
         const col=colorsObj[k];
-        // Firebase بيخزن imgs كـ object أحياناً — نحوله لـ array
         let imgs=col.imgs||[];
         if(imgs && !Array.isArray(imgs)){
           imgs=Object.keys(imgs).sort((a,b)=>Number(a)-Number(b)).map(i=>imgs[i]);
@@ -611,7 +657,6 @@ function openProduct(id){
         <div class="form-row"><label class="form-label">السعر القديم</label><input class="form-input" id="p-old" type="number" value="${p.oldPrice||''}" style="direction:ltr"></div>
       </div>
       <div class="form-row"><label class="form-label">💰 عمولة المسوق (KWD ثابت لكل طلب)</label><input class="form-input" id="p-comm" type="number" step="0.1" value="${p.commission||0}" style="direction:ltr"></div>
-      </div>
       <div class="form-2">
         <div class="form-row"><label class="form-label">الإيموجي</label><input class="form-input" id="p-emoji" value="${xe(p.emoji||'🛋️')}" style="direction:ltr;font-size:22px;text-align:center"></div>
         <div class="form-row"><label class="form-label">Badge</label>
@@ -697,7 +742,6 @@ function pasteImgUrl(ci){
   if(!url){toast('أدخل رابط الصورة',false);return;}
   if(!editColors[ci].imgs) editColors[ci].imgs=[];
   if(editColors[ci].imgs.length>=8){toast('الحد الأقصى 8 صور',false);return;}
-  // نعمل copy جديدة عشان مش نعدل على reference مشترك
   editColors[ci]={...editColors[ci], imgs:[...editColors[ci].imgs, url]};
   inp.value='';renderColors();
 }
@@ -716,7 +760,6 @@ function saveProduct(id){
   const colorsObj={};
   editColors.forEach((c,i)=>{
     const key=c._key||('c'+(i+1));
-    // تأكد إن imgs array وليست object
     let imgs=c.imgs||[];
     if(!Array.isArray(imgs)) imgs=Object.values(imgs);
     colorsObj[key]={ar:c.ar||'',en:c.en||'',hex:c.hex,imgs};
@@ -742,22 +785,19 @@ function delProduct(id){
   db.ref('products/'+id).remove().then(()=>toast('تم الحذف')).catch(e=>toast('خطأ: '+e.message,false));
 }
 
-// ===== MARKETER PRODUCTS PICKER (by brand) =====
+// ===== MARKETER PRODUCTS PICKER =====
 function renderMarketerProds(pa, oldProducts, excluded){
   const wrap = document.getElementById('prod-pick-wrap');
   if(!wrap) return;
-  // group by brand
   const byBrand = {};
   pa.forEach(p=>{
     const bid = p.brand_id||p.brand||'other';
     if(!byBrand[bid]) byBrand[bid]=[];
     byBrand[bid].push(p);
   });
-  const ba = brandsArr();
   let html = '';
   Object.entries(byBrand).forEach(([bid, prods])=>{
     const brand = gb(bid);
-    const allSel = prods.every(p=>!excluded.includes(p.id));
     html += `<div style="margin-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg);border-radius:8px 8px 0 0;border:1px solid var(--bd);border-bottom:none">
         <div style="font-size:12px;font-weight:800;color:var(--gold)">${xe(brand.ar)}</div>
@@ -916,7 +956,6 @@ function openMarketer(id){
       <button class="btn-primary" onclick="saveMarketer(${isNew?'null':`'${id}'`})">${isNew?'إضافة':'حفظ'}</button>
     </div>`;
   openModal();
-  // استدعاء بعد render عشان الـ DOM يكون جاهز
   setTimeout(()=>renderMarketerProds(pa, m.products||[], m.excluded||[]), 50);
 }
 function selectTheme(id){
@@ -933,7 +972,6 @@ function saveMarketer(id){
   const name=document.getElementById('m-name').value.trim();
   const slug=document.getElementById('m-slug').value.trim().toLowerCase();
   if(!name||!slug){toast('أدخل الاسم والرابط',false);return;}
-  // جمع المنتجات المُخفاة (excluded) بدل المختارة
   const excludedProds=[...document.querySelectorAll('#prod-pick-wrap .prod-check:not(.sel)')].map(el=>el.dataset.pid).filter(Boolean);
   const theme=_selectedTheme||'luxury';
   const isNew=!id||id==='null';
@@ -1018,26 +1056,10 @@ function updateOrderStatus(id,status){
     .then(()=>toast('تم تحديث الطلب ✓'))
     .catch(e=>toast('خطأ: '+e.message,false));
 }
-
-// إشعار واتساب للمسوق عند وصول طلب جديد
 function notifyMarketerWA(order){
   const mkt=marketersArr().find(m=>m.name===order.marketer);
   if(!mkt||!mkt.waNumber) return;
-  const msg=`🛋️ *طلب جديد في متجرك!*
-
-`
-    +`• المنتج: *${order.product||''}*
-`
-    +`• اللون: ${order.color||''}
-`
-    +(order.size?`• المقاس: ${order.size}
-`:'')
-    +`• السعر: *${order.price} KWD*
-`
-    +`• التاريخ: ${order.date||''}
-
-`
-    +`افتح لوحة الأدمن لتأكيد الطلب 👆`;
+  const msg=`🛋️ *طلب جديد في متجرك!*\n\n• المنتج: *${order.product||''}*\n• اللون: ${order.color||''}\n${order.size?'• المقاس: '+order.size+'\n':''}• السعر: *${order.price} KWD*\n• التاريخ: ${order.date||''}\n\nافتح لوحة الأدمن لتأكيد الطلب 👆`;
   window.open(`https://wa.me/${mkt.waNumber}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
@@ -1055,24 +1077,6 @@ function previewImg(url,prevId,circle){
   const el=document.getElementById(prevId);if(!el)return;
   el.innerHTML=url?`<img src="${url}" style="width:100%;height:100%;object-fit:cover">`:(circle?'👤':'🖼️');
 }
-
-// ===== INIT =====
-document.getElementById('content').innerHTML='<div class="empty" style="padding:60px;font-size:14px">⏳ جاري الاتصال بـ Firebase...</div>';
-initListeners();
-goTab('overview',document.getElementById('nav-overview'));
-
-// ===== AUTH (يشتغل فوق الكود الأصلي) =====
-(function(){
-  const KEY='maf_admin_auth', PASS='mafroshaty2025';
-  const overlay=document.getElementById('authOverlay');
-  if(localStorage.getItem(KEY)==='1'){overlay.style.display='none';return;}
-  setTimeout(()=>document.getElementById('authPass').focus(),100);
-  window.checkAuth=function(){
-    const v=document.getElementById('authPass').value;
-    if(v===PASS){localStorage.setItem(KEY,'1');overlay.style.display='none';}
-    else{document.getElementById('authErr').textContent='كلمة المرور غير صحيحة';document.getElementById('authPass').value='';}
-  };
-})();
 
 // ===== LIGHTBOX =====
 let lbUrls=[],lbIdx=0;
@@ -1106,8 +1110,6 @@ document.getElementById('lbBg').addEventListener('click',e=>{if(e.target===docum
 function renderLeaderboard(){
   const ma=marketersArr().filter(m=>m.status==='active');
   if(!ma.length)return`<div class="section"><div class="empty">لا يوجد مسوقون نشطون بعد</div></div>`;
-
-  // حساب بيانات كل مسوق
   const rows=ma.map(m=>{
     const myRefs=Object.values(registrationsData).filter(r=>r.ref===m.slug);
     const myOrders=Object.values(orders||{}).filter(o=>o.marketer_id===m.id);
@@ -1116,12 +1118,8 @@ function renderLeaderboard(){
     const earnings=parseFloat(m.earnings||0);
     return{...m,myRefs,approved:myRefs.filter(r=>r.status==='approved').length,revenue,earnings,ordersCount:myOrders.length,deliveredCount:delivered.length};
   }).sort((a,b)=>b.earnings-a.earnings);
-
   const medals=['🥇','🥈','🥉'];
-  const top=rows[0];
-
   return`<div class="section">
-    <!-- Stats Row -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
       <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
         <div style="font-size:22px;font-weight:900;color:var(--gold)">${rows.length}</div>
@@ -1136,23 +1134,13 @@ function renderLeaderboard(){
         <div style="font-size:11px;color:var(--mt)">إحالة مفعّلة</div>
       </div>
     </div>
-
-    <!-- Leaderboard Table -->
     <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
       <div style="padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:800;color:var(--gold)">🏆 ترتيب المسوقين</div>
       <table class="tbl" style="margin:0">
-        <tr>
-          <th style="width:36px">#</th>
-          <th>المسوق</th>
-          <th>الطلبات</th>
-          <th>المبيعات</th>
-          <th>الإحالات</th>
-          <th>الأرباح</th>
-        </tr>
+        <tr><th style="width:36px">#</th><th>المسوق</th><th>الطلبات</th><th>المبيعات</th><th>الإحالات</th><th>الأرباح</th></tr>
         ${rows.map((m,i)=>{
           const isTop=i===0;
-          const rowStyle=isTop?'background:rgba(201,169,110,.06);':'';
-          return`<tr style="${rowStyle}">
+          return`<tr style="${isTop?'background:rgba(201,169,110,.06);':''}">
             <td style="font-size:18px;text-align:center">${medals[i]||`<span style="color:var(--mt);font-size:12px">${i+1}</span>`}</td>
             <td>
               <div style="display:flex;align-items:center;gap:10px">
@@ -1164,15 +1152,9 @@ function renderLeaderboard(){
                 </div>
               </div>
             </td>
-            <td>
-              <div style="font-size:13px;font-weight:800">${m.deliveredCount} <span style="font-size:10px;color:var(--mt);font-weight:400">مسلّم</span></div>
-              <div style="font-size:10px;color:var(--mt)">${m.ordersCount} إجمالي</div>
-            </td>
+            <td><div style="font-size:13px;font-weight:800">${m.deliveredCount} <span style="font-size:10px;color:var(--mt);font-weight:400">مسلّم</span></div><div style="font-size:10px;color:var(--mt)">${m.ordersCount} إجمالي</div></td>
             <td><span style="font-weight:800;color:var(--tx)">${m.revenue.toFixed(1)} KWD</span></td>
-            <td>
-              <div style="font-size:13px;font-weight:800">${m.myRefs.length} <span style="font-size:10px;color:var(--mt);font-weight:400">إجمالي</span></div>
-              ${m.approved?`<div style="font-size:10px;color:var(--green)">✅ ${m.approved} مفعّل</div>`:''}
-            </td>
+            <td><div style="font-size:13px;font-weight:800">${m.myRefs.length} <span style="font-size:10px;color:var(--mt);font-weight:400">إجمالي</span></div>${m.approved?`<div style="font-size:10px;color:var(--green)">✅ ${m.approved} مفعّل</div>`:''}</td>
             <td><span style="font-size:14px;font-weight:900;color:var(--green)">${m.earnings} KWD</span></td>
           </tr>`;
         }).join('')}
@@ -1180,6 +1162,9 @@ function renderLeaderboard(){
     </div>
   </div>`;
 }
+
+// ===== INITIAL LOADING STATE =====
+document.getElementById('content').innerHTML='<div class="empty" style="padding:60px;font-size:14px">⏳ جاري التحقق من الهوية...</div>';
 </script>
 </body>
 </html>
