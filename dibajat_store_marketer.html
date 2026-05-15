@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -130,6 +132,48 @@ main{padding:16px 16px 90px}
 .filter-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
 .filter-tab{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid var(--bd);background:none;color:var(--mt);cursor:pointer;font-family:'Tajawal',sans-serif;white-space:nowrap}
 .filter-tab.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+/* ===== QR CARD ===== */
+.qr-card-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0 16px}
+.qr-card{background:linear-gradient(145deg,#1a1f2e,#0d1117);border:1.5px solid var(--bd);border-radius:20px;padding:28px 24px;width:min(320px,100%);text-align:center;position:relative;overflow:hidden}
+.qr-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(201,169,110,.15),transparent 70%);border-radius:50%}
+.qr-card-logo{width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;margin:0 auto 10px;display:block}
+.qr-card-logo-placeholder{width:56px;height:56px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0d1117;margin:0 auto 10px}
+.qr-card-name{font-size:18px;font-weight:900;color:var(--tx);margin-bottom:4px}
+.qr-card-sub{font-size:11px;color:var(--mt);margin-bottom:20px}
+.qr-box{width:160px;height:160px;background:#fff;border-radius:12px;padding:10px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center}
+.qr-box canvas{border-radius:4px}
+.qr-card-url{font-size:11px;color:var(--gold);font-family:monospace;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.2);border-radius:8px;padding:6px 12px;display:inline-block}
+.qr-card-brand{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--mt);letter-spacing:1px;white-space:nowrap}
+.qr-actions{display:flex;gap:8px;width:min(320px,100%)}
+.qr-act-btn{flex:1;padding:11px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s}
+.qr-act-btn:hover{opacity:.85}
+.qr-act-share{background:linear-gradient(135deg,#25d366,#1aab54);color:#fff}
+.qr-act-copy{background:var(--bg2);color:var(--tx);border:1.5px solid var(--bd)}
+
+/* ===== REFERRALS ===== */
+.ref-stat{background:var(--bg2);border:1.5px solid rgba(201,169,110,.3);border-radius:var(--radius);padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.ref-stat-icon{font-size:32px}
+.ref-stat-val{font-size:28px;font-weight:900;color:var(--gold)}
+.ref-stat-label{font-size:12px;color:var(--mt);margin-top:2px}
+.ref-list{display:flex;flex-direction:column;gap:8px}
+.ref-item{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.ref-item-name{font-size:13px;font-weight:700;color:var(--tx)}
+.ref-item-meta{font-size:11px;color:var(--mt);margin-top:2px}
+.ref-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px}
+.ref-badge-pending{background:var(--yellow-dim);color:var(--yellow)}
+.ref-badge-approved{background:var(--green-dim);color:var(--green)}
+.ref-badge-rejected{background:var(--red-dim);color:var(--red)}
+/* ===== STATS TAB ===== */
+.stats-section{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.stats-section-title{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:14px}
+.chart-wrap{position:relative;width:100%;height:200px}
+.top-product-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}
+.top-product-item:last-child{border-bottom:none}
+.top-product-rank{width:24px;height:24px;border-radius:50%;background:var(--bg3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--mt);flex-shrink:0}
+.top-product-rank.gold{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.top-product-rank.silver{background:rgba(139,148,158,.12);border-color:var(--mt);color:var(--mt)}
+.top-product-rank.bronze{background:rgba(210,147,71,.12);border-color:#d29347;color:#d29347}
 </style>
 </head>
 <body>
@@ -185,6 +229,12 @@ main{padding:16px 16px 90px}
     <button class="nav-tab" onclick="goTab('store',this)" id="tab-store">
       <span class="nav-tab-icon">🔗</span>متجري
     </button>
+    <button class="nav-tab" onclick="goTab('card',this)" id="tab-card">
+      <span class="nav-tab-icon">🪪</span>بطاقتي
+    </button>
+    <button class="nav-tab" onclick="goTab('stats',this)" id="tab-stats">
+      <span class="nav-tab-icon">📈</span>إحصائياتي
+    </button>
   </nav>
 </div>
 
@@ -196,7 +246,7 @@ firebase.initializeApp(FB);
 const db=firebase.database();
 
 const MKT_KEY='maf_mkt_id';
-let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, currentTab='overview', orderFilter='all';
+let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, allRegistrations={}, currentTab='overview', orderFilter='all';
 
 // ===== LOGIN =====
 function doLogin(){
@@ -264,6 +314,10 @@ function startApp(id, mkt){
   db.ref('brands').on('value',snap=>{
     allBrands=snap.val()||{};
   });
+  db.ref('registrations').on('value',snap=>{
+    allRegistrations=snap.val()||{};
+    if(currentTab==='card')renderTab();
+  });
 
   renderTab();
 }
@@ -279,8 +333,9 @@ function renderTab(){
   const c=document.getElementById('mainContent');
   if(currentTab==='overview')c.innerHTML=renderOverview();
   else if(currentTab==='orders')c.innerHTML=renderOrders();
-
   else if(currentTab==='store')c.innerHTML=renderStore();
+  else if(currentTab==='card'){c.innerHTML=renderCard();buildQR();}
+  else if(currentTab==='stats'){c.innerHTML=renderStats();buildCharts();}
 }
 
 // ===== HELPERS =====
@@ -541,6 +596,228 @@ function copyUrl(url){
 }
 function shareOnWa(url){
   window.open('https://wa.me/?text='+encodeURIComponent('🛋️ تسوق من متجري على مفروشاتي:\n'+url),'_blank');
+}
+
+// ===== CARD & QR =====
+function renderCard(){
+  const m=currentMarketer;
+  const storeUrl=`https://${m.slug}.dibajat.store`;
+  const myRefs=Object.entries(allRegistrations).filter(([k,v])=>v.ref===m.slug);
+  const approved=myRefs.filter(([k,v])=>v.status==='approved').length;
+  const pending=myRefs.filter(([k,v])=>v.status==='pending').length;
+  return`
+  <div class="qr-card-wrap">
+    <div class="qr-card" id="qrCardEl">
+      ${m.logo
+        ?`<img class="qr-card-logo" src="${xe(m.logo)}" onerror="this.style.display='none'">`
+        :`<div class="qr-card-logo-placeholder">${xe((m.name||'م')[0])}</div>`}
+      <div class="qr-card-name">${xe(m.name||'')}</div>
+      <div class="qr-card-sub">متجر مفروشات — ديباجات</div>
+      <div class="qr-box" id="qrBox"></div>
+      <div class="qr-card-url">${xe(storeUrl)}</div>
+      <div class="qr-card-brand">dibajat.store</div>
+    </div>
+    <div class="qr-actions">
+      <button class="qr-act-btn qr-act-share" onclick="shareCard('${xe(storeUrl)}','${xe(m.name||'')}')">📲 مشاركة</button>
+      <button class="qr-act-btn qr-act-copy" onclick="copyUrl('${xe(storeUrl)}')">📋 نسخ الرابط</button>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:4px">👥 إحالاتي <span class="count-badge">${myRefs.length}</span></div>
+  <div class="ref-stat">
+    <div class="ref-stat-icon">🏆</div>
+    <div>
+      <div class="ref-stat-val">${myRefs.length}</div>
+      <div class="ref-stat-label">إجمالي من سجّل عن طريقك</div>
+    </div>
+    <div style="margin-right:auto;text-align:left;display:flex;flex-direction:column;gap:4px">
+      <span class="ref-badge ref-badge-approved">✅ مفعّل ${approved}</span>
+      <span class="ref-badge ref-badge-pending">⏳ معلق ${pending}</span>
+    </div>
+  </div>
+  ${myRefs.length===0
+    ? `<div class="empty">لا توجد إحالات بعد — شارك رابطك لتبدأ!</div>`
+    : `<div class="ref-list">
+        ${myRefs.sort((a,b)=>(b[1].date||'').localeCompare(a[1].date||'')).map(([k,r])=>`
+          <div class="ref-item">
+            <div>
+              <div class="ref-item-name">${xe(r.name||'—')}</div>
+              <div class="ref-item-meta">${r.city?'📍 '+xe(r.city)+' · ':''} ${r.date?new Date(r.date).toLocaleDateString('ar-EG'):''}</div>
+            </div>
+            <span class="ref-badge ${r.status==='approved'?'ref-badge-approved':r.status==='rejected'?'ref-badge-rejected':'ref-badge-pending'}">
+              ${r.status==='approved'?'✅ مفعّل':r.status==='rejected'?'❌ مرفوض':'⏳ معلق'}
+            </span>
+          </div>`).join('')}
+      </div>`}`;
+}
+function buildQR(){
+  const box=document.getElementById('qrBox');
+  if(!box||!currentMarketer)return;
+  box.innerHTML='';
+  try{
+    new QRCode(box,{
+      text:`https://${currentMarketer.slug}.dibajat.store`,
+      width:140,height:140,
+      colorDark:'#0d1117',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){box.innerHTML='<div style="font-size:11px;color:#999">QR غير متاح</div>';}
+}
+function shareCard(url,name){
+  const text=`🛋️ تسوق من متجر ${name} على ديباجات:\n${url}`;
+  if(navigator.share){
+    navigator.share({title:`متجر ${name}`,text,url}).catch(()=>{});
+  }else{
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  }
+}
+
+// ===== STATS =====
+function renderStats(){
+  const oa=ordersArr();
+  const delivered=oa.filter(o=>o.status==='delivered');
+  const totalRevenue=delivered.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const earnings=parseFloat(currentMarketer.earnings||0);
+  const myRefs=Object.entries(allRegistrations).filter(([k,v])=>v.ref===currentMarketer.slug);
+
+  // أكثر المنتجات مبيعاً
+  const prodCount={};
+  delivered.forEach(o=>{
+    (o.items?Object.values(o.items):[]).forEach(item=>{
+      const name=item.product||'غير محدد';
+      prodCount[name]=(prodCount[name]||0)+(item.qty||1);
+    });
+  });
+  const topProds=Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const rankClass=['gold','silver','bronze'];
+
+  return`
+  <!-- KPIs -->
+  <div class="stats-grid" style="margin-bottom:14px">
+    <div class="stat-card gold">
+      <div class="stat-label">إجمالي أرباحي</div>
+      <div class="stat-val">${earnings}</div>
+      <div class="stat-sub">KWD</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">مبيعات مسلّمة</div>
+      <div class="stat-val">${totalRevenue.toFixed(1)}</div>
+      <div class="stat-sub">KWD</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">طلبات مسلّمة</div>
+      <div class="stat-val">${delivered.length}</div>
+      <div class="stat-sub">من ${oa.length} إجمالي</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">إحالاتي</div>
+      <div class="stat-val">${myRefs.length}</div>
+      <div class="stat-sub">${myRefs.filter(([k,v])=>v.status==='approved').length} مفعّل</div>
+    </div>
+  </div>
+
+  <!-- المبيعات الشهرية -->
+  <div class="stats-section">
+    <div class="stats-section-title">📊 المبيعات الشهرية (آخر 6 أشهر)</div>
+    <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
+  </div>
+
+  <!-- توزيع الطلبات -->
+  <div class="stats-section">
+    <div class="stats-section-title">🍩 توزيع الطلبات بالحالة</div>
+    <div class="chart-wrap" style="height:180px"><canvas id="chartStatus"></canvas></div>
+  </div>
+
+  <!-- أكثر المنتجات مبيعاً -->
+  <div class="stats-section">
+    <div class="stats-section-title">🏅 أكثر المنتجات مبيعاً</div>
+    ${topProds.length===0?'<div style="color:var(--mt);font-size:13px;text-align:center;padding:16px">لا توجد مبيعات بعد</div>'
+    :topProds.map(([name,qty],i)=>`
+      <div class="top-product-item">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="top-product-rank ${rankClass[i]||''}">${i+1}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--tx)">${xe(name)}</div>
+        </div>
+        <span style="font-size:12px;font-weight:800;color:var(--gold);background:var(--gold-dim);padding:3px 10px;border-radius:20px">${qty} قطعة</span>
+      </div>`).join('')}
+  </div>`;
+}
+
+function buildCharts(){
+  const oa=ordersArr();
+  // بيانات آخر 6 أشهر
+  const months=[];
+  const monthLabels=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({y:d.getFullYear(),m:d.getMonth()});
+    monthLabels.push(d.toLocaleDateString('ar-EG',{month:'short',year:'2-digit'}));
+  }
+  const monthlyRevenue=months.map(({y,m})=>{
+    return oa.filter(o=>{
+      if(o.status!=='delivered')return false;
+      const d=new Date(o.date||0);
+      return d.getFullYear()===y&&d.getMonth()===m;
+    }).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  });
+
+  // Chart 1 — المبيعات الشهرية
+  const ctx1=document.getElementById('chartMonthly');
+  if(ctx1){
+    new Chart(ctx1,{
+      type:'bar',
+      data:{
+        labels:monthLabels,
+        datasets:[{
+          label:'المبيعات KWD',
+          data:monthlyRevenue,
+          backgroundColor:'rgba(201,169,110,.7)',
+          borderColor:'rgba(201,169,110,1)',
+          borderWidth:1.5,
+          borderRadius:6,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.5)'}},
+          y:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.5)'},beginAtZero:true}
+        }
+      }
+    });
+  }
+
+  // Chart 2 — توزيع الطلبات
+  const statusCounts={
+    'جديد':oa.filter(o=>o.status==='new').length,
+    'مؤكد':oa.filter(o=>o.status==='confirmed').length,
+    'مسلّم':oa.filter(o=>o.status==='delivered').length,
+    'ملغي':oa.filter(o=>o.status==='cancelled').length,
+  };
+  const ctx2=document.getElementById('chartStatus');
+  if(ctx2&&oa.length){
+    new Chart(ctx2,{
+      type:'doughnut',
+      data:{
+        labels:Object.keys(statusCounts),
+        datasets:[{
+          data:Object.values(statusCounts),
+          backgroundColor:['#58a6ff','#e3b341','#3fb950','#f85149'],
+          borderWidth:0,hoverOffset:6
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{position:'bottom',labels:{color:'#8b949e',font:{size:11},padding:12,boxWidth:12}}
+        }
+      }
+    });
+  }else if(ctx2){
+    ctx2.parentElement.innerHTML='<div style="color:var(--mt);font-size:13px;text-align:center;padding:32px">لا توجد طلبات بعد</div>';
+  }
 }
 
 // ===== TOAST =====
