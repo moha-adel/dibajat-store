@@ -316,7 +316,7 @@ function startApp(id, mkt){
   });
   db.ref('registrations').on('value',snap=>{
     allRegistrations=snap.val()||{};
-    if(currentTab==='card')renderTab();
+    if(currentTab==='card'||currentTab==='overview'||currentTab==='stats')renderTab();
   });
 
   renderTab();
