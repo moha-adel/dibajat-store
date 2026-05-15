@@ -140,8 +140,9 @@ main{padding:16px 16px 90px}
     <div class="login-logo">م</div>
     <div class="login-title">لوحة المسوق</div>
     <div class="login-sub">سجل دخولك برقم واتساب المسجل في المنصة</div>
-    <input class="login-input" id="loginWa" type="tel" placeholder="مثال: 96512345678" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="login-hint">أدخل الرقم بالصيغة الدولية بدون + أو مسافات</div>
+    <input class="login-input" id="loginWa" type="tel" placeholder="مثال: 96512345678" onkeydown="if(event.key==='Enter')document.getElementById('loginPin').focus()">
+    <input class="login-input" id="loginPin" type="password" inputmode="numeric" maxlength="6" placeholder="الـ PIN السري" style="letter-spacing:6px;font-size:18px;font-weight:800;margin-top:4px" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-hint">أدخل رقم الواتساب بالصيغة الدولية بدون + أو مسافات</div>
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" onclick="doLogin()">دخول ←</button>
   </div>
@@ -200,22 +201,18 @@ let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, currentTab
 // ===== LOGIN =====
 function doLogin(){
   const wa=document.getElementById('loginWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('loginPin').value.trim();
   if(!wa||wa.length<8){showLoginErr('أدخل رقم واتساب صحيح');return;}
+  if(!pin){showLoginErr('أدخل الـ PIN');return;}
   document.getElementById('loginErr').textContent='⏳ جاري التحقق...';
   db.ref('marketers').once('value',snap=>{
     const all=snap.val()||{};
-    const keys=Object.keys(all);
-    if(keys.length===0){showLoginErr('لا يوجد مسوقين في قاعدة البيانات');return;}
     const found=Object.entries(all).find(([k,v])=>{
-      const stored=String(v.waNumber||'').trim().replace(/^\+/,'');
-      return stored===wa;
+      const storedWa=String(v.waNumber||'').trim().replace(/^\+/,'');
+      const storedPin=String(v.pin||'').trim();
+      return storedWa===wa && storedPin===pin;
     });
-    if(!found){
-      // debug: نعرض أول رقم موجود عشان نعرف الفرق
-      const sample=Object.values(all)[0]?.waNumber||'—';
-      showLoginErr(`الرقم غير مسجل. مثال على رقم مسجل: ${sample}`);
-      return;
-    }
+    if(!found){showLoginErr('رقم الواتساب أو الـ PIN غير صحيح');return;}
     const [id,mkt]=found;
     localStorage.setItem(MKT_KEY,id);
     startApp(id,mkt);
@@ -560,7 +557,7 @@ const savedId=localStorage.getItem(MKT_KEY);
 if(savedId){
   db.ref('marketers/'+savedId).once('value',snap=>{
     const mkt=snap.val();
-    if(mkt)startApp(savedId,mkt);
+    if(mkt&&mkt.pin)startApp(savedId,mkt);
     else{localStorage.removeItem(MKT_KEY);}
   });
 }
