@@ -605,41 +605,37 @@ const ALL_SIZES=[
   {id:'single',ar:'مفرد',en:'Single Size'},
 ];
 let _prodBrandFilter='all';
-function setProdFilter(el){_prodBrandFilter=el.dataset.bid;renderProducts();}
+function setProdFilter(bid){_prodBrandFilter=bid;renderProducts();}
 function renderProducts(){
-  // ترتيب بالأحدث — createdAt أو Firebase key كـ fallback
-  const pa=productsArr().sort((a,b)=>{
-    const ta=a.createdAt||a.id;
-    const tb=b.createdAt||b.id;
-    if(tb>ta)return 1;
-    if(tb<ta)return -1;
-    return 0;
-  });
+  // Firebase push keys: أحرف base64 مرتبة — الأحدث أكبر أبجدياً
+  const pa=productsArr().sort((a,b)=>
+    a.id < b.id ? 1 : a.id > b.id ? -1 : 0
+  );
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
 
   const brandIds=[...new Set(pa.map(p=>p.brand_id||p.brand).filter(Boolean))];
   const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>(p.brand_id||p.brand)===_prodBrandFilter);
 
-  const filterBtns=[
-    {id:'all',label:'الكل'},
-    ...brandIds.map(bid=>({id:bid,label:gb(bid).ar||'—'}))
-  ].map(f=>{
+  // أزرار الفلتر — بدون onclick inline، نستخدم data-bid
+  const allBrands=[{id:'all',label:'الكل'},...brandIds.map(bid=>({id:bid,label:gb(bid).ar||'—'}))];
+  const filterBtns=allBrands.map(f=>{
     const on=_prodBrandFilter===f.id;
-    const st=on
-      ?'border-color:#c9a96e;background:rgba(201,169,110,.12);color:#c9a96e'
-      :'border-color:#30363d;background:none;color:#8b949e';
-    return`<button onclick="setProdFilter(this)" data-bid="${xe(f.id)}" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid;cursor:pointer;font-family:Tajawal,sans-serif;${st}">${xe(f.label)}</button>`;
+    const border=on?'#c9a96e':'#30363d';
+    const bg=on?'rgba(201,169,110,.12)':'transparent';
+    const color=on?'#c9a96e':'#8b949e';
+    return`<button data-bid="${f.id}" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid ${border};background:${bg};color:${color};cursor:pointer;font-family:Tajawal,sans-serif">${xe(f.label)}</button>`;
   }).join('');
 
-  return`<div class="section">
+  return`<div class="section" id="prod-section">
     <div class="section-hd">
       <div class="section-title">🛋️ المنتجات <span class="section-count">${filtered.length}${_prodBrandFilter!=='all'?' / '+pa.length:''}</span></div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">${filterBtns}</div>
+      <div id="prod-filter-btns" style="display:flex;gap:5px;flex-wrap:wrap">${filterBtns}</div>
     </div>
     <table class="tbl">
       <tr><th></th><th>المنتج</th><th>الشركة</th><th>السعر</th><th>المقاسات</th><th>الألوان</th><th>الحالة</th><th>إجراءات</th></tr>
-      ${filtered.length===0?`<tr><td colspan="8" class="empty">لا توجد منتجات لهذه الشركة</td></tr>`:
-        filtered.map(p=>`<tr>
+      ${filtered.length===0
+        ?`<tr><td colspan="8" class="empty">لا توجد منتجات لهذه الشركة</td></tr>`
+        :filtered.map(p=>`<tr>
           <td><div class="tbl-emoji">${p.emoji||'🛋️'}</div></td>
           <td><div class="tbl-name">${xe(p.nameAr)}</div><div class="tbl-sub">${xe(p.nameEn)}</div></td>
           <td>${xe(gb(p.brand_id||p.brand).ar)}</td>
@@ -653,8 +649,17 @@ function renderProducts(){
           </div></td>
         </tr>`).join('')}
     </table>
-  </div>`;
-}
+  </div>
+  <script>
+    (function(){
+      var wrap=document.getElementById('prod-filter-btns');
+      if(wrap) wrap.addEventListener('click',function(e){
+        var btn=e.target.closest('[data-bid]');
+        if(btn) setProdFilter(btn.dataset.bid);
+      });
+    })();
+  </script>`
+;}
 function openProduct(id){
   const isNew=id===-1;
   const p=isNew?{brand_id:'',nameAr:'',nameEn:'',descAr:'',descEn:'',price:'',oldPrice:'',badge:'',emoji:'🛋️',status:'active',colors:{},sizes:[]}:{...products[id]};
