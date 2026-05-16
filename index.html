@@ -212,78 +212,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .fcolor-opt.sold-out .fcolor-thumb-ph{position:relative}
 .fcolor-soldout-badge{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;letter-spacing:.3px}
 
-/* SHARE IMAGE CARD — hidden, used for canvas capture */
-#shareCardWrap{
-  position:fixed;left:-9999px;top:0;z-index:-1;
-  width:405px;height:720px; /* 9:16 story ratio */
-  font-family:'Tajawal',sans-serif;
-  direction:rtl;overflow:hidden;
-  border-radius:0;background:#1c1c1c;
-}
-.share-card-inner{
-  width:405px;height:720px;
-  position:relative;display:flex;flex-direction:column;
-  background:#111;overflow:hidden;
-}
-.share-card-img{
-  width:100%;height:420px;object-fit:cover;display:block;flex-shrink:0;
-}
-.share-card-img-ph{
-  width:100%;height:420px;display:flex;align-items:center;justify-content:center;
-  font-size:100px;background:linear-gradient(145deg,#1a1a1a,#2a2a2a);flex-shrink:0;
-}
-.share-card-overlay{
-  position:absolute;top:380px;left:0;right:0;bottom:0;
-  background:linear-gradient(to bottom, transparent, rgba(0,0,0,.95) 40px);
-}
-.share-card-body{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:22px 24px 20px;
-}
-.share-card-brand{
-  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:#b8934a;margin-bottom:8px;
-}
-.share-card-name{
-  font-size:26px;font-weight:900;color:#fff;line-height:1.2;
-  margin-bottom:6px;
-}
-.share-card-price{
-  font-size:22px;font-weight:900;color:#b8934a;margin-bottom:18px;
-}
-.share-card-price span{font-size:13px;font-weight:400;color:rgba(255,255,255,.5);margin-right:4px}
-.share-card-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  border-top:1px solid rgba(255,255,255,.12);padding-top:14px;
-}
-.share-card-store{display:flex;align-items:center;gap:10px}
-.share-card-avatar{
-  width:36px;height:36px;border-radius:50%;border:2px solid #b8934a;
-  overflow:hidden;background:#2a2a2a;display:flex;align-items:center;
-  justify-content:center;font-size:14px;font-weight:900;color:#b8934a;flex-shrink:0;
-}
-.share-card-avatar img{width:100%;height:100%;object-fit:cover}
-.share-card-store-name{font-size:13px;font-weight:800;color:#fff}
-.share-card-url{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
-.share-card-dibajat{
-  font-size:10px;font-weight:800;color:rgba(255,255,255,.3);
-  letter-spacing:.5px;
-}
-/* overlay loading للتوليد */
-#shareLoadingOverlay{
-  display:none;position:fixed;inset:0;z-index:9998;
-  background:rgba(0,0,0,.7);align-items:center;justify-content:center;
-  flex-direction:column;gap:14px;
-}
-#shareLoadingOverlay.show{display:flex}
-.share-loading-spinner{
-  width:44px;height:44px;border:3px solid rgba(255,255,255,.15);
-  border-top-color:#b8934a;border-radius:50%;
-  animation:spin .8s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.share-loading-text{color:#fff;font-size:14px;font-weight:700;font-family:'Tajawal',sans-serif}
-
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
@@ -313,7 +241,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <!-- NAV -->
 <div class="fnav">
@@ -420,35 +347,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
     </div>
     <div id="cmpContent" style="padding:14px 16px"></div>
   </div>
-</div>
-
-<!-- SHARE IMAGE CARD (hidden) -->
-<div id="shareCardWrap">
-  <div class="share-card-inner" id="shareCardInner">
-    <div id="sc-img-wrap"></div>
-    <div class="share-card-overlay"></div>
-    <div class="share-card-body">
-      <div class="share-card-brand" id="sc-brand"></div>
-      <div class="share-card-name" id="sc-name"></div>
-      <div class="share-card-price"><span>KWD</span><span id="sc-price"></span></div>
-      <div class="share-card-footer">
-        <div class="share-card-store">
-          <div class="share-card-avatar" id="sc-avatar"></div>
-          <div>
-            <div class="share-card-store-name" id="sc-store-name"></div>
-            <div class="share-card-url" id="sc-store-url"></div>
-          </div>
-        </div>
-        <div class="share-card-dibajat">dibajat.store</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- LOADING OVERLAY -->
-<div id="shareLoadingOverlay">
-  <div class="share-loading-spinner"></div>
-  <div class="share-loading-text">جاري تجهيز الصورة...</div>
 </div>
 
 <script>
@@ -762,10 +660,7 @@ function renderModal(){
           ${isEn?'🛒 Add to Cart':'🛒 أضف للسلة'}
         </button>
         <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
-          🔗 ${isEn?'Share Link':'مشاركة الرابط'}
-        </button>
-        <button style="width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,#1c1c1c,#2d2d2d);color:#b8934a;font-size:13px;font-weight:800;border:1.5px solid rgba(184,147,74,.3);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="generateProductImage('${pid}')">
-          📸 ${isEn?'Share as Image':'صورة للانستغرام'}
+          🔗 ${isEn?'Share Product':'مشاركة الطقم'}
         </button>
       </div>
 
@@ -1046,95 +941,6 @@ function shareProduct(pid){
       document.execCommand('copy');document.body.removeChild(t);
       toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
     });
-  }
-}
-
-// ===== SHARE PRODUCT IMAGE =====
-async function generateProductImage(pid){
-  const p=PRODUCTS[pid];if(!p)return;
-  const bid=p.brand_id||p.brand;
-  const ci=selColor[pid]||0;
-  const col=p.colors[ci]||{};
-  const imgs=col.imgs||[];
-  const imgUrl=imgs[currentSlideIdx]||imgs[0]||'';
-
-  // جهّز الكارد
-  const scImgWrap=document.getElementById('sc-img-wrap');
-  if(imgUrl){
-    // نحمّل الصورة عبر proxy لتجنب CORS
-    scImgWrap.innerHTML=`<img class="share-card-img" id="sc-main-img" crossorigin="anonymous" src="${imgUrl}" alt="">`;
-  } else {
-    scImgWrap.innerHTML=`<div class="share-card-img-ph">${p.emoji||'🛋️'}</div>`;
-  }
-
-  document.getElementById('sc-brand').textContent=isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en)||'';
-  document.getElementById('sc-name').textContent=isEn?p.nameEn:p.nameAr;
-  document.getElementById('sc-price').textContent=p.price;
-  document.getElementById('sc-store-name').textContent=STORE.name||'';
-  document.getElementById('sc-store-url').textContent=(STORE.slug||'')+'.dibajat.store';
-
-  // أفاتار المسوق
-  const avEl=document.getElementById('sc-avatar');
-  if(STORE.logo){
-    avEl.innerHTML=`<img src="${STORE.logo}" crossorigin="anonymous" alt="" style="width:100%;height:100%;object-fit:cover">`;
-  } else {
-    avEl.textContent=(STORE.name||'م')[0];
-  }
-
-  // أظهر الـ loading
-  const overlay=document.getElementById('shareLoadingOverlay');
-  overlay.classList.add('show');
-
-  // انتظر تحميل الصورة
-  if(imgUrl){
-    await new Promise(res=>{
-      const img=document.getElementById('sc-main-img');
-      if(!img){res();return;}
-      if(img.complete){res();}
-      else{img.onload=res;img.onerror=res;setTimeout(res,3000);}
-    });
-  }
-
-  // خد لقطة بـ html2canvas
-  try{
-    const canvas=await html2canvas(document.getElementById('shareCardInner'),{
-      scale:2,
-      useCORS:true,
-      allowTaint:true,
-      backgroundColor:'#111111',
-      width:405,
-      height:720,
-      logging:false,
-    });
-
-    overlay.classList.remove('show');
-
-    // حاول تشارك كـ file (موبايل) وإلا حمّل
-    canvas.toBlob(async blob=>{
-      const file=new File([blob],`${p.slug||pid}-dibajat.png`,{type:'image/png'});
-      const productPath=p.slug?`/p/${p.slug}`:`/product/${pid}`;
-      const productUrl=`https://${STORE.slug}.dibajat.store${productPath}`;
-      const shareText=isEn
-        ?`🛋️ ${p.nameEn} — ${p.price} KWD\n${productUrl}`
-        :`🛋️ ${p.nameAr} — ${p.price} KWD\n${productUrl}`;
-
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        try{
-          await navigator.share({files:[file],title:isEn?p.nameEn:p.nameAr,text:shareText});
-          return;
-        }catch(e){if(e.name==='AbortError')return;}
-      }
-      // fallback — حمّل الصورة
-      const a=document.createElement('a');
-      a.href=canvas.toDataURL('image/png');
-      a.download=`${p.slug||pid}-dibajat.png`;
-      a.click();
-      toast(isEn?'Image saved! Share it on Instagram 📸':'✓ الصورة اتحفظت — شاركيها على انستغرام 📸');
-    },'image/png');
-  }catch(err){
-    overlay.classList.remove('show');
-    console.error(err);
-    toast(isEn?'Could not generate image':'تعذّر توليد الصورة');
   }
 }
 
