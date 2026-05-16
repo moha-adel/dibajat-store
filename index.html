@@ -485,7 +485,7 @@ function loadMarketer(key, data){
             if(imgs && !Array.isArray(imgs)){
               imgs=Object.keys(imgs).sort((a,b)=>Number(a)-Number(b)).map(i=>imgs[i]);
             }
-            return {_key:k, ar:col.ar||col.nameAr||'', en:col.en||col.nameEn||'', hex:col.hex||'#ccc', imgs, soldOut:col.soldOut||false};
+            return {_key:k, ar:col.ar||col.nameAr||'', en:col.en||col.nameEn||'', hex:col.hex||'#ccc', imgs, soldOut:col.soldOut||false, sizeSoldOut:col.sizeSoldOut||{}};
           });
           PRODUCTS[pid]={...p, id:pid, colors:colorsArr};
         }
@@ -785,6 +785,7 @@ function addCart(pid){
   const c=p.colors[ci]||{ar:'',en:'',hex:'#ccc'};
   if(c.soldOut){toast(isEn?'This color is out of stock':'هذا اللون نفذت كميته');return;}
   const size=selSize[pid]||null;
+  if(size && c.sizeSoldOut && c.sizeSoldOut[size]){toast(isEn?'This size is out of stock':'نفذت الكمية لهذا المقاس');return;}
   const key=`${pid}_${ci}_${size||''}`;
   const ex=cart.find(x=>x.key===key);
   if(ex) ex.qty++;
@@ -850,6 +851,7 @@ function waProduct(pid){
   const ci=selColor[pid]||0;const col=p.colors[ci]||{};
   if(col.soldOut){toast(isEn?'This color is out of stock':'هذا اللون نفذت كميته');return;}
   const size=selSize[pid];
+  if(size && col.sizeSoldOut && col.sizeSoldOut[size]){toast(isEn?'This size is out of stock':'نفذت الكمية لهذا المقاس');return;}
   const colorName=isEn?(col.en||col.nameEn||''):(col.ar||col.nameAr||'');
   const sizeName=size?(isEn?gs(size).en:gs(size).ar):'';
   // حفظ الطلب في Firebase
