@@ -454,6 +454,14 @@ function showErr(msg){
 function loadMarketer(key, data){
   STORE={...data, id:key};
   if(STORE.status==='banned'){document.body.innerHTML='<div style="text-align:center;padding:80px;font-family:Tajawal,sans-serif;font-size:18px">⛔ هذا المتجر موقوف</div>';return;}
+  // تطبيق اللغة الافتراضية للمسوق
+  if(STORE.defaultLang==='en'){
+    isEn=true;
+    document.getElementById('langBtn').textContent='ع';
+    document.body.style.direction='ltr';
+    document.querySelectorAll('.lar').forEach(e=>e.style.display='none');
+    document.querySelectorAll('.len').forEach(e=>e.style.display='');
+  }
   applyTheme(STORE);
   renderHeader();
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value')])
