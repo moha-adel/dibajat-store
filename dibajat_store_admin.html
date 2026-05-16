@@ -612,7 +612,7 @@ function setProdFilter(bid){
 function getBid(p){return p.brand_id||p.brand||'';}
 function renderProducts(){
   // Firebase push keys مرتبة — الأكبر = الأحدث
-  const pa=productsArr().sort((a,b)=>a.id>b.id?-1:a.id<b.id?1:0);
+  const pa=productsArr().sort((a,b)=>b.id>a.id?-1:b.id<a.id?1:0);
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
   const brandIds=[...new Set(pa.map(p=>getBid(p)).filter(Boolean))];
   const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>getBid(p)===_prodBrandFilter);
@@ -658,7 +658,7 @@ function openProduct(id){
         if(imgs && !Array.isArray(imgs)){
           imgs=Object.keys(imgs).sort((a,b)=>Number(a)-Number(b)).map(i=>imgs[i]);
         }
-        return {_key:k, ar:col.ar||col.nameAr||'', en:col.en||col.nameEn||'', hex:col.hex||'#ccc', imgs:[...imgs]};
+        return {_key:k, ar:col.ar||col.nameAr||'', en:col.en||col.nameEn||'', hex:col.hex||'#ccc', imgs:[...imgs], soldOut:col.soldOut||false};
       })
     :[{ar:'لون 1',en:'Color 1',hex:'#8B5E3C',imgs:[]}];
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة منتج جديد':'تعديل: '+p.nameAr;
@@ -750,12 +750,15 @@ function toggleSizeLbl(id){
 function renderColors(){
   const el=document.getElementById('colors-list');if(!el)return;
   el.innerHTML=editColors.map((c,i)=>`
-    <div class="color-block">
+    <div class="color-block" style="${c.soldOut?'opacity:.7;':''}">
       <div class="color-block-hd">
-        <div class="color-preview" style="background:${c.hex}" onclick="document.getElementById('cp${i}').click()"></div>
+        <div class="color-preview" style="background:${c.hex};position:relative" onclick="document.getElementById('cp${i}').click()">
+          ${c.soldOut?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:800">X</div>':''}
+        </div>
         <input type="color" id="cp${i}" value="${c.hex}" style="display:none" oninput="editColors[${i}].hex=this.value;document.querySelectorAll('.color-preview')[${i}].style.background=this.value">
         <input class="cin" value="${xe(c.ar||'')}" placeholder="اسم اللون بالعربي" oninput="editColors[${i}].ar=this.value">
         <input class="cin-sm" value="${xe(c.en||'')}" placeholder="EN" oninput="editColors[${i}].en=this.value">
+        <button onclick="editColors[${i}].soldOut=!editColors[${i}].soldOut;renderColors()" title="${c.soldOut?'إتاحة اللون':'تعليم نفذت الكمية'}" style="padding:3px 8px;border-radius:6px;border:1.5px solid ${c.soldOut?'var(--red)':'var(--bd)'};background:${c.soldOut?'rgba(248,81,73,.12)':'var(--bg3)'};color:${c.soldOut?'var(--red)':'var(--mt)'};font-size:10px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;white-space:nowrap;transition:all .18s">${c.soldOut?'✓ نفذت':'نفذت؟'}</button>
         <button class="color-remove" onclick="editColors.splice(${i},1);renderColors()">🗑️</button>
       </div>
       <div class="color-imgs-label">صور هذا اللون (حتى 8 صور)</div>
@@ -807,7 +810,7 @@ function saveProduct(id){
     const key=c._key||('c'+(i+1));
     let imgs=c.imgs||[];
     if(!Array.isArray(imgs)) imgs=Object.values(imgs);
-    colorsObj[key]={ar:c.ar||'',en:c.en||'',hex:c.hex,imgs};
+    colorsObj[key]={ar:c.ar||'',en:c.en||'',hex:c.hex,imgs,soldOut:c.soldOut||false};
   });
   const oldPrice=Number(document.getElementById('p-old').value);
   const obj={
