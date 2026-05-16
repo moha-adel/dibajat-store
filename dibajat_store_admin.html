@@ -970,6 +970,13 @@ function openMarketer(id){
         <input class="form-input" id="m-welcome-ar" value="${xe(m.welcomeAr||'')}" placeholder="مرحباً بك في متجري" style="margin-bottom:6px">
         <input class="form-input" id="m-welcome-en" value="${xe(m.welcomeEn||'')}" placeholder="Welcome to my store" style="direction:ltr">
       </div>
+      <div class="form-row">
+        <label class="form-label">🌐 اللغة الافتراضية للمتجر</label>
+        <select class="form-select" id="m-default-lang">
+          <option value="ar"${(m.defaultLang||'ar')==='ar'?' selected':''}>🇸🇦 العربية</option>
+          <option value="en"${m.defaultLang==='en'?' selected':''}>🇬🇧 English</option>
+        </select>
+      </div>
       <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">🛋️ المنتجات المتاحة</div>
       <div style="font-size:12px;color:var(--mt);margin-bottom:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd);line-height:1.6">
         💡 <strong style="color:var(--gold)">الافتراضي:</strong> كل المنتجات النشطة تظهر تلقائياً.
@@ -1015,6 +1022,7 @@ function saveMarketer(id){
     colorBg:theme==='custom'?document.getElementById('m-c-bg').value:'',
     welcomeAr:document.getElementById('m-welcome-ar').value.trim(),
     welcomeEn:document.getElementById('m-welcome-en').value.trim(),
+    defaultLang:document.getElementById('m-default-lang').value,
     excluded:excludedProds,
     earnings:isNew?0:(marketers[id]?.earnings||0),
     status:document.getElementById('m-status').value,
