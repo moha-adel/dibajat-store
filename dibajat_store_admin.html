@@ -604,7 +604,7 @@ const ALL_SIZES=[
   {id:'single',ar:'مفرد',en:'Single Size'},
 ];
 let _prodBrandFilter='all';
-function setProdFilter(bid){_prodBrandFilter=bid;renderProducts();}
+function setProdFilter(el){_prodBrandFilter=el.dataset.bid;renderProducts();}
 function renderProducts(){
   // ترتيب بالأحدث — createdAt أو Firebase key كـ fallback
   const pa=productsArr().sort((a,b)=>{
@@ -622,7 +622,10 @@ function renderProducts(){
     ...brandIds.map(bid=>({id:bid,label:gb(bid).ar||'—'}))
   ].map(f=>{
     const on=_prodBrandFilter===f.id;
-    return`<button onclick="setProdFilter('${f.id}')" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid ${on?'var(--gold)':'var(--bd)'};background:${on?'var(--gold-dim)':'none'};color:${on?'var(--gold)':'var(--mt)'};cursor:pointer;font-family:Tajawal,sans-serif">${xe(f.label)}</button>`;
+    const st=on
+      ?'border-color:#c9a96e;background:rgba(201,169,110,.12);color:#c9a96e'
+      :'border-color:#30363d;background:none;color:#8b949e';
+    return`<button onclick="setProdFilter(this)" data-bid="${xe(f.id)}" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid;cursor:pointer;font-family:Tajawal,sans-serif;${st}">${xe(f.label)}</button>`;
   }).join('');
 
   return`<div class="section">
