@@ -242,7 +242,7 @@ const auth = firebase.auth();
 
 // ===== STATE =====
 let brands={}, products={}, marketers={}, orders={};
-let editColors=[], currentTab='overview', _selectedTheme='luxury';
+let editColors=[], editProd={}, currentTab='overview', _selectedTheme='luxury';
 
 // ===== HELPERS =====
 function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -649,6 +649,7 @@ function renderProducts(){
 function openProduct(id){
   const isNew=id===-1;
   const p=isNew?{brand_id:'',nameAr:'',nameEn:'',descAr:'',descEn:'',price:'',oldPrice:'',badge:'',emoji:'🛋️',status:'active',colors:{},sizes:[]}:{...products[id]};
+  editProd={sizeSoldOut:{...(p.sizeSoldOut||{})}};
   const ba=brandsArr();
   const colorsObj=p.colors||{};
   editColors=Object.keys(colorsObj).length
@@ -707,6 +708,7 @@ function openProduct(id){
             <div style="display:flex;align-items:center;gap:5px" onclick="event.stopPropagation()">
               <input type="number" id="size-price-${s.id}" value="${(p.sizePrices&&p.sizePrices[s.id])||''}" placeholder="السعر" min="0" step="0.5" style="width:80px;padding:4px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-family:'Tajawal',sans-serif;font-size:12px;text-align:center">
               <span style="font-size:10px;color:var(--mt)">KWD</span>
+              <button type="button" id="size-so-${s.id}" onclick="toggleSizeSoldOut('${s.id}')" style="padding:3px 8px;border-radius:6px;border:1.5px solid ${(p.sizeSoldOut&&p.sizeSoldOut[s.id])?'var(--red)':'var(--bd)'};background:${(p.sizeSoldOut&&p.sizeSoldOut[s.id])?'rgba(248,81,73,.12)':'var(--bg3)'};color:${(p.sizeSoldOut&&p.sizeSoldOut[s.id])?'var(--red)':'var(--mt)'};font-size:10px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;white-space:nowrap;transition:all .18s">${(p.sizeSoldOut&&p.sizeSoldOut[s.id])?'✓ نفذ':'نفذ؟'}</button>
             </div>
           </label>`).join('')}
       </div>
@@ -740,6 +742,17 @@ function openProduct(id){
       <button class="btn-primary" onclick="saveProduct(${isNew?'null':`'${id}'`})">${isNew?'إضافة المنتج':'حفظ التعديلات'}</button>
     </div>`;
   openModal();renderColors();
+}
+function toggleSizeSoldOut(id){
+  if(!editProd.sizeSoldOut) editProd.sizeSoldOut={};
+  editProd.sizeSoldOut[id]=!editProd.sizeSoldOut[id];
+  const btn=document.getElementById('size-so-'+id);
+  if(!btn)return;
+  const isNow=editProd.sizeSoldOut[id];
+  btn.textContent=isNow?'✓ نفذ':'نفذ؟';
+  btn.style.borderColor=isNow?'var(--red)':'var(--bd)';
+  btn.style.background=isNow?'rgba(248,81,73,.12)':'var(--bg3)';
+  btn.style.color=isNow?'var(--red)':'var(--mt)';
 }
 function toggleSizeLbl(id){
   const cb=document.getElementById('size-'+id),lbl=document.getElementById('size-lbl-'+id);
@@ -825,7 +838,7 @@ function saveProduct(id){
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
     status:document.getElementById('p-status').value,
-    sizes,sizePrices,colors:colorsObj
+    sizes,sizePrices,sizeSoldOut:editProd.sizeSoldOut||{},colors:colorsObj
   };
   // createdAt للمنتجات الجديدة فقط
   if(!id) obj.createdAt=new Date().toISOString();
