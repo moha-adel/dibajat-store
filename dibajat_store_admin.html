@@ -605,7 +605,10 @@ const ALL_SIZES=[
   {id:'single',ar:'مفرد',en:'Single Size'},
 ];
 let _prodBrandFilter='all';
-function setProdFilter(bid){_prodBrandFilter=bid;renderProducts();}
+function setProdFilter(bid){
+  _prodBrandFilter=bid;
+  document.getElementById('content').innerHTML=renderProducts();
+}
 function getBid(p){return p.brand_id||p.brand||'';}
 function renderProducts(){
   // Firebase push keys مرتبة — الأكبر = الأحدث
