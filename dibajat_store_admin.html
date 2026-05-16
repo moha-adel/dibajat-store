@@ -612,7 +612,7 @@ function setProdFilter(bid){
 function getBid(p){return p.brand_id||p.brand||'';}
 function renderProducts(){
   // Firebase push keys مرتبة — الأكبر = الأحدث
-  const pa=productsArr().sort((a,b)=>b.id>a.id?-1:b.id<a.id?1:0);
+  const pa=productsArr().sort((a,b)=>a.id>b.id?-1:a.id<b.id?1:0);
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
   const brandIds=[...new Set(pa.map(p=>getBid(p)).filter(Boolean))];
   const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>getBid(p)===_prodBrandFilter);
