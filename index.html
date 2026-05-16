@@ -480,6 +480,11 @@ function loadMarketer(key, data){
       });
       renderFilters();
       renderProducts();
+      // فتح منتج تلقائياً لو جاي من رابط مباشر
+      const autoPid = window.PRODUCT_PID;
+      if(autoPid && PRODUCTS[autoPid]){
+        setTimeout(()=>openModal(autoPid), 300);
+      }
     });
 }
 
@@ -574,7 +579,9 @@ function openModal(pid){
   if(selColor[pid]==null) selColor[pid]=0;
   renderModal();
   document.getElementById('modalBg').classList.add('open');
-  history.pushState({modal:true},'','');
+  // تحديث الـ URL بدون reload
+  const productUrl=`/product/${pid}`;
+  history.pushState({modal:true, pid},'',productUrl);
 }
 function renderModal(){
   const pid=currentPid;
@@ -637,6 +644,9 @@ function renderModal(){
         <button class="add-cart-btn" onclick="addCart('${pid}')">
           ${isEn?'🛒 Add to Cart':'🛒 أضف للسلة'}
         </button>
+        <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
+          🔗 ${isEn?'Share Product':'مشاركة الطقم'}
+        </button>
       </div>
 
       ${(p.sizes||[]).length?`
@@ -680,7 +690,11 @@ function slideTo(i){
 function pickColor(pid,ci){selColor[pid]=ci;currentSlideIdx=0;renderModal();}
 function pickSize(pid,sid){selSize[pid]=sid;renderModal();}
 function getPrice(p,sid){return (p.sizePrices&&sid&&p.sizePrices[sid])||p.price;}
-function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+function closeModal(){
+  document.getElementById('modalBg').classList.remove('open');
+  // رجّع الـ URL للمتجر بدون المنتج
+  history.replaceState({},'','/');
+}
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
 
 // زر الرجوع
@@ -889,6 +903,27 @@ function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.display='block';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2200);
+}
+
+// ===== SHARE PRODUCT =====
+function shareProduct(pid){
+  const p=PRODUCTS[pid];if(!p)return;
+  const productUrl=`https://${STORE.slug}.dibajat.store/product/${pid}`;
+  const text=isEn
+    ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD\n${productUrl}`
+    :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD\n${productUrl}`;
+  if(navigator.share){
+    navigator.share({title:isEn?p.nameEn:p.nameAr, text, url:productUrl}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(productUrl).then(()=>{
+      toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
+    }).catch(()=>{
+      const t=document.createElement('textarea');
+      t.value=productUrl;document.body.appendChild(t);t.select();
+      document.execCommand('copy');document.body.removeChild(t);
+      toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
+    });
+  }
 }
 
 initStore();
