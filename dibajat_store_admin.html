@@ -603,26 +603,42 @@ const ALL_SIZES=[
   {id:'queen',ar:'كويين — نفر ونص',en:'Queen Size'},
   {id:'single',ar:'مفرد',en:'Single Size'},
 ];
+let _prodBrandFilter='all';
 function renderProducts(){
-  const pa=productsArr();
+  // ترتيب بالأحدث (Firebase key الأحدث أكبر)
+  const pa=productsArr().sort((a,b)=>b.id.localeCompare(a.id));
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
+
+  // الشركات الموجودة فعلاً في المنتجات
+  const brandIds=[...new Set(pa.map(p=>p.brand_id||p.brand).filter(Boolean))];
+  const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>(p.brand_id||p.brand)===_prodBrandFilter);
+
   return`<div class="section">
-    <div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">${pa.length}</span></div></div>
+    <div class="section-hd">
+      <div class="section-title">🛋️ المنتجات <span class="section-count">${filtered.length} / ${pa.length}</span></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button onclick="_prodBrandFilter='all';renderProducts()" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid ${_prodBrandFilter==='all'?'var(--gold)':'var(--bd)'};background:${_prodBrandFilter==='all'?'var(--gold-dim)':'none'};color:${_prodBrandFilter==='all'?'var(--gold)':'var(--mt)'};cursor:pointer;font-family:'Tajawal',sans-serif">الكل</button>
+          ${brandIds.map(bid=>`<button onclick="_prodBrandFilter='${bid}';renderProducts()" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid ${_prodBrandFilter===bid?'var(--gold)':'var(--bd)'};background:${_prodBrandFilter===bid?'var(--gold-dim)':'none'};color:${_prodBrandFilter===bid?'var(--gold)':'var(--mt)'};cursor:pointer;font-family:'Tajawal',sans-serif">${xe(gb(bid).ar)}</button>`).join('')}
+        </div>
+      </div>
+    </div>
     <table class="tbl">
       <tr><th></th><th>المنتج</th><th>الشركة</th><th>السعر</th><th>المقاسات</th><th>الألوان</th><th>الحالة</th><th>إجراءات</th></tr>
-      ${pa.map(p=>`<tr>
-        <td><div class="tbl-emoji">${p.emoji||'🛋️'}</div></td>
-        <td><div class="tbl-name">${xe(p.nameAr)}</div><div class="tbl-sub">${xe(p.nameEn)}</div></td>
-        <td>${xe(gb(p.brand_id||p.brand).ar)}</td>
-        <td><span style="color:var(--gold);font-weight:800">${p.price}</span> <span style="color:var(--mt);font-size:10px">KWD</span>${p.oldPrice?`<div class="tbl-sub" style="text-decoration:line-through">${p.oldPrice}</div>`:''}</td>
-        <td><div style="display:flex;gap:3px;flex-wrap:wrap">${(p.sizes||[]).map(s=>{const si=ALL_SIZES.find(x=>x.id===s);return si?`<span style="font-size:9px;padding:1px 6px;border-radius:10px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt)">${si.en}</span>`:''}).join('')||'<span style="color:var(--mt)">—</span>'}</div></td>
-        <td><div class="color-dots">${Object.values(p.colors||{}).map(c=>`<div class="color-dot" style="background:${c.hex}"></div>`).join('')}</div></td>
-        <td>${p.status==='active'?'<span class="badge badge-active">نشط</span>':'<span class="badge badge-suspended">مخفي</span>'}</td>
-        <td><div class="actions">
-          <button class="act-btn act-edit" onclick="openProduct('${p.id}')">تعديل</button>
-          <button class="act-btn act-del" onclick="delProduct('${p.id}')">حذف</button>
-        </div></td>
-      </tr>`).join('')}
+      ${filtered.length===0?`<tr><td colspan="8" class="empty">لا توجد منتجات لهذه الشركة</td></tr>`:
+        filtered.map(p=>`<tr>
+          <td><div class="tbl-emoji">${p.emoji||'🛋️'}</div></td>
+          <td><div class="tbl-name">${xe(p.nameAr)}</div><div class="tbl-sub">${xe(p.nameEn)}</div></td>
+          <td>${xe(gb(p.brand_id||p.brand).ar)}</td>
+          <td><span style="color:var(--gold);font-weight:800">${p.price}</span> <span style="color:var(--mt);font-size:10px">KWD</span>${p.oldPrice?`<div class="tbl-sub" style="text-decoration:line-through">${p.oldPrice}</div>`:''}</td>
+          <td><div style="display:flex;gap:3px;flex-wrap:wrap">${(p.sizes||[]).map(s=>{const si=ALL_SIZES.find(x=>x.id===s);return si?`<span style="font-size:9px;padding:1px 6px;border-radius:10px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt)">${si.en}</span>`:''}).join('')||'<span style="color:var(--mt)">—</span>'}</div></td>
+          <td><div class="color-dots">${Object.values(p.colors||{}).map(c=>`<div class="color-dot" style="background:${c.hex}"></div>`).join('')}</div></td>
+          <td>${p.status==='active'?'<span class="badge badge-active">نشط</span>':'<span class="badge badge-suspended">مخفي</span>'}</td>
+          <td><div class="actions">
+            <button class="act-btn act-edit" onclick="openProduct('${p.id}')">تعديل</button>
+            <button class="act-btn act-del" onclick="delProduct('${p.id}')">حذف</button>
+          </div></td>
+        </tr>`).join('')}
     </table>
   </div>`;
 }
