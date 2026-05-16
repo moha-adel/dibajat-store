@@ -606,12 +606,14 @@ const ALL_SIZES=[
 ];
 let _prodBrandFilter='all';
 function setProdFilter(bid){_prodBrandFilter=bid;renderProducts();}
+function getBid(p){return p.brand_id||p.brand||'';}
 function renderProducts(){
-  const pa=productsArr().sort((a,b)=>a.id<b.id?1:a.id>b.id?-1:0);
+  // Firebase push keys مرتبة — الأكبر = الأحدث
+  const pa=productsArr().sort((a,b)=>b.id>a.id?1:b.id<a.id?-1:0);
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
-  const brandIds=[...new Set(pa.map(p=>p.brand_id||p.brand).filter(Boolean))];
-  const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>(p.brand_id||p.brand)===_prodBrandFilter);
-  const allBrands=[{id:'all',label:'الكل'},...brandIds.map(bid=>({id:bid,label:gb(bid).ar||'—'}))];
+  const brandIds=[...new Set(pa.map(p=>getBid(p)).filter(Boolean))];
+  const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>getBid(p)===_prodBrandFilter);
+  const allBrands=[{id:'all',label:'الكل'},...brandIds.map(bid=>({id:bid,label:gb(bid).ar==='—'?bid:gb(bid).ar}))];
   const filterBtns=allBrands.map(f=>{
     const on=_prodBrandFilter===f.id;
     return`<button onclick="setProdFilter('${f.id}')" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid ${on?'#c9a96e':'#30363d'};background:${on?'rgba(201,169,110,.12)':'transparent'};color:${on?'#c9a96e':'#8b949e'};cursor:pointer;font-family:Tajawal,sans-serif">${xe(f.label)}</button>`;
