@@ -579,9 +579,10 @@ function openModal(pid){
   if(selColor[pid]==null) selColor[pid]=0;
   renderModal();
   document.getElementById('modalBg').classList.add('open');
-  // تحديث الـ URL بدون reload
-  const productUrl=`/product/${pid}`;
-  history.pushState({modal:true, pid},'',productUrl);
+  // استخدم الـ slug لو موجود، وإلا pid
+  const p=PRODUCTS[pid];
+  const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
+  history.pushState({modal:true, pid},'',productPath);
 }
 function renderModal(){
   const pid=currentPid;
@@ -908,7 +909,8 @@ function toast(msg){
 // ===== SHARE PRODUCT =====
 function shareProduct(pid){
   const p=PRODUCTS[pid];if(!p)return;
-  const productUrl=`https://${STORE.slug}.dibajat.store/product/${pid}`;
+  const productPath = p.slug ? `/p/${p.slug}` : `/product/${pid}`;
+  const productUrl=`https://${STORE.slug}.dibajat.store${productPath}`;
   const text=isEn
     ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD\n${productUrl}`
     :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD\n${productUrl}`;
