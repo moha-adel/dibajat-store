@@ -660,7 +660,8 @@ function renderModal(){
       <div class="fmodal-section-lbl" style="margin-top:14px">${isEn?'Size:':'المقاس:'}</div>
       <div class="fmodal-sizes" id="modal-sizes">
         ${p.sizes.map(s=>{
-          const isSO=p.sizeSoldOut&&p.sizeSoldOut[s];
+          const curColor=p.colors[ci]||{};
+          const isSO=curColor.sizeSoldOut&&curColor.sizeSoldOut[s];
           return `<div class="fmodal-size${selSize[pid]===s?' sel':''}${isSO?' size-soldout':''}" onclick="${isSO?`toast(isEn?'Out of stock':'نفذت الكمية لهذا المقاس')`:`pickSize('${pid}','${s}')`}" style="${isSO?'opacity:.5;cursor:not-allowed;text-decoration:line-through;':''}">
             ${xe(isEn?gs(s).en:gs(s).ar)}${isSO?` <span style="font-size:9px;color:var(--red)">✕</span>`:''}
           </div>`;
@@ -709,7 +710,18 @@ function slideTo(i){
   const slider=document.getElementById('img-slider');if(!slider)return;
   slider.scrollTo({left:i*slider.offsetWidth,behavior:'smooth'});
 }
-function pickColor(pid,ci){selColor[pid]=ci;currentSlideIdx=0;renderModal();}
+function pickColor(pid,ci){
+  selColor[pid]=ci;
+  currentSlideIdx=0;
+  // لو المقاس المحدد حالياً نافذ في اللون الجديد، امسحه
+  const p=PRODUCTS[pid];
+  const newColor=p&&p.colors[ci];
+  const curSize=selSize[pid];
+  if(curSize && newColor && newColor.sizeSoldOut && newColor.sizeSoldOut[curSize]){
+    selSize[pid]=null;
+  }
+  renderModal();
+}
 function pickSize(pid,sid){selSize[pid]=sid;renderModal();}
 function getPrice(p,sid){return (p.sizePrices&&sid&&p.sizePrices[sid])||p.price;}
 function closeModal(){
