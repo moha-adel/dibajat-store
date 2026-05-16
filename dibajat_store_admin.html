@@ -649,6 +649,14 @@ function openProduct(id){
         <div class="form-row"><label class="form-label">الاسم بالعربي</label><input class="form-input" id="p-ar" value="${xe(p.nameAr||'')}" placeholder="طقم غرفة نوم"></div>
         <div class="form-row"><label class="form-label">English Name</label><input class="form-input" id="p-en" value="${xe(p.nameEn||'')}" placeholder="Bedroom Set" style="direction:ltr"></div>
       </div>
+      <div class="form-row">
+        <label class="form-label">🔗 رابط المشاركة (Slug) <span style="color:var(--mt);font-weight:400;text-transform:none;letter-spacing:0">— بالإنجليزي بدون مسافات</span></label>
+        <div style="display:flex;align-items:center;gap:0">
+          <span style="padding:9px 10px;background:var(--bg);border:1.5px solid var(--bd);border-left:none;color:var(--mt);font-size:11px;border-radius:8px 0 0 8px;white-space:nowrap;direction:ltr">/p/</span>
+          <input class="form-input" id="p-slug" value="${xe(p.slug||'')}" placeholder="riviera-king" style="direction:ltr;border-radius:0 8px 8px 0;border-right:none" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+        </div>
+        <div style="font-size:10px;color:var(--mt);margin-top:4px">مثال: riviera-king · sofa-cloud · bedroom-set</div>
+      </div>
       <div class="form-row"><label class="form-label">الشركة</label>
         <select class="form-select" id="p-brand">${ba.map(b=>`<option value="${b.id}"${(p.brand_id||p.brand)===b.id?' selected':''}>${xe(b.ar)}</option>`).join('')}</select>
       </div>
@@ -686,6 +694,18 @@ function openProduct(id){
       <div class="colors-editor" id="colors-wrap">
         <div id="colors-list"></div>
         <button class="add-color-btn" onclick="addColor()">+ إضافة لون</button>
+      </div>
+      <div class="form-row" style="margin-top:14px">
+        <label class="form-label">🖼️ صورة السوشيال (OG Image) <span style="color:var(--mt);font-weight:400;text-transform:none;letter-spacing:0">— تظهر لما حد يشارك الرابط</span></label>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div id="p-og-preview" style="width:80px;height:80px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">
+            ${p.ogImage?`<img src="${xe(p.ogImage)}" style="width:100%;height:100%;object-fit:cover">`:'🖼️'}
+          </div>
+          <div style="flex:1">
+            <input class="form-input" id="p-og-url" value="${xe(p.ogImage||'')}" placeholder="https://... (1200×630px مثالي)" style="direction:ltr;font-size:11px;margin-bottom:6px" oninput="(function(v){const el=document.getElementById('p-og-preview');el.innerHTML=v?'<img src=\\''+v+'\\'  style=\\'width:100%;height:100%;object-fit:cover\\'>':'🖼️';})(this.value)">
+            <div style="font-size:10px;color:var(--mt);line-height:1.6">لو مفيش، هيستخدم أول صورة من المنتج تلقائياً</div>
+          </div>
+        </div>
       </div>
       <div class="form-row" style="margin-top:14px"><label class="form-label">الحالة</label>
         <select class="form-select" id="p-status">
@@ -751,6 +771,11 @@ function saveProduct(id){
   const en=document.getElementById('p-en').value.trim();
   const price=Number(document.getElementById('p-price').value);
   if(!ar||!en||!price){toast('أدخل الاسم والسعر',false);return;}
+  const slug=document.getElementById('p-slug').value.trim();
+  if(!slug){toast('أدخل رابط المشاركة (Slug)',false);return;}
+  // تحقق إن الـ slug مش متكرر
+  const existingSlug=Object.entries(products).find(([k,v])=>v.slug===slug && k!==(id||''));
+  if(existingSlug){toast('هذا الـ Slug مستخدم مسبقاً — اختر اسماً آخر',false);return;}
   const sizes=ALL_SIZES.map(s=>s.id).filter(sid=>document.getElementById('size-'+sid)?.checked);
   const sizePrices={};
   ALL_SIZES.forEach(s=>{
@@ -768,6 +793,8 @@ function saveProduct(id){
   const obj={
     brand_id:document.getElementById('p-brand').value,
     nameAr:ar,nameEn:en,
+    slug,
+    ogImage:document.getElementById('p-og-url').value.trim()||null,
     descAr:document.getElementById('p-desc-ar').value.trim(),
     descEn:document.getElementById('p-desc-en').value.trim(),
     price,oldPrice:oldPrice||null,currency:'KWD',
