@@ -551,10 +551,10 @@ function renderProducts(){
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
     return true;
   }).sort((a,b)=>{
-    // الأحداث (new) في الأعلى أولاً
-    if(a.badge==='new'&&b.badge!=='new')return -1;
-    if(b.badge==='new'&&a.badge!=='new')return 1;
-    return 0;
+    // الأحدث في الإضافة يظهر أولاً
+    const ta=a.createdAt?new Date(a.createdAt).getTime():0;
+    const tb=b.createdAt?new Date(b.createdAt).getTime():0;
+    return tb-ta;
   });
   document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
   if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
@@ -949,10 +949,10 @@ function shareProduct(pid){
   const productPath = p.slug ? `/p/${p.slug}` : `/product/${pid}`;
   const productUrl=`https://${STORE.slug}.dibajat.store${productPath}`;
   const text=isEn
-    ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD\n${productUrl}`
-    :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD\n${productUrl}`;
+    ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD`
+    :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD`;
   if(navigator.share){
-    navigator.share({title:isEn?p.nameEn:p.nameAr, text, url:productUrl}).catch(()=>{});
+    navigator.share({title:isEn?p.nameEn:p.nameAr, text:text+'\n'+productUrl, url:productUrl}).catch(()=>{});
   } else {
     navigator.clipboard.writeText(productUrl).then(()=>{
       toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
