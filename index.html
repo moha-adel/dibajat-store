@@ -366,7 +366,7 @@ const db=firebase.database();
 // ===== STATE =====
 let isEn=false, activeBrand='all', activeSize='all';
 let cart=[], selColor={}, selSize={}, compareList=[];
-let STORE={}, BRANDS={}, PRODUCTS={};
+let STORE={}, BRANDS={}, PRODUCTS={}, _storeBaseUrl=location.origin+location.pathname;
 let currentPid=null, currentSlideIdx=0;
 
 const ALL_SIZES=[
@@ -596,10 +596,11 @@ function openModal(pid){
   if(selColor[pid]==null) selColor[pid]=0;
   renderModal();
   document.getElementById('modalBg').classList.add('open');
-  // استخدم الـ slug لو موجود، وإلا pid
+  // نستخدم query param بدل مسار جديد — لتفادي 404 عند الواتساب
   const p=PRODUCTS[pid];
-  const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
-  history.pushState({modal:true, pid},'',productPath);
+  const baseUrl=location.origin+location.pathname;
+  const productParam= p&&p.slug ? `?product=${p.slug}` : `?pid=${pid}`;
+  history.pushState({modal:true, pid},'', baseUrl+productParam);
 }
 function renderModal(){
   const pid=currentPid;
@@ -726,8 +727,8 @@ function pickSize(pid,sid){selSize[pid]=sid;renderModal();}
 function getPrice(p,sid){return (p.sizePrices&&sid&&p.sizePrices[sid])||p.price;}
 function closeModal(){
   document.getElementById('modalBg').classList.remove('open');
-  // رجّع الـ URL للمتجر بدون المنتج
-  history.replaceState({},'','/');
+  // رجّع الـ URL الأصلي للمتجر بدون query params
+  history.replaceState({}, '', location.origin+location.pathname);
 }
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
 
@@ -952,7 +953,7 @@ function shareProduct(pid){
     ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD`
     :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD`;
   if(navigator.share){
-    navigator.share({title:isEn?p.nameEn:p.nameAr, text, url:productUrl}).catch(()=>{});
+    navigator.share({title:isEn?p.nameEn:p.nameAr, text:text+'\n'+productUrl, url:productUrl}).catch(()=>{});
   } else {
     navigator.clipboard.writeText(productUrl).then(()=>{
       toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
