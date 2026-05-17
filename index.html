@@ -789,7 +789,7 @@ function addCart(pid){
   const key=`${pid}_${ci}_${size||''}`;
   const ex=cart.find(x=>x.key===key);
   if(ex) ex.qty++;
-  else cart.push({key,pid,nameAr:p.nameAr,nameEn:p.nameEn,
+  else cart.push({key,pid,slug:p.slug||'',nameAr:p.nameAr,nameEn:p.nameEn,
     colorAr:c.ar||c.nameAr||'',colorEn:c.en||c.nameEn||'',
     hex:c.hex,thumb:(c.imgs||[])[0]||'',size,price:getPrice(p,size),brand_id:p.brand_id||p.brand||'',qty:1});
   updateCartUI();toast(isEn?'Added to cart ✓':'✓ أضيف للسلة');
@@ -884,10 +884,11 @@ function sendWA(){
     if(brandName) msg+=isEn?`🏢 *${brandName}*\n`:`🏢 *${brandName}*\n`;
     items.forEach((item,i)=>{
       const sizeName=item.size?(isEn?gs(item.size).en:gs(item.size).ar):'';
-      const iLink=`https://${STORE.slug}.dibajat.store/p/${item.slug||item.pid||''}`;
+      const iSlug=item.slug||(PRODUCTS[item.pid]&&PRODUCTS[item.pid].slug)||'';
+      const iLink=iSlug?`https://${STORE.slug}.dibajat.store/p/${iSlug}`:'';
       msg+=isEn
-        ?`  ${i+1}. *${item.nameEn}*\n     🎨 Color: ${item.colorEn}\n${sizeName?`     📐 Size: ${sizeName}\n`:''}     🛒 ${item.qty} × ${item.price} = ${item.price*item.qty} KWD\n     🔗 ${iLink}\n`
-        :`  ${i+1}. *${item.nameAr}*\n     🎨 اللون: ${item.colorAr}\n${sizeName?`     📐 المقاس: ${sizeName}\n`:''}     🛒 ${item.qty} × ${item.price} = ${item.price*item.qty} KWD\n     🔗 ${iLink}\n`;
+        ?`  ${i+1}. *${item.nameEn}*\n     🎨 Color: ${item.colorEn}\n${sizeName?`     📐 Size: ${sizeName}\n`:''}     🛒 ${item.qty} × ${item.price} = ${item.price*item.qty} KWD\n${iLink?`     🔗 ${iLink}\n`:''}`
+        :`  ${i+1}. *${item.nameAr}*\n     🎨 اللون: ${item.colorAr}\n${sizeName?`     📐 المقاس: ${sizeName}\n`:''}     🛒 ${item.qty} × ${item.price} = ${item.price*item.qty} KWD\n${iLink?`     🔗 ${iLink}\n`:''}`;
     });
     msg+='\n';
   });
