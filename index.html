@@ -366,7 +366,7 @@ const db=firebase.database();
 // ===== STATE =====
 let isEn=false, activeBrand='all', activeSize='all';
 let cart=[], selColor={}, selSize={}, compareList=[];
-let STORE={}, BRANDS={}, PRODUCTS={}, _storeBaseUrl=location.origin+location.pathname;
+let STORE={}, BRANDS={}, PRODUCTS={};
 let currentPid=null, currentSlideIdx=0;
 
 const ALL_SIZES=[
@@ -596,11 +596,10 @@ function openModal(pid){
   if(selColor[pid]==null) selColor[pid]=0;
   renderModal();
   document.getElementById('modalBg').classList.add('open');
-  // نستخدم query param بدل مسار جديد — لتفادي 404 عند الواتساب
+  // استخدم الـ slug لو موجود، وإلا pid
   const p=PRODUCTS[pid];
-  const baseUrl=location.origin+location.pathname;
-  const productParam= p&&p.slug ? `?product=${p.slug}` : `?pid=${pid}`;
-  history.pushState({modal:true, pid},'', baseUrl+productParam);
+  const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
+  history.pushState({modal:true, pid},'',productPath);
 }
 function renderModal(){
   const pid=currentPid;
@@ -727,8 +726,8 @@ function pickSize(pid,sid){selSize[pid]=sid;renderModal();}
 function getPrice(p,sid){return (p.sizePrices&&sid&&p.sizePrices[sid])||p.price;}
 function closeModal(){
   document.getElementById('modalBg').classList.remove('open');
-  // رجّع الـ URL الأصلي للمتجر بدون query params
-  history.replaceState({}, '', location.origin+location.pathname);
+  // رجّع الـ URL للمتجر بدون المنتج
+  history.replaceState({},'','/');
 }
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
 
