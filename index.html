@@ -550,12 +550,7 @@ function renderProducts(){
     if(activeBrand!=='all'&&bid!==activeBrand)return false;
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
     return true;
-  }).sort((a,b)=>{
-    // الأحداث (new) في الأعلى أولاً
-    if(a.badge==='new'&&b.badge!=='new')return -1;
-    if(b.badge==='new'&&a.badge!=='new')return 1;
-    return 0;
-  });
+  }).sort((a,b)=> (b.id||'').localeCompare(a.id||''));
   document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
   if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
   document.getElementById('prodGrid').innerHTML=vis.map(p=>{
