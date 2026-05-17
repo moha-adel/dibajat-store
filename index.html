@@ -551,15 +551,10 @@ function renderProducts(){
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
     return true;
   }).sort((a,b)=>{
-    // الأحدث (بالـ timestamp) في الأعلى
-    const ta=a.createdAt||a.timestamp||a.created||0;
-    const tb=b.createdAt||b.timestamp||b.created||0;
-    if(tb!==ta) return tb-ta;
-    // لو مفيش timestamp، badge=new يجي أول
+    // الأحداث (new) في الأعلى أولاً
     if(a.badge==='new'&&b.badge!=='new')return -1;
     if(b.badge==='new'&&a.badge!=='new')return 1;
-    // آخر fallback: الـ Firebase key (الأحدث أكبر أبجدياً)
-    return (a.id||'').localeCompare(b.id||'');
+    return 0;
   });
   document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
   if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
