@@ -997,6 +997,18 @@ function openMarketer(id){
           </div>
         </div>
       </div>
+      <div class="form-row" style="margin-top:10px">
+        <label class="form-label">🌐 صورة سوشيال ميديا (OG Image) <span style="color:var(--mt);font-weight:400;text-transform:none;letter-spacing:0">— تظهر عند المشاركة على واتساب وتويتر</span></label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="m-og-prev" style="width:80px;height:42px;border-radius:7px;border:1.5px solid var(--bd);background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${m.ogImage?`<img src="${xe(m.ogImage)}" style="width:100%;height:100%;object-fit:cover">`:'📷'}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+            <button type="button" style="padding:6px;border-radius:7px;background:var(--bg3);border:1.5px dashed var(--bd);color:var(--mt);font-size:11px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif" onclick="document.getElementById('m-og-file').click()">📁 رفع صورة OG</button>
+            <input type="file" id="m-og-file" accept="image/*" style="display:none" onchange="loadImg(this,'m-og-url','m-og-prev',false)">
+            <input class="form-input" id="m-og-url" value="${xe(m.ogImage||'')}" placeholder="أو الصق رابط الصورة (1200×630 px)" style="direction:ltr;font-size:10px" oninput="previewImg(this.value,'m-og-prev',false)">
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--mt);margin-top:5px;line-height:1.6">💡 الحجم المثالي: <strong style="color:var(--gold)">1200 × 630</strong> بيكسل — لو فارغة، بتستخدم البانر تلقائياً</div>
+      </div>
       <div class="form-row">
         <label class="form-label">ثيم المتجر</label>
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px">
@@ -1062,6 +1074,7 @@ function saveMarketer(id){
     pin:document.getElementById('m-pin').value.trim(),
     logo:document.getElementById('m-logo-url').value.trim(),
     banner:document.getElementById('m-banner-url').value.trim(),
+    ogImage:document.getElementById('m-og-url').value.trim()||null,
     theme,
     colorPrimary:theme==='custom'?document.getElementById('m-c-primary').value:'',
     colorAccent:theme==='custom'?document.getElementById('m-c-accent').value:'',
