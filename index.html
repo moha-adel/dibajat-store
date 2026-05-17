@@ -952,7 +952,7 @@ function shareProduct(pid){
     ?`🛋️ Check out "${p.nameEn}" — ${p.price} KWD`
     :`🛋️ شوف طقم "${p.nameAr}" — ${p.price} KWD`;
   if(navigator.share){
-    navigator.share({title:isEn?p.nameEn:p.nameAr, text:text+'\n'+productUrl, url:productUrl}).catch(()=>{});
+    navigator.share({title:isEn?p.nameEn:p.nameAr, text, url:productUrl}).catch(()=>{});
   } else {
     navigator.clipboard.writeText(productUrl).then(()=>{
       toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
