@@ -559,7 +559,7 @@ function renderProducts(){
     if(a.badge==='new'&&b.badge!=='new')return -1;
     if(b.badge==='new'&&a.badge!=='new')return 1;
     // آخر fallback: الـ Firebase key (الأحدث أكبر أبجدياً)
-    return (b.id||'').localeCompare(a.id||'');
+    return (a.id||'').localeCompare(b.id||'');
   });
   document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
   if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
