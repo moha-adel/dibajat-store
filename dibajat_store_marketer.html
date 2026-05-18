@@ -9,7 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -317,7 +316,7 @@ function startApp(id, mkt){
   });
   db.ref('registrations').on('value',snap=>{
     allRegistrations=snap.val()||{};
-    if(currentTab==='card')renderTab();
+    if(currentTab==='card'||currentTab==='stats')renderTab();
   });
 
   renderTab();
@@ -623,9 +622,6 @@ function renderCard(){
       <button class="qr-act-btn qr-act-share" onclick="shareCard('${xe(storeUrl)}','${xe(m.name||'')}')">📲 مشاركة المتجر</button>
       <button class="qr-act-btn qr-act-copy" onclick="copyUrl('${xe(storeUrl)}')">📋 نسخ رابط المتجر</button>
     </div>
-    <button id="saveCardBtn" onclick="saveCardImg()" style="width:min(320px,100%);padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#a07832);color:#0d1117;font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .2s">
-      💾 حفظ البطاقة كصورة
-    </button>
   </div>
 
   <div class="section-title" style="margin-top:4px">👥 إحالاتي <span class="count-badge">${myRefs.length}</span></div>
@@ -678,42 +674,6 @@ function buildQR(){
       correctLevel:QRCode.CorrectLevel.M
     });
   }catch(e){box.innerHTML='<div style="font-size:11px;color:#999">QR غير متاح</div>';}
-}
-function saveCardImg(){
-  const card=document.getElementById('qrCardEl');
-  const btn=document.getElementById('saveCardBtn');
-  if(!card||!btn)return;
-  btn.textContent='⏳ جاري التحضير...';
-  btn.disabled=true;
-  html2canvas(card,{
-    scale:3,
-    useCORS:true,
-    allowTaint:true,
-    backgroundColor:'#1a1f2e',
-    logging:false,
-    onclone:(doc)=>{
-      // تأكد إن الـ QR canvas اتنسخ صح
-      const srcCanvas=card.querySelector('canvas');
-      const dstCanvas=doc.getElementById('qrCardEl')?.querySelector('canvas');
-      if(srcCanvas&&dstCanvas){
-        const ctx=dstCanvas.getContext('2d');
-        if(ctx) ctx.drawImage(srcCanvas,0,0);
-      }
-    }
-  }).then(canvas=>{
-    const link=document.createElement('a');
-    const name=(currentMarketer?.slug||'marketer')+'-card.png';
-    link.download=name;
-    link.href=canvas.toDataURL('image/png');
-    link.click();
-    toast('✅ تم حفظ البطاقة!');
-  }).catch(e=>{
-    console.error(e);
-    toast('حدث خطأ — حاول مرة أخرى');
-  }).finally(()=>{
-    btn.innerHTML='💾 حفظ البطاقة كصورة';
-    btn.disabled=false;
-  });
 }
 function shareRef(url,name){
   const text=`🛋️ انضم معي على منصة ديباجات للتسويق بالعمولة في المفروشات!\nسجّل من هنا:\n${url}`;
@@ -803,7 +763,11 @@ function renderStats(){
   </div>`;
 }
 
+let _chartMonthly=null, _chartStatus=null;
 function buildCharts(){
+  // تدمير الـ charts القديمة قبل إعادة الرسم
+  if(_chartMonthly){_chartMonthly.destroy();_chartMonthly=null;}
+  if(_chartStatus){_chartStatus.destroy();_chartStatus=null;}
   const oa=ordersArr();
   // بيانات آخر 6 أشهر
   const months=[];
@@ -825,7 +789,7 @@ function buildCharts(){
   // Chart 1 — المبيعات الشهرية
   const ctx1=document.getElementById('chartMonthly');
   if(ctx1){
-    new Chart(ctx1,{
+    _chartMonthly=new Chart(ctx1,{
       type:'bar',
       data:{
         labels:monthLabels,
@@ -858,7 +822,7 @@ function buildCharts(){
   };
   const ctx2=document.getElementById('chartStatus');
   if(ctx2&&oa.length){
-    new Chart(ctx2,{
+    _chartStatus=new Chart(ctx2,{
       type:'doughnut',
       data:{
         labels:Object.keys(statusCounts),
