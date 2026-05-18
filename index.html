@@ -14,13 +14,19 @@
   --green:#1a7a4a;--red:#c0392b;--shadow:0 2px 16px rgba(0,0,0,.07);
   /* ثيم المسوق — قابل للتغيير */
   --theme-primary:#b8934a;
+  --theme-primary-hover:#a07d3a;
   --theme-accent:#1c1c1c;
   --theme-bg:#faf8f5;
+  --nav-bg:#ffffff;
+  --card-bg:#ffffff;
+  --btn-dark:#1c1c1c;
+  --filter-on:#1c1c1c;
+  --shadow-color:rgba(0,0,0,.07);
 }
 body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dark);direction:rtl;overflow-x:hidden;font-size:14px}
 
 /* NAV */
-.fnav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+.fnav{position:sticky;top:0;z-index:200;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
 .fnav-logo{width:36px;height:36px;border-radius:8px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--theme-primary);background:var(--gold-light);flex-shrink:0}
 .fnav-logo img{width:100%;height:100%;object-fit:cover}
 .fnav-store-name{font-size:15px;font-weight:800;color:var(--dark)}
@@ -28,7 +34,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .fnav-acts{margin-right:auto;display:flex;gap:8px;align-items:center}
 .lang-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);color:var(--gray);background:none;cursor:pointer;font-size:12px;font-weight:700;font-family:'Tajawal',sans-serif;transition:all .2s}
 .lang-btn:hover{border-color:var(--theme-primary);color:var(--theme-primary)}
-.cart-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:var(--dark);color:var(--white);font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:opacity .2s}
+.cart-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:var(--btn-dark);color:var(--white);font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:opacity .2s}
 .cart-btn:hover{opacity:.85}
 .cart-count{background:var(--theme-primary);color:var(--dark);border-radius:50px;padding:1px 7px;font-size:11px;font-weight:900;min-width:18px;text-align:center}
 
@@ -53,7 +59,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .ffilter-row::-webkit-scrollbar{display:none}
 .ffilter-label{font-size:10px;font-weight:700;color:var(--gray2);text-transform:uppercase;letter-spacing:.5px;padding:8px 16px 0;display:flex;align-items:center;gap:5px}
 .ffilter-btn{padding:11px 16px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.ffilter-btn.on{color:var(--dark);border-bottom-color:var(--theme-primary);font-weight:800}
+.ffilter-btn.on{color:var(--filter-on);border-bottom-color:var(--theme-primary);font-weight:800}
 
 /* PRODUCTS */
 .fprod-section{padding:14px}
@@ -65,7 +71,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 @media(min-width:1024px){.fgrid{grid-template-columns:repeat(4,1fr);max-width:1100px;margin:0 auto}}
 
 /* PRODUCT CARD */
-.fprod{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .22s,transform .22s}
+.fprod{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .22s,transform .22s}
 .fprod:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-2px)}
 .fprod-img-wrap{position:relative;overflow:hidden;background:#f5f1eb}
 .fprod-img{width:100%;height:160px;object-fit:cover;display:block}
@@ -86,7 +92,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .fprod-price-sub{font-size:10px;color:var(--gray2)}
 .fprod-old{font-size:11px;color:var(--gray2);text-decoration:line-through}
 .fprod-choose{background:var(--gold-light);border:1.5px solid var(--gold-border);color:var(--theme-primary);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .2s;white-space:nowrap}
-.fprod-choose:hover{background:var(--theme-primary);color:var(--white);border-color:var(--theme-primary)}
+.fprod-choose:hover{background:var(--theme-primary);color:var(--card-bg);border-color:var(--theme-primary)}
 
 /* COMPARE BAR */
 .compare-bar{position:fixed;bottom:72px;right:0;left:0;z-index:1300;display:none;justify-content:center}
@@ -98,7 +104,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 /* MODAL */
 .fmodal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:flex-end;justify-content:center}
 .fmodal-bg.open{display:flex}
-.fmodal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;position:relative;animation:slideUp .25s ease}
+.fmodal{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;position:relative;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(50px);opacity:.6}to{transform:translateY(0);opacity:1}}
 .fmodal-drag{width:40px;height:4px;background:var(--border);border-radius:4px;margin:10px auto 0}
 .fmodal-close{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:50%;background:var(--cream);border:1px solid var(--border);cursor:pointer;color:var(--gray);font-size:14px;display:flex;align-items:center;justify-content:center;z-index:1}
@@ -148,7 +154,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .fmodal-btns{display:flex;flex-direction:column;gap:8px}
 .wa-btn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,#25d366,#1aab54);color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
 .wa-btn:hover{opacity:.9}
-.add-cart-btn{width:100%;padding:12px;border-radius:10px;background:var(--dark);color:var(--white);font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.add-cart-btn{width:100%;padding:12px;border-radius:10px;background:var(--btn-dark);color:var(--white);font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
 .add-cart-btn:hover{opacity:.85}
 
 /* COMPARE MODAL */
@@ -172,7 +178,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 /* CART */
 .fcart-bd{display:none;position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.4)}
 .fcart-bd.show{display:block}
-.fcart-panel{position:fixed;bottom:0;right:0;left:0;z-index:1600;background:var(--white);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:16px 16px 28px;max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.fcart-panel{position:fixed;bottom:0;right:0;left:0;z-index:1600;background:var(--card-bg);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:16px 16px 28px;max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .fcart-panel.open{transform:translateY(0)}
 .fcart-drag{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 14px}
 .fcart-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -195,12 +201,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 
 /* FLOAT */
 .float-cart{position:fixed;bottom:20px;right:16px;z-index:1400}
-.float-cart-btn{display:none;align-items:center;gap:7px;padding:11px 18px;border-radius:50px;background:var(--dark);color:var(--white);font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.float-cart-btn{display:none;align-items:center;gap:7px;padding:11px 18px;border-radius:50px;background:var(--btn-dark);color:var(--white);font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .float-cart-btn.show{display:flex}
 .float-cart-count{background:var(--theme-primary);color:var(--dark);border-radius:50px;padding:2px 8px;font-size:11px;font-weight:900}
 
 /* FOOTER */
-.ffooter{padding:20px 16px 24px;border-top:1px solid var(--border);text-align:center;background:var(--white)}
+.ffooter{padding:20px 16px 24px;border-top:1px solid var(--border);text-align:center;background:var(--nav-bg)}
 .ffooter-wa{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:50px;background:linear-gradient(135deg,#25d366,#1aab54);color:#fff;font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;margin-bottom:12px}
 .ffooter-brand{font-size:11px;color:var(--gray2)}
 .ffooter-brand span{color:var(--theme-primary);font-weight:700}
@@ -392,27 +398,87 @@ function getSlug(){
 
 // ===== THEME =====
 function applyTheme(m){
+  // ===== الثيمات الأربعة =====
   const T={
-    luxury:{primary:'#b8934a',dark:'#1c1c1c',white:'#fff',cream:'#faf8f5',border:'#e8e4de',gray:'#6b6b6b',goldLight:'#fdf6e9',goldBorder:'#e8d5b0',bg:'#faf8f5'},
-    modern:{primary:'#2563eb',dark:'#0f172a',white:'#fff',cream:'#f1f5f9',border:'#e2e8f0',gray:'#64748b',goldLight:'#eff6ff',goldBorder:'#bfdbfe',bg:'#f8faff'},
-    classic:{primary:'#7c3f2b',dark:'#2c1810',white:'#fffcf7',cream:'#fdf8f2',border:'#e8d5c4',gray:'#8b6b5a',goldLight:'#fdf0e8',goldBorder:'#d4a882',bg:'#fdf8f2'},
-    dark:{primary:'#c9a96e',dark:'#e6edf3',white:'#161b22',cream:'#21262d',border:'#30363d',gray:'#8b949e',goldLight:'#1c2128',goldBorder:'#3d3018',bg:'#0d1117'},
+    // Ivory — بيج كلاسيك (الافتراضي)
+    ivory:{
+      primary:'#b8934a', primaryHover:'#a07d3a',
+      dark:'#1a1a1a', text:'#2d2d2d',
+      white:'#ffffff', cream:'#faf8f5',
+      border:'#e8e4de', borderLight:'#f0ece6',
+      gray:'#6b6b6b', gray2:'#9a9a9a',
+      goldLight:'#fdf6e9', goldBorder:'#e8d5b0',
+      bg:'#faf8f5', navBg:'#ffffff',
+      cardBg:'#ffffff', btnDark:'#1a1a1a',
+      font:"'Tajawal',sans-serif",
+      filterOn:'#1a1a1a', shadow:'rgba(0,0,0,.07)'
+    },
+    // Midnight — أسود وذهبي لوكشري
+    midnight:{
+      primary:'#c9a96e', primaryHover:'#e8c57a',
+      dark:'#f0e6d3', text:'#e8ddd0',
+      white:'#141414', cream:'#1e1e1e',
+      border:'#2e2e2e', borderLight:'#262626',
+      gray:'#a09080', gray2:'#7a6a5a',
+      goldLight:'#1e1a14', goldBorder:'#3d3018',
+      bg:'#0f0f0f', navBg:'#141414',
+      cardBg:'#1a1a1a', btnDark:'#c9a96e',
+      font:"'Tajawal',sans-serif",
+      filterOn:'#c9a96e', shadow:'rgba(0,0,0,.4)'
+    },
+    // Stone — رمادي بارد مينيمال
+    stone:{
+      primary:'#4a4a4a', primaryHover:'#333333',
+      dark:'#1c1c1c', text:'#2a2a2a',
+      white:'#ffffff', cream:'#f5f5f5',
+      border:'#dcdcdc', borderLight:'#e8e8e8',
+      gray:'#737373', gray2:'#a3a3a3',
+      goldLight:'#f0f0f0', goldBorder:'#d4d4d4',
+      bg:'#f5f5f5', navBg:'#ffffff',
+      cardBg:'#ffffff', btnDark:'#1c1c1c',
+      font:"'Tajawal',sans-serif",
+      filterOn:'#1c1c1c', shadow:'rgba(0,0,0,.06)'
+    },
+    // Sage — أخضر زيتوني ناتشورال
+    sage:{
+      primary:'#6b7c5c', primaryHover:'#556347',
+      dark:'#2c3325', text:'#3a4232',
+      white:'#fefef9', cream:'#f4f6f0',
+      border:'#d8e0cc', borderLight:'#e4ecd8',
+      gray:'#6b7560', gray2:'#96a08a',
+      goldLight:'#edf2e6', goldBorder:'#c8d8b4',
+      bg:'#f4f6f0', navBg:'#fefef9',
+      cardBg:'#fefef9', btnDark:'#2c3325',
+      font:"'Tajawal',sans-serif",
+      filterOn:'#2c3325', shadow:'rgba(44,51,37,.08)'
+    },
   };
-  const t=T[m.theme]||T.luxury;
+  // fallback للثيمات القديمة
+  const themeKey = m.theme==='luxury'?'ivory': m.theme==='dark'?'midnight': m.theme==='modern'?'stone': m.theme==='classic'?'sage': (T[m.theme]?m.theme:'ivory');
+  const t=T[themeKey]||T.ivory;
   const r=document.documentElement;
   if(m.theme==='custom'){
     r.style.setProperty('--theme-primary',m.colorPrimary||'#b8934a');
   } else {
     r.style.setProperty('--theme-primary',t.primary);
+    r.style.setProperty('--theme-primary-hover',t.primaryHover);
     r.style.setProperty('--dark',t.dark);
     r.style.setProperty('--white',t.white);
     r.style.setProperty('--cream',t.cream);
     r.style.setProperty('--border',t.border);
     r.style.setProperty('--gray',t.gray);
-    r.style.setProperty('--gray2',t.gray);
+    r.style.setProperty('--gray2',t.gray2);
     r.style.setProperty('--gold-light',t.goldLight);
     r.style.setProperty('--gold-border',t.goldBorder);
+    r.style.setProperty('--nav-bg',t.navBg);
+    r.style.setProperty('--card-bg',t.cardBg);
+    r.style.setProperty('--btn-dark',t.btnDark);
+    r.style.setProperty('--filter-on',t.filterOn);
+    r.style.setProperty('--shadow-color',t.shadow);
     document.body.style.background=t.bg;
+    // تطبيق على عناصر محددة
+    const navEl=document.querySelector('.fnav');
+    if(navEl) navEl.style.background=t.navBg;
   }
 }
 
