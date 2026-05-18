@@ -899,11 +899,13 @@ function toggleBrandProds(bid, show){
 
 // ===== MARKETERS =====
 const THEMES=[
-  {id:'ivory',   label:'Ivory',    emoji:'🪨', primary:'#b8934a', bg:'#faf8f5', card:'#fff',     text:'#1a1a1a', desc:'بيج فاخر — كلاسيك'},
-  {id:'midnight',label:'Midnight', emoji:'🌙', primary:'#c9a96e', bg:'#0f0f0f', card:'#1a1a1a',  text:'#f0e6d3', desc:'أسود وذهبي — لوكشري'},
-  {id:'stone',   label:'Stone',    emoji:'🩶', primary:'#4a4a4a', bg:'#f5f5f5', card:'#fff',     text:'#1c1c1c', desc:'رمادي مينيمال — Muji'},
-  {id:'sage',    label:'Sage',     emoji:'🌿', primary:'#6b7c5c', bg:'#f4f6f0', card:'#fefef9',  text:'#2c3325', desc:'أخضر ناتشورال — Organic'},
-  {id:'custom',  label:'مخصص',    emoji:'✏️', primary:'',        bg:'',         card:'',          text:'',        desc:'اختر ألوانك'},
+  {id:'ivory',   label:'Ivory',   emoji:'🪨', primary:'#b8934a', bg:'#faf8f5', card:'#ffffff', text:'#1a1a1a', desc:'بيج ذهبي — كلاسيك'},
+  {id:'midnight',label:'Midnight',emoji:'🌙', primary:'#c9a96e', bg:'#0f0f0f', card:'#1a1a1a', text:'#f0e6d3', desc:'أسود وذهبي — لوكشري'},
+  {id:'arctic',  label:'Arctic',  emoji:'🩵', primary:'#0071e3', bg:'#f5f5f7', card:'#ffffff', text:'#1d1d1f', desc:'أبيض وأزرق — Apple'},
+  {id:'blush',   label:'Blush',   emoji:'🌹', primary:'#c4788a', bg:'#fdf2f4', card:'#fffaf9', text:'#3d2028', desc:'وردي إيليجانت'},
+  {id:'walnut',  label:'Walnut',  emoji:'🟫', primary:'#8b5e3c', bg:'#f5ede3', card:'#fdf8f3', text:'#2c1a0e', desc:'بني دافي — West Elm'},
+  {id:'slate',   label:'Slate',   emoji:'🖤', primary:'#94a3b8', bg:'#0f172a', card:'#1e293b', text:'#e2e8f0', desc:'رمادي داكن — Industrial'},
+  {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
   const ma=marketersArr();
@@ -919,7 +921,7 @@ function renderMarketers(){
         <td>${m.logo?`<img src="${xe(m.logo)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid var(--bd)">`:`<div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--gold)">${xe((m.name||'م')[0])}</div>`}</td>
         <td><div class="tbl-name">${xe(m.name)}</div><div class="tbl-sub">${xe(m.phone||'')}</div></td>
         <td><span style="color:var(--blue);font-size:11px">${xe(m.slug)}.dibajat.store</span></td>
-        <td><span style="font-size:11px;color:var(--mt)">${THEMES.find(t=>t.id===(m.theme||'luxury'))?.label||'فاخر'}</span></td>
+        <td><span style="font-size:11px;color:var(--mt)">${(()=>{const th=THEMES.find(t=>t.id===(m.theme||'ivory'));return th?`${th.emoji} ${th.label}`:'🪨 Ivory';})()}</span></td>
         <td><span style="font-family:monospace;font-size:13px;font-weight:800;color:${m.pin?'var(--gold)':'var(--red)'};background:var(--bg3);padding:2px 8px;border-radius:6px;border:1px solid var(--bd)">${m.pin?'••••':'غير محدد'}</span></td>
         <td><div style="display:flex;flex-direction:column;gap:2px">
           <span style="font-weight:800;color:var(--tx)">${myRefs.length} <span style="font-size:10px;color:var(--mt);font-weight:400">إجمالي</span></span>
@@ -941,8 +943,8 @@ function openMarketer(id){
   const m=isNew?{name:'',slug:'',phone:'',products:[],earnings:0,status:'active',logo:'',banner:'',theme:'ivory',colorPrimary:'',colorAccent:'',colorBg:'',welcomeAr:'',welcomeEn:'',waNumber:''}:{...marketers[id]};
   const pa=productsArr();
   // fallback للثيمات القديمة
-  const _oldMap={luxury:'ivory',dark:'midnight',modern:'stone',classic:'sage'};
-  _selectedTheme=_oldMap[m.theme]||m.theme||'ivory';
+  const _oldMap={luxury:'ivory',dark:'midnight',modern:'arctic',classic:'walnut',stone:'slate',sage:'walnut'};
+  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','custom'].includes(m.theme)?m.theme:'ivory' );
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
@@ -1013,7 +1015,7 @@ function openMarketer(id){
       </div>
       <div class="form-row">
         <label class="form-label">ثيم المتجر</label>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
           ${THEMES.filter(t=>t.id!=='custom').map(t=>`
           <div onclick="selectTheme('${t.id}')" id="theme-opt-${t.id}" style="border-radius:10px;border:2px solid ${_selectedTheme===t.id?'var(--gold)':'var(--bd)'};background:${_selectedTheme===t.id?'var(--gold-dim)':'var(--bg3)'};cursor:pointer;overflow:hidden;transition:all .2s">
             <!-- preview مصغر للمتجر -->
