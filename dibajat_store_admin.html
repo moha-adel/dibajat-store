@@ -596,18 +596,6 @@ function toggleCommFields(){
   document.getElementById('cf-percent').style.display=t==='fixed'?'none':'block';
   document.getElementById('cf-fixed').style.display=t==='percent'?'none':'block';
 }
-function togglePriceOnRequest(cb){
-  const priceInput=document.getElementById('p-price');
-  if(!priceInput) return;
-  if(cb.checked){
-    priceInput.disabled=true;
-    priceInput.value='';
-    priceInput.placeholder='مخفي — حسب الطلب';
-  } else {
-    priceInput.disabled=false;
-    priceInput.placeholder='';
-  }
-}
 function previewBrandLogo(url){const el=document.getElementById('b-logo-preview');if(el)el.innerHTML=url?`<img src="${url}" style="width:100%;height:100%;object-fit:cover">`:'🏢';}
 
 // ===== إدارة الشركات لكل مسوق =====
@@ -782,12 +770,8 @@ function openProduct(id){
         <select class="form-select" id="p-brand">${ba.map(b=>`<option value="${b.id}"${(p.brand_id||p.brand)===b.id?' selected':''}>${xe(b.ar)}</option>`).join('')}</select>
       </div>
       <div class="form-2">
-        <div class="form-row"><label class="form-label">السعر KWD</label><input class="form-input" id="p-price" type="number" value="${p.priceOnRequest?'':p.price||''}" style="direction:ltr" ${p.priceOnRequest?'disabled':''}></div>
+        <div class="form-row"><label class="form-label">السعر KWD</label><input class="form-input" id="p-price" type="number" value="${p.price||''}" style="direction:ltr"></div>
         <div class="form-row"><label class="form-label">السعر القديم</label><input class="form-input" id="p-old" type="number" value="${p.oldPrice||''}" style="direction:ltr"></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd);margin-bottom:8px">
-        <input type="checkbox" id="p-price-on-request" ${p.priceOnRequest?'checked':''} onchange="togglePriceOnRequest(this)" style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer">
-        <label for="p-price-on-request" style="font-size:12px;font-weight:700;color:var(--tx);cursor:pointer">حسب الطلب — إخفاء السعر وعرض زر تواصل</label>
       </div>
       <div class="form-row"><label class="form-label">💰 عمولة المسوق (KWD ثابت لكل طلب)</label><input class="form-input" id="p-comm" type="number" step="0.1" value="${p.commission||0}" style="direction:ltr"></div>
       <div class="form-2">
@@ -918,9 +902,8 @@ function removeColorImg(ci,ji){editColors[ci].imgs.splice(ji,1);renderColors();}
 function saveProduct(id){
   const ar=document.getElementById('p-ar').value.trim();
   const en=document.getElementById('p-en').value.trim();
-  const priceOnRequest=document.getElementById('p-price-on-request')?.checked||false;
   const price=Number(document.getElementById('p-price').value);
-  if(!ar||!en||(!price&&!priceOnRequest)){toast('أدخل الاسم والسعر',false);return;}
+  if(!ar||!en||!price){toast('أدخل الاسم والسعر',false);return;}
   const slug=document.getElementById('p-slug').value.trim();
   if(!slug){toast('أدخل رابط المشاركة (Slug)',false);return;}
   // تحقق إن الـ slug مش متكرر
@@ -947,7 +930,7 @@ function saveProduct(id){
     ogImage:document.getElementById('p-og-url').value.trim()||null,
     descAr:document.getElementById('p-desc-ar').value.trim(),
     descEn:document.getElementById('p-desc-en').value.trim(),
-    price:priceOnRequest?0:price,oldPrice:oldPrice||null,currency:'KWD',priceOnRequest:priceOnRequest||false,
+    price,oldPrice:oldPrice||null,currency:'KWD',
     commission:Number(document.getElementById('p-comm')?.value)||0,
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
@@ -1068,36 +1051,6 @@ function openMarketer(id){
       <div class="form-2">
         <div class="form-row"><label class="form-label">رقم واتساب المسوق</label><input class="form-input" id="m-wa" value="${xe(m.waNumber||'')}" style="direction:ltr"></div>
         <div class="form-row"><label class="form-label">PIN الدخول 🔐</label><input class="form-input" id="m-pin" type="text" inputmode="numeric" maxlength="6" value="${xe(m.pin||'')}" placeholder="مثال: 1234" style="direction:ltr;letter-spacing:4px;font-size:16px;font-weight:800" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><div style="font-size:10px;color:var(--mt);margin-top:4px">يُستخدم مع رقم الواتساب لتسجيل الدخول</div></div>
-      </div>
-      <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">📱 روابط السوشيال ميديا</div>
-      <div class="form-2">
-        <div class="form-row">
-          <label class="form-label">📸 انستجرام</label>
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
-            <input class="form-input" id="m-instagram" value="${xe(m.instagram||'')}" placeholder="username" style="direction:ltr">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">👻 سناب شات</label>
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
-            <input class="form-input" id="m-snapchat" value="${xe(m.snapchat||'')}" placeholder="username" style="direction:ltr">
-          </div>
-        </div>
-      </div>
-      <div class="form-2">
-        <div class="form-row">
-          <label class="form-label">🎵 تيك توك</label>
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
-            <input class="form-input" id="m-tiktok" value="${xe(m.tiktok||'')}" placeholder="username" style="direction:ltr">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">📘 فيسبوك</label>
-          <input class="form-input" id="m-facebook" value="${xe(m.facebook||'')}" placeholder="رابط الصفحة" style="direction:ltr;font-size:11px">
-        </div>
       </div>
       <div class="form-row"><label class="form-label">الحالة</label>
         <select class="form-select" id="m-status">
@@ -1247,10 +1200,6 @@ function saveMarketer(id){
     name,slug,
     phone:document.getElementById('m-phone').value.trim(),
     waNumber:document.getElementById('m-wa').value.trim(),
-    instagram:document.getElementById('m-instagram').value.trim().replace('@',''),
-    snapchat:document.getElementById('m-snapchat').value.trim().replace('@',''),
-    tiktok:document.getElementById('m-tiktok').value.trim().replace('@',''),
-    facebook:document.getElementById('m-facebook').value.trim(),
     pin:document.getElementById('m-pin').value.trim(),
     logo:document.getElementById('m-logo-url').value.trim(),
     banner:document.getElementById('m-banner-url').value.trim(),
