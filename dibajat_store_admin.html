@@ -1385,7 +1385,7 @@ function renderLeaderboard(){
   if(!ma.length)return`<div class="section"><div class="empty">لا يوجد مسوقون نشطون بعد</div></div>`;
   const rows=ma.map(m=>{
     const myRefs=Object.values(registrationsData).filter(r=>r.ref===m.slug);
-    const myOrders=Object.values(orders||{}).filter(o=>o.marketer_id===m.id);
+    const myOrders=Object.values(orders||{}).filter(o=>o.marketer===m.name||o.marketer_id===m.id||o.marketer_slug===m.slug);
     const delivered=myOrders.filter(o=>o.status==='delivered');
     const revenue=delivered.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
     const earnings=parseFloat(m.earnings||0);
