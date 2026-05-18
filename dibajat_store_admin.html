@@ -526,7 +526,7 @@ function openBrand(id){
       <div class="form-row">
         <label class="form-label">لوجو الشركة</label>
         <div style="display:flex;align-items:center;gap:12px">
-          <div id="b-logo-preview" style="width:64px;height:64px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${b.logo?`<img src="${xe(b.logo)}" style="width:100%;height:100%;object-fit:cover">`:'🏢'}</div>
+          <div id="b-logo-preview" style="width:64px;height:64px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${b.logo?'<img src="'+xe(b.logo)+'" style="width:100%;height:100%;object-fit:cover">':'🏢'}</div>
           <div style="flex:1">
             <button type="button" style="width:100%;padding:8px;border-radius:7px;background:var(--bg3);border:1.5px dashed var(--bd);color:var(--mt);font-size:12px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;margin-bottom:6px" onclick="document.getElementById('b-logo-file').click()">📁 رفع لوجو</button>
             <input class="form-input" id="b-logo-url" value="${xe(b.logo||'')}" placeholder="أو الصق رابط اللوجو" style="direction:ltr;font-size:11px" oninput="previewBrandLogo(this.value)">
@@ -564,10 +564,11 @@ function openBrand(id){
         </select>
       </div>
     </div>
+    ${!isNew ? renderBrandMarketers(id) : ''}
     <div class="modal-footer">
-      ${!isNew?`<button class="btn-danger" onclick="delBrand('${id}');closeModal()">حذف</button>`:''}
+      ${isNew ? '' : `<button class="btn-danger" onclick="delBrand('${id}');closeModal()">حذف</button>`}
       <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      <button class="btn-primary" onclick="saveBrand(${isNew?'null':`'${id}'`})">${isNew?'إضافة':'حفظ'}</button>
+      <button class="btn-primary" onclick="saveBrand('${isNew ? 'NEW_BRAND' : id}')">${isNew ? 'إضافة' : 'حفظ'}</button>
     </div>`;
   openModal();
 }
@@ -595,7 +596,107 @@ function toggleCommFields(){
   document.getElementById('cf-percent').style.display=t==='fixed'?'none':'block';
   document.getElementById('cf-fixed').style.display=t==='percent'?'none':'block';
 }
+function togglePriceOnRequest(cb){
+  const priceInput=document.getElementById('p-price');
+  if(!priceInput) return;
+  if(cb.checked){
+    priceInput.disabled=true;
+    priceInput.value='';
+    priceInput.placeholder='مخفي — حسب الطلب';
+  } else {
+    priceInput.disabled=false;
+    priceInput.placeholder='';
+  }
+}
 function previewBrandLogo(url){const el=document.getElementById('b-logo-preview');if(el)el.innerHTML=url?`<img src="${url}" style="width:100%;height:100%;object-fit:cover">`:'🏢';}
+
+// ===== إدارة الشركات لكل مسوق =====
+function renderBrandMarketers(brandId){
+  const ma = marketersArr();
+  let rows = '';
+  if(!ma.length){
+    rows = '<div style="color:var(--mt);font-size:12px;text-align:center;padding:20px">لا يوجد مسوقون</div>';
+  } else {
+    ma.forEach(function(m){
+      const active = m.brands ? (m.brands||[]).includes(brandId) : true;
+      const logo = m.logo ? '<img src="'+m.logo+'" style="width:100%;height:100%;object-fit:cover">' : '👤';
+      rows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd);margin-bottom:6px">'
+        + '<div style="width:30px;height:30px;border-radius:50%;background:var(--bg4);border:1.5px solid var(--bd);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">'+logo+'</div>'
+        + '<div style="flex:1;min-width:0">'
+          + '<div style="font-size:12px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(m.name||'—')+'</div>'
+          + '<div style="font-size:10px;color:var(--mt)">'+(m.slug||'')+'.dibajat.store</div>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'
+          + '<span id="bmtxt-'+m.id+'" style="font-size:10px;color:'+(active?'var(--green)':'var(--mt)')+'">'+( active?'يعرض':'مخفي')+'</span>'
+          + '<div onclick="toggleBrandMarketer(''+brandId+'',''+m.id+'',this)" data-on="'+(active?'1':'0')+'" style="width:34px;height:18px;border-radius:18px;background:'+(active?'var(--green)':'var(--bd)')+';position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">'
+            + '<div style="position:absolute;top:3px;'+(active?'left:17px':'left:3px')+';width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s"></div>'
+          + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+  return '<div class="modal-body" style="border-top:1px solid var(--bd);padding-top:14px;margin-top:4px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+      + '<div style="font-size:12px;font-weight:800;color:var(--tx)">👤 المسوقون</div>'
+      + '<div style="display:flex;gap:6px">'
+        + '<button type="button" onclick="setBrandMarketers(''+brandId+'',true)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">تفعيل الكل</button>'
+        + '<button type="button" onclick="setBrandMarketers(''+brandId+'',false)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">إيقاف الكل</button>'
+      + '</div>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;max-height:220px;overflow-y:auto">'+rows+'</div>'
+    + '</div>';
+}
+function toggleBrandMarketer(brandId, marketerId, toggleEl){
+  const isOn = toggleEl.dataset.on==='1';
+  const newOn = !isOn;
+  // جيب brands المسوق الحالية
+  const m = marketers[marketerId];
+  if(!m) return;
+  // لو brands مش موجودة = كل الشركات متاحة، نبني القائمة من الموجودين
+  let brandsList = m.brands ? [...m.brands] : Object.keys(brands);
+  if(newOn){
+    if(!brandsList.includes(brandId)) brandsList.push(brandId);
+  } else {
+    brandsList = brandsList.filter(b=>b!==brandId);
+  }
+  db.ref('marketers/'+marketerId+'/brands').set(brandsList).then(()=>{
+    toggleEl.dataset.on = newOn?'1':'0';
+    toggleEl.style.background = newOn?'var(--green)':'var(--bd)';
+    toggleEl.querySelector('div').style.left = newOn?'17px':'3px';
+    const txt = document.getElementById('bmtxt-'+marketerId);
+    if(txt){ txt.textContent=newOn?'يعرض':'مخفي'; txt.style.color=newOn?'var(--green)':'var(--mt)'; }
+    toast(newOn?'تم التفعيل ✓':'تم الإيقاف ✓');
+  }).catch(e=>toast('خطأ: '+e.message,false));
+}
+
+function setBrandMarketers(brandId, enable){
+  const ma = marketersArr();
+  if(!ma.length) return;
+  const updates={};
+  ma.forEach(m=>{
+    let brandsList = m.brands ? [...m.brands] : Object.keys(brands);
+    if(enable){
+      if(!brandsList.includes(brandId)) brandsList.push(brandId);
+    } else {
+      brandsList = brandsList.filter(b=>b!==brandId);
+    }
+    updates['marketers/'+m.id+'/brands']=brandsList;
+  });
+  db.ref().update(updates).then(()=>{
+    toast(enable?'تم تفعيل الكل ✓':'تم إيقاف الكل ✓');
+    // تحديث الـ toggles في الـ UI
+    ma.forEach(m=>{
+      const el=document.querySelector(`[data-on][onclick*="'${m.id}'"]`);
+      if(el){
+        el.dataset.on=enable?'1':'0';
+        el.style.background=enable?'var(--green)':'var(--bd)';
+        el.querySelector('div').style.left=enable?'17px':'3px';
+        const txt=document.getElementById('bmtxt-'+m.id);
+        if(txt){txt.textContent=enable?'يعرض':'مخفي';txt.style.color=enable?'var(--green)':'var(--mt)';}
+      }
+    });
+  }).catch(e=>toast('خطأ: '+e.message,false));
+}
 function loadBrandLogoFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{document.getElementById('b-logo-url').value=e.target.result;previewBrandLogo(e.target.result);};r.readAsDataURL(f);}
 
 // ===== PRODUCTS =====
@@ -681,8 +782,12 @@ function openProduct(id){
         <select class="form-select" id="p-brand">${ba.map(b=>`<option value="${b.id}"${(p.brand_id||p.brand)===b.id?' selected':''}>${xe(b.ar)}</option>`).join('')}</select>
       </div>
       <div class="form-2">
-        <div class="form-row"><label class="form-label">السعر KWD</label><input class="form-input" id="p-price" type="number" value="${p.price||''}" style="direction:ltr"></div>
+        <div class="form-row"><label class="form-label">السعر KWD</label><input class="form-input" id="p-price" type="number" value="${p.priceOnRequest?'':p.price||''}" style="direction:ltr" ${p.priceOnRequest?'disabled':''}></div>
         <div class="form-row"><label class="form-label">السعر القديم</label><input class="form-input" id="p-old" type="number" value="${p.oldPrice||''}" style="direction:ltr"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd);margin-bottom:8px">
+        <input type="checkbox" id="p-price-on-request" ${p.priceOnRequest?'checked':''} onchange="togglePriceOnRequest(this)" style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer">
+        <label for="p-price-on-request" style="font-size:12px;font-weight:700;color:var(--tx);cursor:pointer">حسب الطلب — إخفاء السعر وعرض زر تواصل</label>
       </div>
       <div class="form-row"><label class="form-label">💰 عمولة المسوق (KWD ثابت لكل طلب)</label><input class="form-input" id="p-comm" type="number" step="0.1" value="${p.commission||0}" style="direction:ltr"></div>
       <div class="form-2">
@@ -813,8 +918,9 @@ function removeColorImg(ci,ji){editColors[ci].imgs.splice(ji,1);renderColors();}
 function saveProduct(id){
   const ar=document.getElementById('p-ar').value.trim();
   const en=document.getElementById('p-en').value.trim();
+  const priceOnRequest=document.getElementById('p-price-on-request')?.checked||false;
   const price=Number(document.getElementById('p-price').value);
-  if(!ar||!en||!price){toast('أدخل الاسم والسعر',false);return;}
+  if(!ar||!en||(!price&&!priceOnRequest)){toast('أدخل الاسم والسعر',false);return;}
   const slug=document.getElementById('p-slug').value.trim();
   if(!slug){toast('أدخل رابط المشاركة (Slug)',false);return;}
   // تحقق إن الـ slug مش متكرر
@@ -841,7 +947,7 @@ function saveProduct(id){
     ogImage:document.getElementById('p-og-url').value.trim()||null,
     descAr:document.getElementById('p-desc-ar').value.trim(),
     descEn:document.getElementById('p-desc-en').value.trim(),
-    price,oldPrice:oldPrice||null,currency:'KWD',
+    price:priceOnRequest?0:price,oldPrice:oldPrice||null,currency:'KWD',priceOnRequest:priceOnRequest||false,
     commission:Number(document.getElementById('p-comm')?.value)||0,
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
@@ -962,6 +1068,36 @@ function openMarketer(id){
       <div class="form-2">
         <div class="form-row"><label class="form-label">رقم واتساب المسوق</label><input class="form-input" id="m-wa" value="${xe(m.waNumber||'')}" style="direction:ltr"></div>
         <div class="form-row"><label class="form-label">PIN الدخول 🔐</label><input class="form-input" id="m-pin" type="text" inputmode="numeric" maxlength="6" value="${xe(m.pin||'')}" placeholder="مثال: 1234" style="direction:ltr;letter-spacing:4px;font-size:16px;font-weight:800" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><div style="font-size:10px;color:var(--mt);margin-top:4px">يُستخدم مع رقم الواتساب لتسجيل الدخول</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">📱 روابط السوشيال ميديا</div>
+      <div class="form-2">
+        <div class="form-row">
+          <label class="form-label">📸 انستجرام</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
+            <input class="form-input" id="m-instagram" value="${xe(m.instagram||'')}" placeholder="username" style="direction:ltr">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">👻 سناب شات</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
+            <input class="form-input" id="m-snapchat" value="${xe(m.snapchat||'')}" placeholder="username" style="direction:ltr">
+          </div>
+        </div>
+      </div>
+      <div class="form-2">
+        <div class="form-row">
+          <label class="form-label">🎵 تيك توك</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="color:var(--mt);font-size:12px;white-space:nowrap">@</span>
+            <input class="form-input" id="m-tiktok" value="${xe(m.tiktok||'')}" placeholder="username" style="direction:ltr">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">📘 فيسبوك</label>
+          <input class="form-input" id="m-facebook" value="${xe(m.facebook||'')}" placeholder="رابط الصفحة" style="direction:ltr;font-size:11px">
+        </div>
       </div>
       <div class="form-row"><label class="form-label">الحالة</label>
         <select class="form-select" id="m-status">
@@ -1106,11 +1242,15 @@ function saveMarketer(id){
   if(!name||!slug){toast('أدخل الاسم والرابط',false);return;}
   const excludedProds=[...document.querySelectorAll('#prod-pick-wrap .prod-check:not(.sel)')].map(el=>el.dataset.pid).filter(Boolean);
   const theme=_selectedTheme||'luxury';
-  const isNew=!id||id==='null';
+  const isNew=!id||id==='null'||id==='NEW_BRAND';
   const obj={
     name,slug,
     phone:document.getElementById('m-phone').value.trim(),
     waNumber:document.getElementById('m-wa').value.trim(),
+    instagram:document.getElementById('m-instagram').value.trim().replace('@',''),
+    snapchat:document.getElementById('m-snapchat').value.trim().replace('@',''),
+    tiktok:document.getElementById('m-tiktok').value.trim().replace('@',''),
+    facebook:document.getElementById('m-facebook').value.trim(),
     pin:document.getElementById('m-pin').value.trim(),
     logo:document.getElementById('m-logo-url').value.trim(),
     banner:document.getElementById('m-banner-url').value.trim(),
