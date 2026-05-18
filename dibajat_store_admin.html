@@ -144,6 +144,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);direc
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
 </style>
+<base target="_blank">
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -616,7 +617,7 @@ function renderBrandMarketers(brandId){
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'
           + '<span id="bmtxt-'+m.id+'" style="font-size:10px;color:'+(active?'var(--green)':'var(--mt)')+'">'+( active?'يعرض':'مخفي')+'</span>'
-          + '<div onclick="toggleBrandMarketer(\"'+brandId+'\",\"'+m.id+'\",this)" data-on="'+(active?'1':'0')+'" style="width:34px;height:18px;border-radius:18px;background:'+(active?'var(--green)':'var(--bd)')+';position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">'
+          + '<div onclick="toggleBrandMarketer(''+brandId+'',''+m.id+'',this)" data-on="'+(active?'1':'0')+'" style="width:34px;height:18px;border-radius:18px;background:'+(active?'var(--green)':'var(--bd)')+';position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">'
             + '<div style="position:absolute;top:3px;'+(active?'left:17px':'left:3px')+';width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s"></div>'
           + '</div>'
         + '</div>'
@@ -627,8 +628,8 @@ function renderBrandMarketers(brandId){
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
       + '<div style="font-size:12px;font-weight:800;color:var(--tx)">👤 المسوقون</div>'
       + '<div style="display:flex;gap:6px">'
-        + '<button type="button" onclick="setBrandMarketers(\"'+brandId+'\",true)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:Tajawal,sans-serif">تفعيل الكل</button>'
-        + '<button type="button" onclick="setBrandMarketers(\"'+brandId+'\",false)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt);font-size:10px;font-weight:700;cursor:pointer;font-family:Tajawal,sans-serif">إيقاف الكل</button>'
+        + '<button type="button" onclick="setBrandMarketers(''+brandId+'',true)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">تفعيل الكل</button>'
+        + '<button type="button" onclick="setBrandMarketers(''+brandId+'',false)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">إيقاف الكل</button>'
       + '</div>'
     + '</div>'
     + '<div style="display:flex;flex-direction:column;max-height:220px;overflow-y:auto">'+rows+'</div>'
@@ -773,6 +774,10 @@ function openProduct(id){
         <div class="form-row"><label class="form-label">السعر KWD</label><input class="form-input" id="p-price" type="number" value="${p.price||''}" style="direction:ltr"></div>
         <div class="form-row"><label class="form-label">السعر القديم</label><input class="form-input" id="p-old" type="number" value="${p.oldPrice||''}" style="direction:ltr"></div>
       </div>
+      <div class="form-row" style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd);margin-top:8px">
+        <input type="checkbox" id="p-price-request" ${p.priceOnRequest?'checked':''} style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer" onchange="togglePriceFields()">
+        <label for="p-price-request" style="font-size:13px;font-weight:700;color:var(--tx);cursor:pointer;margin:0">💬 السعر حسب الطلب (يتواصل الزبون مع المسوق)</label>
+      </div>
       <div class="form-row"><label class="form-label">💰 عمولة المسوق (KWD ثابت لكل طلب)</label><input class="form-input" id="p-comm" type="number" step="0.1" value="${p.commission||0}" style="direction:ltr"></div>
       <div class="form-2">
         <div class="form-row"><label class="form-label">الإيموجي</label><input class="form-input" id="p-emoji" value="${xe(p.emoji||'🛋️')}" style="direction:ltr;font-size:22px;text-align:center"></div>
@@ -899,6 +904,16 @@ function pasteImgUrl(ci){
   inp.value='';renderColors();
 }
 function removeColorImg(ci,ji){editColors[ci].imgs.splice(ji,1);renderColors();}
+function togglePriceFields(){
+  const isRequest = document.getElementById('p-price-request').checked;
+  const priceInput = document.getElementById('p-price');
+  const oldInput = document.getElementById('p-old');
+  if(priceInput) priceInput.disabled = isRequest;
+  if(oldInput) oldInput.disabled = isRequest;
+  if(priceInput) priceInput.style.opacity = isRequest ? '0.5' : '1';
+  if(oldInput) oldInput.style.opacity = isRequest ? '0.5' : '1';
+}
+
 function saveProduct(id){
   const ar=document.getElementById('p-ar').value.trim();
   const en=document.getElementById('p-en').value.trim();
@@ -923,6 +938,7 @@ function saveProduct(id){
     colorsObj[key]={ar:c.ar||'',en:c.en||'',hex:c.hex,imgs,soldOut:c.soldOut||false,sizeSoldOut:c.sizeSoldOut||{}};
   });
   const oldPrice=Number(document.getElementById('p-old').value);
+  const priceOnRequest=document.getElementById('p-price-request').checked;
   const obj={
     brand_id:document.getElementById('p-brand').value,
     nameAr:ar,nameEn:en,
@@ -930,7 +946,7 @@ function saveProduct(id){
     ogImage:document.getElementById('p-og-url').value.trim()||null,
     descAr:document.getElementById('p-desc-ar').value.trim(),
     descEn:document.getElementById('p-desc-en').value.trim(),
-    price,oldPrice:oldPrice||null,currency:'KWD',
+    price:priceOnRequest?0:price,oldPrice:priceOnRequest?null:(oldPrice||null),priceOnRequest,currency:'KWD',
     commission:Number(document.getElementById('p-comm')?.value)||0,
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
@@ -1157,6 +1173,36 @@ function openMarketer(id){
         <input class="form-input" id="m-welcome-ar" value="${xe(m.welcomeAr||'')}" placeholder="مرحباً بك في متجري" style="margin-bottom:6px">
         <input class="form-input" id="m-welcome-en" value="${xe(m.welcomeEn||'')}" placeholder="Welcome to my store" style="direction:ltr">
       </div>
+      <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">🔗 روابط التواصل الاجتماعي</div>
+      <div class="form-2">
+        <div class="form-row">
+          <label class="form-label">📷 انستجرام</label>
+          <div style="display:flex;align-items:center;gap:0">
+            <span style="padding:9px 10px;background:var(--bg);border:1.5px solid var(--bd);border-left:none;color:var(--mt);font-size:11px;border-radius:8px 0 0 8px;white-space:nowrap;direction:ltr">@</span>
+            <input class="form-input" id="m-instagram" value="${xe(m.instagram||'')}" placeholder="username" style="direction:ltr;border-radius:0 8px 8px 0;border-right:none">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">📘 فيسبوك</label>
+          <input class="form-input" id="m-facebook" value="${xe(m.facebook||'')}" placeholder="رابط الصفحة أو اسم المستخدم" style="direction:ltr">
+        </div>
+      </div>
+      <div class="form-2">
+        <div class="form-row">
+          <label class="form-label">🎵 تيك توك</label>
+          <div style="display:flex;align-items:center;gap:0">
+            <span style="padding:9px 10px;background:var(--bg);border:1.5px solid var(--bd);border-left:none;color:var(--mt);font-size:11px;border-radius:8px 0 0 8px;white-space:nowrap;direction:ltr">@</span>
+            <input class="form-input" id="m-tiktok" value="${xe(m.tiktok||'')}" placeholder="username" style="direction:ltr;border-radius:0 8px 8px 0;border-right:none">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">👻 سناب شات</label>
+          <div style="display:flex;align-items:center;gap:0">
+            <span style="padding:9px 10px;background:var(--bg);border:1.5px solid var(--bd);border-left:none;color:var(--mt);font-size:11px;border-radius:8px 0 0 8px;white-space:nowrap;direction:ltr">@</span>
+            <input class="form-input" id="m-snapchat" value="${xe(m.snapchat||'')}" placeholder="username" style="direction:ltr;border-radius:0 8px 8px 0;border-right:none">
+          </div>
+        </div>
+      </div>
       <div class="form-row">
         <label class="form-label">🌐 اللغة الافتراضية للمتجر</label>
         <select class="form-select" id="m-default-lang">
@@ -1210,6 +1256,10 @@ function saveMarketer(id){
     colorBg:theme==='custom'?document.getElementById('m-c-bg').value:'',
     welcomeAr:document.getElementById('m-welcome-ar').value.trim(),
     welcomeEn:document.getElementById('m-welcome-en').value.trim(),
+    instagram:document.getElementById('m-instagram').value.trim(),
+    facebook:document.getElementById('m-facebook').value.trim(),
+    tiktok:document.getElementById('m-tiktok').value.trim(),
+    snapchat:document.getElementById('m-snapchat').value.trim(),
     defaultLang:document.getElementById('m-default-lang').value,
     excluded:excludedProds,
     earnings:isNew?0:(marketers[id]?.earnings||0),
