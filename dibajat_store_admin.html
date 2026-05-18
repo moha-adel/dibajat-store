@@ -899,11 +899,11 @@ function toggleBrandProds(bid, show){
 
 // ===== MARKETERS =====
 const THEMES=[
-  {id:'luxury',label:'فاخر',primary:'#b8934a'},
-  {id:'modern',label:'مودرن',primary:'#2563eb'},
-  {id:'classic',label:'كلاسيك',primary:'#7c3f2b'},
-  {id:'dark',label:'داكن',primary:'#c9a96e'},
-  {id:'custom',label:'مخصص ✏️',primary:''},
+  {id:'ivory',   label:'Ivory',    emoji:'🪨', primary:'#b8934a', bg:'#faf8f5', card:'#fff',     text:'#1a1a1a', desc:'بيج فاخر — كلاسيك'},
+  {id:'midnight',label:'Midnight', emoji:'🌙', primary:'#c9a96e', bg:'#0f0f0f', card:'#1a1a1a',  text:'#f0e6d3', desc:'أسود وذهبي — لوكشري'},
+  {id:'stone',   label:'Stone',    emoji:'🩶', primary:'#4a4a4a', bg:'#f5f5f5', card:'#fff',     text:'#1c1c1c', desc:'رمادي مينيمال — Muji'},
+  {id:'sage',    label:'Sage',     emoji:'🌿', primary:'#6b7c5c', bg:'#f4f6f0', card:'#fefef9',  text:'#2c3325', desc:'أخضر ناتشورال — Organic'},
+  {id:'custom',  label:'مخصص',    emoji:'✏️', primary:'',        bg:'',         card:'',          text:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
   const ma=marketersArr();
@@ -938,9 +938,11 @@ function renderMarketers(){
 }
 function openMarketer(id){
   const isNew=id===-1;
-  const m=isNew?{name:'',slug:'',phone:'',products:[],earnings:0,status:'active',logo:'',banner:'',theme:'luxury',colorPrimary:'',colorAccent:'',colorBg:'',welcomeAr:'',welcomeEn:'',waNumber:''}:{...marketers[id]};
+  const m=isNew?{name:'',slug:'',phone:'',products:[],earnings:0,status:'active',logo:'',banner:'',theme:'ivory',colorPrimary:'',colorAccent:'',colorBg:'',welcomeAr:'',welcomeEn:'',waNumber:''}:{...marketers[id]};
   const pa=productsArr();
-  _selectedTheme=m.theme||'luxury';
+  // fallback للثيمات القديمة
+  const _oldMap={luxury:'ivory',dark:'midnight',modern:'stone',classic:'sage'};
+  _selectedTheme=_oldMap[m.theme]||m.theme||'ivory';
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
@@ -1011,11 +1013,47 @@ function openMarketer(id){
       </div>
       <div class="form-row">
         <label class="form-label">ثيم المتجر</label>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px">
-          ${THEMES.map(t=>`<div onclick="selectTheme('${t.id}')" id="theme-opt-${t.id}" style="padding:8px 4px;border-radius:8px;border:2px solid ${_selectedTheme===t.id?'var(--gold)':'var(--bd)'};background:${_selectedTheme===t.id?'var(--gold-dim)':'var(--bg3)'};cursor:pointer;text-align:center">
-            <div style="width:24px;height:24px;border-radius:50%;background:${t.primary||'#555'};margin:0 auto 4px;border:1.5px solid rgba(255,255,255,.2)"></div>
-            <div style="font-size:10px;font-weight:700;color:var(--tx)">${t.label}</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px">
+          ${THEMES.filter(t=>t.id!=='custom').map(t=>`
+          <div onclick="selectTheme('${t.id}')" id="theme-opt-${t.id}" style="border-radius:10px;border:2px solid ${_selectedTheme===t.id?'var(--gold)':'var(--bd)'};background:${_selectedTheme===t.id?'var(--gold-dim)':'var(--bg3)'};cursor:pointer;overflow:hidden;transition:all .2s">
+            <!-- preview مصغر للمتجر -->
+            <div style="background:${t.bg||'#faf8f5'};padding:8px 10px;border-bottom:1.5px solid ${_selectedTheme===t.id?'var(--gold)':'var(--bd)'}">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
+                <div style="width:14px;height:14px;border-radius:3px;background:${t.primary||'#b8934a'}"></div>
+                <div style="flex:1;height:5px;border-radius:3px;background:${t.text||'#1a1a1a'};opacity:.15"></div>
+                <div style="width:22px;height:10px;border-radius:3px;background:${t.primary||'#b8934a'};opacity:.7"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <div style="background:${t.card||'#fff'};border-radius:5px;padding:5px;border:1px solid rgba(0,0,0,.08)">
+                  <div style="height:24px;border-radius:3px;background:${t.primary||'#b8934a'};opacity:.2;margin-bottom:4px"></div>
+                  <div style="height:4px;border-radius:2px;background:${t.text||'#1a1a1a'};opacity:.2;margin-bottom:2px;width:70%"></div>
+                  <div style="height:6px;border-radius:2px;background:${t.primary||'#b8934a'};width:50%"></div>
+                </div>
+                <div style="background:${t.card||'#fff'};border-radius:5px;padding:5px;border:1px solid rgba(0,0,0,.08)">
+                  <div style="height:24px;border-radius:3px;background:${t.primary||'#b8934a'};opacity:.2;margin-bottom:4px"></div>
+                  <div style="height:4px;border-radius:2px;background:${t.text||'#1a1a1a'};opacity:.2;margin-bottom:2px;width:60%"></div>
+                  <div style="height:6px;border-radius:2px;background:${t.primary||'#b8934a'};width:45%"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:7px 10px;display:flex;align-items:center;gap:6px">
+              <span style="font-size:14px">${t.emoji}</span>
+              <div>
+                <div style="font-size:11px;font-weight:800;color:var(--tx)">${t.label}</div>
+                <div style="font-size:9px;color:var(--mt)">${t.desc}</div>
+              </div>
+              ${_selectedTheme===t.id?'<div style="margin-right:auto;width:16px;height:16px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:9px">✓</div>':''}
+            </div>
           </div>`).join('')}
+        </div>
+        <!-- مخصص -->
+        <div onclick="selectTheme('custom')" id="theme-opt-custom" style="border-radius:10px;border:2px solid ${_selectedTheme==='custom'?'var(--gold)':'var(--bd)'};background:${_selectedTheme==='custom'?'var(--gold-dim)':'var(--bg3)'};cursor:pointer;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;transition:all .2s">
+          <span style="font-size:18px">✏️</span>
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--tx)">مخصص</div>
+            <div style="font-size:9px;color:var(--mt)">اختر ألوانك بنفسك</div>
+          </div>
+          ${_selectedTheme==='custom'?'<div style="margin-right:auto;width:16px;height:16px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:9px">✓</div>':''}
         </div>
         <div id="custom-colors" style="display:${_selectedTheme==='custom'?'grid':'none'};grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd)">
           <div><label class="form-label" style="margin-bottom:4px">اللون الرئيسي</label><div style="display:flex;gap:5px;align-items:center"><input type="color" id="m-c-primary" value="${m.colorPrimary||'#b8934a'}" style="width:32px;height:32px;border:none;border-radius:6px;cursor:pointer"><input class="form-input" id="m-c-primary-hex" value="${m.colorPrimary||'#b8934a'}" style="direction:ltr;font-size:11px"></div></div>
