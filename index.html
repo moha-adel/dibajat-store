@@ -675,7 +675,7 @@ function renderModal(){
         ${p.colors.map((col,i)=>{
           const thumb=(col.imgs||[])[0]||'';
           const isSO=col.soldOut||false;
-          return `<div class="fcolor-opt${i===ci?' sel':''} ${isSO?'sold-out':''}" onclick="${isSO?'toast(isEn?"Out of stock":"نفذت الكمية")':'pickColor(\'${pid}\',${i})'}">
+          return `<div class="fcolor-opt${i===ci?' sel':''} ${isSO?'sold-out':''}" onclick="${isSO?`toast(isEn?'Out of stock':'نفذت الكمية')`:`pickColor('${pid}',${i})`}">
             <div class="fcolor-thumb-ph" style="position:relative">
               ${thumb
                 ?`<img class="fcolor-thumb" src="${xe(thumb)}" alt="" loading="lazy" onerror="this.style.display='none'">`
@@ -693,7 +693,7 @@ function renderModal(){
         ${p.sizes.map(s=>{
           const curColor=p.colors[ci]||{};
           const isSO=curColor.sizeSoldOut&&curColor.sizeSoldOut[s];
-          return `<div class="fmodal-size${selSize[pid]===s?' sel':''}${isSO?' size-soldout':''}" onclick="${isSO?'toast(isEn?"Out of stock":"نفذت الكمية لهذا المقاس")':'pickSize(\'${pid}\',\'${s}\')'}" style="${isSO?'opacity:.5;cursor:not-allowed;text-decoration:line-through;':''}">
+          return `<div class="fmodal-size${selSize[pid]===s?' sel':''}${isSO?' size-soldout':''}" onclick="${isSO?`toast(isEn?'Out of stock':'نفذت الكمية لهذا المقاس')`:`pickSize('${pid}','${s}')`}" style="${isSO?'opacity:.5;cursor:not-allowed;text-decoration:line-through;':''}">
             ${xe(isEn?gs(s).en:gs(s).ar)}${isSO?` <span style="font-size:9px;color:var(--red)">✕</span>`:''}
           </div>`;
         }).join('')}
@@ -706,8 +706,8 @@ function renderModal(){
         </button>
         ${p.priceOnRequest
           ? '<button class="add-cart-btn" style="background:var(--theme-primary)" onclick="waProduct(currentPid)">📲 '+(isEn?'Contact for Price':'تواصل للسعر')+'</button>'
-          : '<button class="add-cart-btn" onclick="addCart('${pid}')">🛒 '+(isEn?'Add to Cart':'أضف للسلة')+'</button>'}
-        <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:Tajawal,sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
+          : '<button class="add-cart-btn" onclick="addCart(''+pid+'')">🛒 '+(isEn?'Add to Cart':'أضف للسلة')+'</button>'}
+        <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
           🔗 ${isEn?'Share Product':'مشاركة الطقم'}
         </button>
       </div>
@@ -715,7 +715,7 @@ function renderModal(){
       ${(p.descAr||p.descEn)?`<div class="fmodal-desc">${xe(isEn?p.descEn:p.descAr)}</div>`:''}
 
       <div class="fmodal-compare-row">
-        <div class="fmodal-compare-lbl">⚖️ ${isEn?'Compare':'أضف للمقارنة'}</div>
+        <div class="fmodal-compare-lbl">⚖️ \${isEn?'Compare':'أضف للمقارنة'}</div>
         <button class="compare-toggle${compareList.includes(pid)?' on':''}" onclick="toggleCompare('${pid}')"></button>
       </div>
     </div>`;
