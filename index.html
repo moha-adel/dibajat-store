@@ -398,63 +398,71 @@ function getSlug(){
 
 // ===== THEME =====
 function applyTheme(m){
-  // ===== الثيمات الأربعة =====
+  // ===== الثيمات الستة =====
   const T={
-    // Ivory — بيج كلاسيك (الافتراضي)
+    // 1. Ivory — بيج ذهبي كلاسيك
     ivory:{
       primary:'#b8934a', primaryHover:'#a07d3a',
       dark:'#1a1a1a', text:'#2d2d2d',
       white:'#ffffff', cream:'#faf8f5',
-      border:'#e8e4de', borderLight:'#f0ece6',
-      gray:'#6b6b6b', gray2:'#9a9a9a',
+      border:'#e8e4de', gray:'#6b6b6b', gray2:'#9a9a9a',
       goldLight:'#fdf6e9', goldBorder:'#e8d5b0',
-      bg:'#faf8f5', navBg:'#ffffff',
-      cardBg:'#ffffff', btnDark:'#1a1a1a',
-      font:"'Tajawal',sans-serif",
-      filterOn:'#1a1a1a', shadow:'rgba(0,0,0,.07)'
+      bg:'#faf8f5', navBg:'#ffffff', cardBg:'#ffffff',
+      btnDark:'#1a1a1a', filterOn:'#1a1a1a', shadow:'rgba(0,0,0,.07)'
     },
-    // Midnight — أسود وذهبي لوكشري
+    // 2. Midnight — أسود وذهبي لوكشري
     midnight:{
       primary:'#c9a96e', primaryHover:'#e8c57a',
       dark:'#f0e6d3', text:'#e8ddd0',
       white:'#141414', cream:'#1e1e1e',
-      border:'#2e2e2e', borderLight:'#262626',
-      gray:'#a09080', gray2:'#7a6a5a',
+      border:'#2e2e2e', gray:'#a09080', gray2:'#7a6a5a',
       goldLight:'#1e1a14', goldBorder:'#3d3018',
-      bg:'#0f0f0f', navBg:'#141414',
-      cardBg:'#1a1a1a', btnDark:'#c9a96e',
-      font:"'Tajawal',sans-serif",
-      filterOn:'#c9a96e', shadow:'rgba(0,0,0,.4)'
+      bg:'#0f0f0f', navBg:'#141414', cardBg:'#1a1a1a',
+      btnDark:'#c9a96e', filterOn:'#c9a96e', shadow:'rgba(0,0,0,.4)'
     },
-    // Stone — رمادي بارد مينيمال
-    stone:{
-      primary:'#4a4a4a', primaryHover:'#333333',
-      dark:'#1c1c1c', text:'#2a2a2a',
-      white:'#ffffff', cream:'#f5f5f5',
-      border:'#dcdcdc', borderLight:'#e8e8e8',
-      gray:'#737373', gray2:'#a3a3a3',
-      goldLight:'#f0f0f0', goldBorder:'#d4d4d4',
-      bg:'#f5f5f5', navBg:'#ffffff',
-      cardBg:'#ffffff', btnDark:'#1c1c1c',
-      font:"'Tajawal',sans-serif",
-      filterOn:'#1c1c1c', shadow:'rgba(0,0,0,.06)'
+    // 3. Arctic — أبيض وأزرق بارد Apple-style
+    arctic:{
+      primary:'#0071e3', primaryHover:'#0058b0',
+      dark:'#1d1d1f', text:'#1d1d1f',
+      white:'#ffffff', cream:'#f5f5f7',
+      border:'#d2d2d7', gray:'#6e6e73', gray2:'#aeaeb2',
+      goldLight:'#e8f0fb', goldBorder:'#b8d0f5',
+      bg:'#f5f5f7', navBg:'rgba(255,255,255,0.85)', cardBg:'#ffffff',
+      btnDark:'#1d1d1f', filterOn:'#0071e3', shadow:'rgba(0,0,0,.05)'
     },
-    // Sage — أخضر زيتوني ناتشورال
-    sage:{
-      primary:'#6b7c5c', primaryHover:'#556347',
-      dark:'#2c3325', text:'#3a4232',
-      white:'#fefef9', cream:'#f4f6f0',
-      border:'#d8e0cc', borderLight:'#e4ecd8',
-      gray:'#6b7560', gray2:'#96a08a',
-      goldLight:'#edf2e6', goldBorder:'#c8d8b4',
-      bg:'#f4f6f0', navBg:'#fefef9',
-      cardBg:'#fefef9', btnDark:'#2c3325',
-      font:"'Tajawal',sans-serif",
-      filterOn:'#2c3325', shadow:'rgba(44,51,37,.08)'
+    // 4. Blush — وردي وبيج فيمنين إيليجانت
+    blush:{
+      primary:'#c4788a', primaryHover:'#a85f70',
+      dark:'#3d2028', text:'#3d2028',
+      white:'#fffaf9', cream:'#fdf2f4',
+      border:'#f0d5da', gray:'#9a7078', gray2:'#c4a0a8',
+      goldLight:'#fdeef1', goldBorder:'#f0c8d0',
+      bg:'#fdf2f4', navBg:'#fffaf9', cardBg:'#fffaf9',
+      btnDark:'#3d2028', filterOn:'#c4788a', shadow:'rgba(196,120,138,.1)'
+    },
+    // 5. Walnut — بني دافي وكريمي West Elm-style
+    walnut:{
+      primary:'#8b5e3c', primaryHover:'#704a2e',
+      dark:'#2c1a0e', text:'#3a2212',
+      white:'#fdf8f3', cream:'#f5ede3',
+      border:'#e0cdb8', gray:'#8b7060', gray2:'#b09880',
+      goldLight:'#f5ede3', goldBorder:'#d4b898',
+      bg:'#f5ede3', navBg:'#fdf8f3', cardBg:'#fdf8f3',
+      btnDark:'#2c1a0e', filterOn:'#8b5e3c', shadow:'rgba(44,26,14,.08)'
+    },
+    // 6. Slate — رمادي داكن وفضي إنداستريال
+    slate:{
+      primary:'#94a3b8', primaryHover:'#7a8fa5',
+      dark:'#f1f5f9', text:'#e2e8f0',
+      white:'#1e293b', cream:'#263346',
+      border:'#334155', gray:'#94a3b8', gray2:'#64748b',
+      goldLight:'#1e2d40', goldBorder:'#334155',
+      bg:'#0f172a', navBg:'#1e293b', cardBg:'#1e293b',
+      btnDark:'#94a3b8', filterOn:'#94a3b8', shadow:'rgba(0,0,0,.3)'
     },
   };
   // fallback للثيمات القديمة
-  const themeKey = m.theme==='luxury'?'ivory': m.theme==='dark'?'midnight': m.theme==='modern'?'stone': m.theme==='classic'?'sage': (T[m.theme]?m.theme:'ivory');
+  const themeKey = m.theme==='luxury'?'ivory': m.theme==='dark'?'midnight': m.theme==='modern'?'arctic': m.theme==='classic'?'walnut': m.theme==='stone'?'slate': m.theme==='sage'?'walnut': (T[m.theme]?m.theme:'ivory');
   const t=T[themeKey]||T.ivory;
   const r=document.documentElement;
   if(m.theme==='custom'){
