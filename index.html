@@ -715,7 +715,7 @@ function renderModal(){
       ${(p.descAr||p.descEn)?`<div class="fmodal-desc">${xe(isEn?p.descEn:p.descAr)}</div>`:''}
 
       <div class="fmodal-compare-row">
-        <div class="fmodal-compare-lbl">⚖️ \${isEn?'Compare':'أضف للمقارنة'}</div>
+        <div class="fmodal-compare-lbl">⚖️ ${isEn?'Compare':'أضف للمقارنة'}</div>
         <button class="compare-toggle${compareList.includes(pid)?' on':''}" onclick="toggleCompare('${pid}')"></button>
       </div>
     </div>`;
