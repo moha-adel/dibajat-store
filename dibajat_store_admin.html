@@ -564,6 +564,41 @@ function openBrand(id){
         </select>
       </div>
     </div>
+    ${!isNew ? `
+    <div class="modal-body" style="border-top:1px solid var(--bd);padding-top:14px;margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:800;color:var(--tx)">👤 المسوقون</div>
+        <div style="display:flex;gap:6px">
+          <button type="button" onclick="setBrandMarketers('${id}',true)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">تفعيل الكل</button>
+          <button type="button" onclick="setBrandMarketers('${id}',false)" style="padding:4px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt);font-size:10px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">إيقاف الكل</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto">
+        ${marketersArr().length===0
+          ? '<div style="color:var(--mt);font-size:12px;text-align:center;padding:20px">لا يوجد مسوقون</div>'
+          : marketersArr().map(m=>{
+              const hasBrand=(m.brands||[]).includes('${id}') || !(m.brands); 
+              // لو brands مش موجودة = الشركة متاحة بشكل افتراضي
+              const active = m.brands ? (m.brands||[]).includes('${id}') : true;
+              return \`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd)">
+                <div style="width:30px;height:30px;border-radius:50%;background:var(--bg4);border:1.5px solid var(--bd);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">
+                  \${m.logo?'<img src="'+m.logo+'" style="width:100%;height:100%;object-fit:cover">':'👤'}
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">\${m.name||'—'}</div>
+                  <div style="font-size:10px;color:var(--mt)">\${m.slug||''}.dibajat.store</div>
+                </div>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0">
+                  <span style="font-size:10px;color:\${active?'var(--green)':'var(--mt)'};\${active?'':'opacity:.7'}" id="bmtxt-\${m.id}">\${active?'يعرض':'مخفي'}</span>
+                  <div onclick="toggleBrandMarketer('${id}','\${m.id}',this)" data-on="\${active?'1':'0'}" style="width:34px;height:18px;border-radius:18px;background:\${active?'var(--green)':'var(--bd)'};position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">
+                    <div style="position:absolute;top:3px;\${active?'left:17px':'left:3px'};width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s"></div>
+                  </div>
+                </label>
+              </div>\`;
+            }).join('')
+        }
+      </div>
+    </div>` : ''}
     <div class="modal-footer">
       ${!isNew?`<button class="btn-danger" onclick="delBrand('${id}');closeModal()">حذف</button>`:''}
       <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
@@ -596,6 +631,59 @@ function toggleCommFields(){
   document.getElementById('cf-fixed').style.display=t==='percent'?'none':'block';
 }
 function previewBrandLogo(url){const el=document.getElementById('b-logo-preview');if(el)el.innerHTML=url?`<img src="${url}" style="width:100%;height:100%;object-fit:cover">`:'🏢';}
+
+// ===== إدارة الشركات لكل مسوق =====
+function toggleBrandMarketer(brandId, marketerId, toggleEl){
+  const isOn = toggleEl.dataset.on==='1';
+  const newOn = !isOn;
+  // جيب brands المسوق الحالية
+  const m = marketers[marketerId];
+  if(!m) return;
+  // لو brands مش موجودة = كل الشركات متاحة، نبني القائمة من الموجودين
+  let brandsList = m.brands ? [...m.brands] : Object.keys(brands);
+  if(newOn){
+    if(!brandsList.includes(brandId)) brandsList.push(brandId);
+  } else {
+    brandsList = brandsList.filter(b=>b!==brandId);
+  }
+  db.ref('marketers/'+marketerId+'/brands').set(brandsList).then(()=>{
+    toggleEl.dataset.on = newOn?'1':'0';
+    toggleEl.style.background = newOn?'var(--green)':'var(--bd)';
+    toggleEl.querySelector('div').style.left = newOn?'17px':'3px';
+    const txt = document.getElementById('bmtxt-'+marketerId);
+    if(txt){ txt.textContent=newOn?'يعرض':'مخفي'; txt.style.color=newOn?'var(--green)':'var(--mt)'; }
+    toast(newOn?'تم التفعيل ✓':'تم الإيقاف ✓');
+  }).catch(e=>toast('خطأ: '+e.message,false));
+}
+
+function setBrandMarketers(brandId, enable){
+  const ma = marketersArr();
+  if(!ma.length) return;
+  const updates={};
+  ma.forEach(m=>{
+    let brandsList = m.brands ? [...m.brands] : Object.keys(brands);
+    if(enable){
+      if(!brandsList.includes(brandId)) brandsList.push(brandId);
+    } else {
+      brandsList = brandsList.filter(b=>b!==brandId);
+    }
+    updates['marketers/'+m.id+'/brands']=brandsList;
+  });
+  db.ref().update(updates).then(()=>{
+    toast(enable?'تم تفعيل الكل ✓':'تم إيقاف الكل ✓');
+    // تحديث الـ toggles في الـ UI
+    ma.forEach(m=>{
+      const el=document.querySelector(`[data-on][onclick*="'${m.id}'"]`);
+      if(el){
+        el.dataset.on=enable?'1':'0';
+        el.style.background=enable?'var(--green)':'var(--bd)';
+        el.querySelector('div').style.left=enable?'17px':'3px';
+        const txt=document.getElementById('bmtxt-'+m.id);
+        if(txt){txt.textContent=enable?'يعرض':'مخفي';txt.style.color=enable?'var(--green)':'var(--mt)';}
+      }
+    });
+  }).catch(e=>toast('خطأ: '+e.message,false));
+}
 function loadBrandLogoFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{document.getElementById('b-logo-url').value=e.target.result;previewBrandLogo(e.target.result);};r.readAsDataURL(f);}
 
 // ===== PRODUCTS =====
