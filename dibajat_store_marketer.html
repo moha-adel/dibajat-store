@@ -302,8 +302,10 @@ function startApp(id, mkt){
     const all=snap.val()||{};
     // فلترة طلبات هذا المسوق فقط
     const mine={};
+    const mktName=currentMarketer?.name||'';
+    const mktSlug=currentMarketer?.slug||'';
     Object.entries(all).forEach(([k,v])=>{
-      if(v.marketer_id===id)mine[k]=v;
+      if(v.marketer_id===id||v.marketer===mktName||v.marketer_slug===mktSlug)mine[k]=v;
     });
     allOrders=mine;
     if(currentTab==='orders'||currentTab==='overview')renderTab();
