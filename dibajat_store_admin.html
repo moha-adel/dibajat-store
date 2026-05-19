@@ -551,9 +551,9 @@ function renderMaterials(){
 function openMaterial(id){
   const isNew=id===-1;
   const m=isNew?{ar:'',en:''}:{...materials[id]};
-  document.getElementById('modal-body').innerHTML=`
-    <div class="modal-header"><div class="modal-title">${isNew?'خامة جديدة':'تعديل الخامة'}</div></div>
-    <div class="modal-content">
+  document.getElementById('modalTitle').textContent=isNew?'+ خامة جديدة':'تعديل: '+m.ar;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-body">
       <div class="form-row"><label class="form-label">اسم الخامة بالعربي</label><input class="form-input" id="m-ar" value="${xe(m.ar)}" placeholder="مثال: مخمل"></div>
       <div class="form-row"><label class="form-label">Material name in English</label><input class="form-input" id="m-en" value="${xe(m.en)}" placeholder="e.g. Velvet" style="direction:ltr"></div>
     </div>
