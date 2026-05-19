@@ -1280,7 +1280,13 @@ function delMarketer(id){
 function renderOrders(){
   const oa=ordersArr().reverse();
   return`<div class="section">
-    <div class="section-hd"><div class="section-title">📦 الطلبات <span class="section-count">${oa.length}</span></div></div>
+    <div class="section-hd">
+      <div class="section-title">📦 الطلبات <span class="section-count">${oa.length}</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="act-btn act-del" onclick="delCompletedOrders()">🗑 حذف المكتملة والملغية</button>
+        <button class="act-btn act-del" onclick="delAllOrders()" style="background:rgba(248,81,73,.18)">⚠️ حذف الكل</button>
+      </div>
+    </div>
     ${oa.length===0?'<div class="empty">لا توجد طلبات بعد</div>':
       oa.map((o,idx)=>{
         const num=oa.length-idx;
@@ -1319,10 +1325,28 @@ function renderOrders(){
             ${o.status==='confirmed'?`<button class="act-btn act-edit" style="background:rgba(37,99,235,.1);color:#3b82f6;border:1px solid rgba(37,99,235,.2)" onclick="updateOrderStatus('${o.id}','delivered')">📦 مسلّم</button>`:''}
             ${o.status!=='cancelled'&&o.status!=='delivered'?`<button class="act-btn act-del" onclick="updateOrderStatus('${o.id}','cancelled')">✕ إلغاء</button>`:''}
             ${o.status==='delivered'||o.status==='cancelled'?`<span style="font-size:11px;color:var(--mt)">${o.status==='delivered'?'✓ مكتمل':'✕ ملغي'}</span>`:''}
+            <button class="act-btn act-del" onclick="delOrder('${o.id}')" style="margin-right:auto">🗑 حذف</button>
           </div>
         </div>`;
       }).join('')}
   </div>`;
+}
+function delOrder(id){
+  if(!confirm('حذف هذا الطلب نهائياً؟'))return;
+  db.ref('orders/'+id).remove().then(()=>toast('تم حذف الطلب')).catch(e=>toast('خطأ: '+e.message,false));
+}
+function delCompletedOrders(){
+  if(!confirm('حذف جميع الطلبات المكتملة والملغية؟'))return;
+  const all=ordersArr();
+  const toDelete=all.filter(o=>o.status==='delivered'||o.status==='cancelled');
+  if(!toDelete.length){toast('لا توجد طلبات لحذفها',false);return;}
+  const updates={};
+  toDelete.forEach(o=>updates['orders/'+o.id]=null);
+  db.ref().update(updates).then(()=>toast(`تم حذف ${toDelete.length} طلب ✓`)).catch(e=>toast('خطأ: '+e.message,false));
+}
+function delAllOrders(){
+  if(!confirm('⚠️ حذف جميع الطلبات نهائياً؟ لا يمكن التراجع!'))return;
+  db.ref('orders').remove().then(()=>toast('تم حذف جميع الطلبات')).catch(e=>toast('خطأ: '+e.message,false));
 }
 function updateOrderStatus(id,status){
   db.ref('orders/'+id).update({status})
