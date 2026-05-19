@@ -61,6 +61,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .ffilter-btn{padding:11px 16px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .ffilter-btn.on{color:var(--filter-on);border-bottom-color:var(--theme-primary);font-weight:800}
 
+
+/* SEARCH */
+.fsearch-wrap{padding:10px 16px;background:var(--white);border-bottom:1px solid var(--border)}
+.fsearch-input{width:100%;box-sizing:border-box;padding:10px 14px 10px 36px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;font-size:14px;background:var(--cream);color:var(--dark);outline:none;transition:border .2s}
+.fsearch-input:focus{border-color:var(--theme-primary)}
+.fsearch-wrap-inner{position:relative}
+.fsearch-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;opacity:.4}
+
 /* PRODUCTS */
 .fprod-section{padding:14px}
 .fsection-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -296,6 +304,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   <div class="ffilter-row" id="size-filter" style="display:none"></div>
 </div>
 
+
+<!-- SEARCH -->
+<div class="fsearch-wrap">
+  <div class="fsearch-wrap-inner">
+    <span class="fsearch-icon">🔍</span>
+    <input class="fsearch-input" id="prodSearch" type="text"
+      placeholder="ابحث عن منتج..." oninput="renderProducts()">
+  </div>
+</div>
+
 <!-- PRODUCTS -->
 <div class="fprod-section">
   <div class="fsection-hd">
@@ -380,7 +398,7 @@ const db=firebase.database();
 // ===== STATE =====
 let isEn=false, activeBrand='all', activeSize='all';
 let cart=[], selColor={}, selSize={}, compareList=[];
-let STORE={}, BRANDS={}, PRODUCTS={};
+let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
 let currentPid=null, currentSlideIdx=0;
 
 const ALL_SIZES=[
@@ -575,10 +593,15 @@ function setSize(s){activeSize=s;renderFilters();renderProducts();}
 
 // ===== PRODUCTS GRID =====
 function renderProducts(){
+  const sq=(document.getElementById('prodSearch')?.value||'').trim().toLowerCase();
   const vis=prodsArr().filter(p=>{
     const bid=p.brand_id||p.brand;
     if(activeBrand!=='all'&&bid!==activeBrand)return false;
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
+    if(sq){
+      const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
+      if(!hay.toLowerCase().includes(sq))return false;
+    }
     return true;
   }).sort((a,b)=>{
     // الأحدث في الإضافة يظهر أولاً
