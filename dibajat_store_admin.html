@@ -37,6 +37,15 @@ body{font-family:Tajawal,sans-serif;background:var(--bg);color:var(--tx);directi
 .admin-role{font-size:10px;color:var(--mt)}
 
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ADMIN SEARCH */
+.admin-search-wrap{padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--bd);display:none}
+.admin-search-wrap.visible{display:block}
+.admin-search-inner{position:relative}
+.admin-search-input{width:100%;box-sizing:border-box;padding:9px 14px 9px 36px;border:1.5px solid var(--bd);border-radius:9px;font-family:Tajawal,sans-serif;font-size:13px;background:var(--bg3);color:var(--tx);outline:none;transition:border .2s}
+.admin-search-input:focus{border-color:var(--gold)}
+.admin-search-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.4}
+
 .topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
 .topbar-title{font-size:15px;font-weight:800;color:var(--tx)}
 .topbar-sub{font-size:11px;color:var(--mt);margin-top:1px}
@@ -209,6 +218,12 @@ body{font-family:Tajawal,sans-serif;background:var(--bg);color:var(--tx);directi
       <div class="topbar-sub" id="topbar-sub">مرحباً، كل شيء تمام 👋</div>
     </div>
     <div class="topbar-acts" id="topbar-acts"></div>
+  </div>
+  <div class="admin-search-wrap" id="adminSearchWrap">
+    <div class="admin-search-inner">
+      <span class="admin-search-icon">🔍</span>
+      <input class="admin-search-input" id="adminSearch" type="text" placeholder="ابحث..." oninput="render()">
+    </div>
   </div>
   <div class="content" id="content"></div>
 </div>
@@ -384,6 +399,13 @@ function goTab(id,el){
   document.getElementById('topbar-title').textContent=t.title;
   document.getElementById('topbar-sub').textContent=t.sub;
   document.getElementById('topbar-acts').innerHTML=t.btn;
+  const searchableTabs=['brands','products','marketers','orders'];
+  const sw=document.getElementById('adminSearchWrap');
+  if(sw){
+    if(searchableTabs.includes(id)){sw.classList.add('visible');}
+    else{sw.classList.remove('visible');}
+    document.getElementById('adminSearch').value='';
+  }
   render();
 }
 function render(){
@@ -498,7 +520,8 @@ function commLabel(b){
   return`${b.commission||10}%`;
 }
 function renderBrands(){
-  const ba=brandsArr();
+  const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
+  const ba=brandsArr().filter(b=>!sq||(b.ar||'').toLowerCase().includes(sq)||(b.en||'').toLowerCase().includes(sq));
   if(!ba.length)return`<div class="section"><div class="section-hd"><div class="section-title">🏢 الشركات <span class="section-count">0</span></div></div><div class="empty">لا توجد شركات — أضف أول شركة!</div></div>`;
   return`<div class="section">
     <div class="section-hd"><div class="section-title">🏢 الشركات <span class="section-count">${ba.length}</span></div></div>
@@ -701,8 +724,9 @@ function setProdFilter(bid){
 }
 function getBid(p){return p.brand_id||p.brand||'';}
 function renderProducts(){
+  const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
   // Firebase push keys مرتبة — الأكبر = الأحدث
-  const pa=productsArr().sort((a,b)=>b.id>a.id?1:b.id<a.id?-1:0);
+  const pa=productsArr().sort((a,b)=>b.id>a.id?1:b.id<a.id?-1:0).filter(p=>!sq||(p.nameAr||'').toLowerCase().includes(sq)||(p.nameEn||'').toLowerCase().includes(sq));
   if(!pa.length)return`<div class="section"><div class="section-hd"><div class="section-title">🛋️ المنتجات <span class="section-count">0</span></div></div><div class="empty">لا توجد منتجات — أضف أول منتج!</div></div>`;
   const brandIds=[...new Set(pa.map(p=>getBid(p)).filter(Boolean))];
   const filtered=_prodBrandFilter==='all'?pa:pa.filter(p=>getBid(p)===_prodBrandFilter);
@@ -1013,7 +1037,8 @@ const THEMES=[
   {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
-  const ma=marketersArr();
+  const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
+  const ma=marketersArr().filter(m=>!sq||(m.name||'').toLowerCase().includes(sq)||(m.slug||'').toLowerCase().includes(sq)||(m.waNumber||'').includes(sq));
   if(!ma.length)return`<div class="section"><div class="section-hd"><div class="section-title">👤 المسوقون <span class="section-count">0</span></div></div><div class="empty">لا يوجد مسوقون — أضف أول مسوق!</div></div>`;
   return`<div class="section">
     <div class="section-hd"><div class="section-title">👤 المسوقون <span class="section-count">${ma.length}</span></div></div>
@@ -1278,7 +1303,8 @@ function delMarketer(id){
 
 // ===== ORDERS =====
 function renderOrders(){
-  const oa=ordersArr().reverse();
+  const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
+  const oa=ordersArr().reverse().filter(o=>!sq||(o.marketer||'').toLowerCase().includes(sq)||(o.customer||'').toLowerCase().includes(sq)||(o.phone||'').includes(sq)||(o.status||'').includes(sq));
   return`<div class="section">
     <div class="section-hd">
       <div class="section-title">📦 الطلبات <span class="section-count">${oa.length}</span></div>
