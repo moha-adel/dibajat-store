@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>متجر مفروشاتي</title>
+<link rel="manifest" href="/manifest.json" id="pwa-manifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ديباجات" id="pwa-apple-title">
+<meta name="theme-color" content="#b8934a" id="pwa-theme-color">
+<link rel="apple-touch-icon" href="/icon-192.png" id="pwa-apple-icon">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -516,6 +523,8 @@ function loadMarketer(key, data){
   applyTheme(STORE);
   renderSocial();
   renderHeader();
+  // PWA — تحديث manifest ديناميكي حسب بيانات المسوق
+  updatePWA(STORE);
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value')])
     .then(([bSnap,pSnap])=>{
       BRANDS=bSnap.val()||{};
@@ -1065,6 +1074,53 @@ function shareProduct(pid){
 }
 
 initStore();
+
+// ===== PWA =====
+function updatePWA(store){
+  const name=store.name||'ديباجات';
+  const themeColor=store.themeColor||'#b8934a';
+  const logo=store.logo||'';
+  // title
+  document.title=name;
+  // apple title
+  const at=document.getElementById('pwa-apple-title');
+  if(at) at.content=name;
+  // theme color
+  const tc=document.getElementById('pwa-theme-color');
+  if(tc) tc.content=themeColor;
+  // apple icon - لو عنده لوجو
+  if(logo){
+    const ai=document.getElementById('pwa-apple-icon');
+    if(ai) ai.href=logo;
+  }
+  // manifest ديناميكي عن طريق blob
+  const manifest={
+    name,
+    short_name:name,
+    description:'متجر '+name+' للمفروشات',
+    start_url:'/',
+    display:'standalone',
+    background_color:'#faf8f5',
+    theme_color:themeColor,
+    dir:'rtl',
+    lang:'ar',
+    orientation:'portrait',
+    icons:[
+      {src:logo||'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:logo||'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const link=document.getElementById('pwa-manifest');
+  if(link) link.href=url;
+}
+// تسجيل Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
