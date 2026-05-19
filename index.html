@@ -692,7 +692,7 @@ function renderModal(){
       <div class="fmodal-nm-en" style="direction:ltr">${xe(isEn?p.nameAr:p.nameEn)}</div>
 
       ${(p.sizes||[]).length?`
-      <div class="fmodal-section-lbl" style="margin-top:12px">${isEn?'Size:':'المقاس:'}</div>
+      <div class="fmodal-section-lbl" style="margin-top:12px">${isEn?'Size:':'المقاس:'} <span style="font-size:11px;font-weight:400;color:var(--gray2)">${isEn?'— select first':'— اختر أولاً'}</span></div>
       <div class="fmodal-sizes" id="modal-sizes">
         ${p.sizes.map(s=>{
           const curColor=p.colors[ci]||{};
@@ -835,6 +835,12 @@ function closeCmp(){document.getElementById('cmpBg').classList.remove('open');}
 // ===== CART =====
 function addCart(pid){
   const p=PRODUCTS[pid];
+  if((p.sizes||[]).length && !selSize[pid]){
+    toast(isEn?'Please select a size first':'اختر المقاس أولاً');
+    document.querySelectorAll('#modal-sizes .fmodal-size').forEach(el=>el.style.boxShadow='0 0 0 2px var(--theme-primary)');
+    setTimeout(()=>document.querySelectorAll('#modal-sizes .fmodal-size').forEach(el=>el.style.boxShadow=''),1800);
+    return;
+  }
   const ci=selColor[pid]||0;
   const c=p.colors[ci]||{ar:'',en:'',hex:'#ccc'};
   if(c.soldOut){toast(isEn?'This color is out of stock':'هذا اللون نفذت كميته');return;}
@@ -902,6 +908,12 @@ function clearCart(){cart=[];updateCartUI();renderCart();}
 // ===== WHATSAPP =====
 function waProduct(pid){
   const p=PRODUCTS[pid];
+  if((p.sizes||[]).length && !selSize[pid]){
+    toast(isEn?'Please select a size first':'اختر المقاس أولاً');
+    document.querySelectorAll('#modal-sizes .fmodal-size').forEach(el=>el.style.boxShadow='0 0 0 2px var(--theme-primary)');
+    setTimeout(()=>document.querySelectorAll('#modal-sizes .fmodal-size').forEach(el=>el.style.boxShadow=''),1800);
+    return;
+  }
   const ci=selColor[pid]||0;const col=p.colors[ci]||{};
   if(col.soldOut){toast(isEn?'This color is out of stock':'هذا اللون نفذت كميته');return;}
   const size=selSize[pid];
