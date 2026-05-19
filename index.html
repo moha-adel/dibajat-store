@@ -691,8 +691,20 @@ function renderModal(){
       </div>
       <div class="fmodal-nm-en" style="direction:ltr">${xe(isEn?p.nameAr:p.nameEn)}</div>
 
+      ${(p.sizes||[]).length?`
+      <div class="fmodal-section-lbl" style="margin-top:12px">${isEn?'Size:':'المقاس:'}</div>
+      <div class="fmodal-sizes" id="modal-sizes">
+        ${p.sizes.map(s=>{
+          const curColor=p.colors[ci]||{};
+          const isSO=curColor.sizeSoldOut&&curColor.sizeSoldOut[s];
+          return `<div class="fmodal-size${selSize[pid]===s?' sel':''}${isSO?' size-soldout':''}" onclick="${isSO?`toast(isEn?'Out of stock':'نفذت الكمية لهذا المقاس')`:`pickSize('${pid}','${s}')`}" style="${isSO?'opacity:.5;cursor:not-allowed;text-decoration:line-through;':''}">
+            ${xe(isEn?gs(s).en:gs(s).ar)}${isSO?` <span style="font-size:9px;color:var(--red)">✕</span>`:''}
+          </div>`;
+        }).join('')}
+      </div>`:''}
+
       ${p.colors.length?`
-      <div class="fmodal-section-lbl" style="margin-top:12px">${isEn?'Color:':'اللون:'}</div>
+      <div class="fmodal-section-lbl" style="margin-top:14px">${isEn?'Color:':'اللون:'}</div>
       <div class="fmodal-colors">
         ${p.colors.map((col,i)=>{
           const thumb=(col.imgs||[])[0]||'';
@@ -709,17 +721,6 @@ function renderModal(){
         }).join('')}
       </div>`:''}
 
-      ${(p.sizes||[]).length?`
-      <div class="fmodal-section-lbl" style="margin-top:14px">${isEn?'Size:':'المقاس:'}</div>
-      <div class="fmodal-sizes" id="modal-sizes">
-        ${p.sizes.map(s=>{
-          const curColor=p.colors[ci]||{};
-          const isSO=curColor.sizeSoldOut&&curColor.sizeSoldOut[s];
-          return `<div class="fmodal-size${selSize[pid]===s?' sel':''}${isSO?' size-soldout':''}" onclick="${isSO?`toast(isEn?'Out of stock':'نفذت الكمية لهذا المقاس')`:`pickSize('${pid}','${s}')`}" style="${isSO?'opacity:.5;cursor:not-allowed;text-decoration:line-through;':''}">
-            ${xe(isEn?gs(s).en:gs(s).ar)}${isSO?` <span style="font-size:9px;color:var(--red)">✕</span>`:''}
-          </div>`;
-        }).join('')}
-      </div>`:''}
 
       <div class="fmodal-btns" style="margin-top:12px">
         <button class="wa-btn" onclick="waProduct('${pid}')">
