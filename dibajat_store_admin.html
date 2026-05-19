@@ -192,6 +192,7 @@ body{font-family:Tajawal,sans-serif;background:var(--bg);color:var(--tx);directi
     <div class="nav-label">القائمة الرئيسية</div>
     <button class="nav-item on" id="nav-overview" onclick="goTab('overview',this)"><span class="nav-icon">📊</span> نظرة عامة</button>
     <button class="nav-item" id="nav-brands" onclick="goTab('brands',this)"><span class="nav-icon">🏢</span> الشركات <span class="nav-badge" id="nb-brands">0</span></button>
+    <button class="nav-item" id="nav-materials" onclick="goTab('materials',this)"><span class="nav-icon">🧵</span> الخامات</button>
     <button class="nav-item" id="nav-products" onclick="goTab('products',this)"><span class="nav-icon">🛋️</span> المنتجات <span class="nav-badge" id="nb-products">0</span></button>
     <button class="nav-item" id="nav-marketers" onclick="goTab('marketers',this)"><span class="nav-icon">👤</span> المسوقون <span class="nav-badge" id="nb-marketers">0</span></button>
     <div class="nav-label" style="margin-top:6px">المتابعة</div>
@@ -257,7 +258,7 @@ const db = firebase.database();
 const auth = firebase.auth();
 
 // ===== STATE =====
-let brands={}, products={}, marketers={}, orders={};
+let brands={}, products={}, marketers={}, orders={}, materials={};
 let editColors=[], editProd={}, currentTab='overview', _selectedTheme='luxury';
 
 // ===== HELPERS =====
@@ -274,6 +275,7 @@ function resolveItemBrand(item){
   return getBrandByProduct(item.product||item.nameAr||'');
 }
 function brandsArr(){return Object.entries(brands).map(([k,v])=>({...v,id:k}))}
+function materialsArr(){return Object.entries(materials).map(([k,v])=>({...v,id:k}))}
 function productsArr(){return Object.entries(products).map(([k,v])=>({...v,id:k}))}
 function marketersArr(){return Object.entries(marketers).map(([k,v])=>({...v,id:k}))}
 function ordersArr(){return Object.entries(orders||{}).map(([k,v])=>({...v,id:k}))}
@@ -292,6 +294,10 @@ function updateBadges(){
 
 // ===== REALTIME LISTENERS =====
 function initListeners(){
+  db.ref('materials').on('value',snap=>{
+    materials=snap.val()||{};
+    if(currentTab==='materials')render();
+  });
   db.ref('brands').on('value',snap=>{
     brands=snap.val()||{};updateBadges();
     if(currentTab==='brands'||currentTab==='overview')render();
@@ -384,6 +390,7 @@ window.doAdminLogout = function() {
 const TABS={
   overview:{title:'نظرة عامة',sub:'مرحباً، كل شيء تمام 👋',btn:''},
   brands:{title:'الشركات',sub:'إدارة شركات المفروشات',btn:'<button class="btn-primary" onclick="openBrand(-1)">＋ شركة جديدة</button>'},
+  materials:{title:'الخامات',sub:'إدارة خامات المنتجات',btn:'<button class="btn-primary" onclick="openMaterial(-1)">＋ خامة جديدة</button>'},
   products:{title:'المنتجات',sub:'إدارة كتالوج المنتجات',btn:'<button class="btn-primary" onclick="openProduct(-1)">＋ منتج جديد</button>'},
   marketers:{title:'المسوقون',sub:'إدارة شبكة المسوقين',btn:'<button class="btn-primary" onclick="openMarketer(-1)">＋ مسوق جديد</button>'},
   orders:{title:'الطلبات',sub:'متابعة طلبات العملاء',btn:''},
@@ -399,7 +406,7 @@ function goTab(id,el){
   document.getElementById('topbar-title').textContent=t.title;
   document.getElementById('topbar-sub').textContent=t.sub;
   document.getElementById('topbar-acts').innerHTML=t.btn;
-  const searchableTabs=['brands','products','marketers','orders'];
+  const searchableTabs=['brands','products','marketers','orders','materials'];
   const sw=document.getElementById('adminSearchWrap');
   if(sw){
     if(searchableTabs.includes(id)){sw.classList.add('visible');}
@@ -412,6 +419,7 @@ function render(){
   const c=document.getElementById('content');
   if(currentTab==='overview')c.innerHTML=renderOverview();
   else if(currentTab==='brands')c.innerHTML=renderBrands();
+  else if(currentTab==='materials')c.innerHTML=renderMaterials();
   else if(currentTab==='products')c.innerHTML=renderProducts();
   else if(currentTab==='marketers')c.innerHTML=renderMarketers();
   else if(currentTab==='orders')c.innerHTML=renderOrders();
@@ -519,6 +527,56 @@ function commLabel(b){
   if(b.commType==='both')return`${b.commission}% + ${b.commFixed} KWD`;
   return`${b.commission||10}%`;
 }
+
+// ===== MATERIALS =====
+function renderMaterials(){
+  const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
+  const ma=materialsArr().filter(m=>!sq||(m.ar||'').includes(sq)||(m.en||'').toLowerCase().includes(sq));
+  return`<div class="section">
+    <div class="section-hd"><div class="section-title">🧵 الخامات <span class="section-count">${ma.length}</span></div></div>
+    ${!ma.length?'<div class="empty">لا توجد خامات — أضف أول خامة!</div>':''}
+    <table class="tbl" ${!ma.length?'style="display:none"':''}>
+      <tr><th>الخامة (عربي)</th><th>Material (English)</th><th>إجراءات</th></tr>
+      ${ma.map(m=>`<tr>
+        <td><div class="tbl-name">${xe(m.ar)}</div></td>
+        <td style="direction:ltr"><div class="tbl-sub">${xe(m.en)}</div></td>
+        <td><div class="actions">
+          <button class="act-btn act-edit" onclick="openMaterial('${m.id}')">تعديل</button>
+          <button class="act-btn act-del" onclick="delMaterial('${m.id}')">حذف</button>
+        </div></td>
+      </tr>`).join('')}
+    </table>
+  </div>`;
+}
+function openMaterial(id){
+  const isNew=id===-1;
+  const m=isNew?{ar:'',en:''}:{...materials[id]};
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-header"><div class="modal-title">${isNew?'خامة جديدة':'تعديل الخامة'}</div></div>
+    <div class="modal-content">
+      <div class="form-row"><label class="form-label">اسم الخامة بالعربي</label><input class="form-input" id="m-ar" value="${xe(m.ar)}" placeholder="مثال: مخمل"></div>
+      <div class="form-row"><label class="form-label">Material name in English</label><input class="form-input" id="m-en" value="${xe(m.en)}" placeholder="e.g. Velvet" style="direction:ltr"></div>
+    </div>
+    <div class="modal-footer">
+      ${!isNew?`<button class="btn-danger" onclick="delMaterial('${id}');closeModal()">حذف</button>`:''}
+      <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
+      <button class="btn-primary" onclick="saveMaterial(${isNew?'null':`'${id}'`})">${isNew?'إضافة':'حفظ'}</button>
+    </div>`;
+  openModal();
+}
+function saveMaterial(id){
+  const ar=document.getElementById('m-ar').value.trim();
+  const en=document.getElementById('m-en').value.trim();
+  if(!ar||!en){toast('أدخل اسم الخامة',false);return;}
+  const obj={ar,en};
+  const p=id?db.ref('materials/'+id).update(obj):db.ref('materials').push(obj);
+  p.then(()=>{closeModal();toast(id?'تم التعديل ✓':'تمت الإضافة ✓');}).catch(e=>toast('خطأ: '+e.message,false));
+}
+function delMaterial(id){
+  if(!confirm('حذف هذه الخامة؟'))return;
+  db.ref('materials/'+id).remove().then(()=>toast('تم الحذف')).catch(e=>toast('خطأ: '+e.message,false));
+}
+
 function renderBrands(){
   const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
   const ba=brandsArr().filter(b=>!sq||(b.ar||'').toLowerCase().includes(sq)||(b.en||'').toLowerCase().includes(sq));
@@ -762,7 +820,7 @@ function renderProducts(){
 }
 function openProduct(id){
   const isNew=id===-1;
-  const p=isNew?{brand_id:'',nameAr:'',nameEn:'',descAr:'',descEn:'',price:'',oldPrice:'',badge:'',emoji:'🛋️',status:'active',colors:{},sizes:[]}:{...products[id]};
+  const p=isNew?{brand_id:'',nameAr:'',nameEn:'',descAr:'',descEn:'',price:'',oldPrice:'',badge:'',emoji:'🛋️',status:'active',colors:{},sizes:[],materials:[]}:{...products[id]};
   const ba=brandsArr();
   const colorsObj=p.colors||{};
   editColors=Object.keys(colorsObj).length
@@ -829,6 +887,15 @@ function openProduct(id){
             </div>
           </label>`).join('')}
       </div>
+      <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">🧵 الخامات</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--bd)">
+        ${materialsArr().length===0?'<div style="color:var(--mt);font-size:12px">لا توجد خامات — أضفها من تبويب الخامات أولاً</div>':
+        materialsArr().map(m=>`
+          <label id="mat-lbl-${m.id}" onclick="toggleMatLbl('${m.id}')" style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:7px 12px;border-radius:7px;border:1.5px solid ${(p.materials||[]).includes(m.id)?'var(--gold)':'var(--bd)'};background:${(p.materials||[]).includes(m.id)?'var(--gold-dim)':'var(--bg2)'}">
+            <input type="checkbox" id="mat-${m.id}" ${(p.materials||[]).includes(m.id)?'checked':''} style="accent-color:var(--gold);width:15px;height:15px" onclick="event.stopPropagation();toggleMatLbl('${m.id}')">
+            <div><div style="font-size:13px;font-weight:700;color:var(--tx)">${xe(m.ar)}</div><div style="font-size:10px;color:var(--mt)">${xe(m.en)}</div></div>
+          </label>`).join('')}
+      </div>
       <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">🎨 الألوان والصور</div>
       <div class="colors-editor" id="colors-wrap">
         <div id="colors-list"></div>
@@ -861,6 +928,12 @@ function openProduct(id){
   openModal();renderColors();
 }
 
+function toggleMatLbl(id){
+  const cb=document.getElementById('mat-'+id),lbl=document.getElementById('mat-lbl-'+id);
+  cb.checked=!cb.checked;
+  lbl.style.borderColor=cb.checked?'var(--gold)':'var(--bd)';
+  lbl.style.background=cb.checked?'var(--gold-dim)':'var(--bg2)';
+}
 function toggleSizeLbl(id){
   const cb=document.getElementById('size-'+id),lbl=document.getElementById('size-lbl-'+id);
   cb.checked=!cb.checked;
@@ -949,6 +1022,7 @@ function saveProduct(id){
   const existingSlug=Object.entries(products).find(([k,v])=>v.slug===slug && k!==(id||''));
   if(existingSlug){toast('هذا الـ Slug مستخدم مسبقاً — اختر اسماً آخر',false);return;}
   const sizes=ALL_SIZES.map(s=>s.id).filter(sid=>document.getElementById('size-'+sid)?.checked);
+  const mats=materialsArr().map(m=>m.id).filter(mid=>document.getElementById('mat-'+mid)?.checked);
   const sizePrices={};
   ALL_SIZES.forEach(s=>{
     const v=Number(document.getElementById('size-price-'+s.id)?.value);
@@ -975,7 +1049,7 @@ function saveProduct(id){
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
     status:document.getElementById('p-status').value,
-    sizes,sizePrices,colors:colorsObj
+    sizes,sizePrices,materials:mats,colors:colorsObj
   };
   // createdAt للمنتجات الجديدة فقط
   if(!id) obj.createdAt=new Date().toISOString();
