@@ -525,9 +525,10 @@ function loadMarketer(key, data){
   renderHeader();
   // PWA — تحديث manifest ديناميكي حسب بيانات المسوق
   updatePWA(STORE);
-  Promise.all([db.ref('brands').once('value'), db.ref('products').once('value')])
-    .then(([bSnap,pSnap])=>{
+  Promise.all([db.ref('brands').once('value'), db.ref('products').once('value'), db.ref('materials').once('value')])
+    .then(([bSnap,pSnap,mSnap])=>{
       BRANDS=bSnap.val()||{};
+      MATERIALS=mSnap.val()||{};
       const all=pSnap.val()||{};
       const excluded=STORE.excluded||[];
       // لو المسوق عنده قائمة شركات محددة، نفلتر بناءً عليها
