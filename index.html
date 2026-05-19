@@ -302,6 +302,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   <div class="ffilter-row" id="brand-filter"></div>
   <div class="ffilter-label" id="size-filter-label" style="display:none">📐 <span class="lar">المقاس</span><span class="len" style="display:none">Size</span></div>
   <div class="ffilter-row" id="size-filter" style="display:none"></div>
+  <div class="ffilter-label" id="mat-filter-label" style="display:none">🧵 <span class="lar">الخامة</span><span class="len" style="display:none">Material</span></div>
+  <div class="ffilter-row" id="mat-filter" style="display:none"></div>
 </div>
 
 
@@ -396,7 +398,7 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
 // ===== STATE =====
-let isEn=false, activeBrand='all', activeSize='all';
+let isEn=false, activeBrand='all', activeSize='all', activeMaterial='all', MATERIALS={};
 let cart=[], selColor={}, selSize={}, compareList=[];
 let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
 let currentPid=null, currentSlideIdx=0;
@@ -587,8 +589,22 @@ function renderFilters(){
         ${xe(isEn?gs(sid).en:gs(sid).ar)}
       </button>`).join('');
   } else {sfl.style.display='none';sfw.style.display='none';}
+  // Materials filter
+  const matIds=[...new Set(pa.flatMap(p=>p.materials||[]))];
+  const mfl=document.getElementById('mat-filter-label');
+  const mfw=document.getElementById('mat-filter');
+  if(mfl&&mfw){
+    if(matIds.length){
+      mfl.style.display='flex';mfw.style.display='flex';
+      mfw.innerHTML=`<button class="ffilter-btn${activeMaterial==='all'?' on':''}" onclick="setMaterial('all')">${isEn?'All':'الكل'}</button>`
+        +matIds.map(mid=>{const m=MATERIALS[mid]||{};return`<button class="ffilter-btn${activeMaterial===mid?' on':''}" onclick="setMaterial('${mid}')">
+          ${xe(isEn?(m.en||m.ar):(m.ar||m.en))}
+        </button>`;}).join('');
+    } else {mfl.style.display='none';mfw.style.display='none';}
+  }
 }
 function setBrand(b){activeBrand=b;renderFilters();renderProducts();}
+function setMaterial(m){activeMaterial=m;renderFilters();renderProducts();}
 function setSize(s){activeSize=s;renderFilters();renderProducts();}
 
 // ===== PRODUCTS GRID =====
@@ -598,6 +614,7 @@ function renderProducts(){
     const bid=p.brand_id||p.brand;
     if(activeBrand!=='all'&&bid!==activeBrand)return false;
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
+    if(activeMaterial!=='all'&&!(p.materials||[]).includes(activeMaterial))return false;
     if(sq){
       const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
       if(!hay.toLowerCase().includes(sq))return false;
