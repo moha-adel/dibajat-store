@@ -236,6 +236,41 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 /* TOAST */
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--dark);color:var(--white);padding:9px 22px;border-radius:50px;font-size:12px;font-weight:700;z-index:9999;display:none;white-space:nowrap;font-family:'Tajawal',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 
+/* LIKE BUTTON */
+.like-btn{position:absolute;top:9px;right:9px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:5;transition:transform .2s,background .2s;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.like-btn:active{transform:scale(1.25)}
+.like-btn.liked{background:#fff0f0;border-color:#ffb3b3}
+.like-count{font-size:9px;font-weight:800;color:var(--gray2);position:absolute;bottom:-4px;right:-4px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1px 4px;line-height:1.4}
+
+/* WISHLIST BTN in modal */
+.wishlist-btn{width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:800;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+.wishlist-btn.wishlisted{background:#fff0f0;border-color:#ffb3b3;color:#c0392b}
+.wishlist-btn:hover{border-color:var(--theme-primary)}
+
+/* NAV WISHLIST ICON */
+.nav-wish-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--cream);cursor:pointer;font-size:16px;position:relative;transition:all .2s;flex-shrink:0}
+.nav-wish-btn:hover{border-color:var(--theme-primary)}
+.nav-wish-count{position:absolute;top:-4px;left:-4px;background:var(--theme-primary);color:var(--dark);border-radius:50px;padding:1px 5px;font-size:9px;font-weight:900;min-width:14px;text-align:center;display:none}
+.nav-wish-count.show{display:block}
+
+/* SUBSCRIBE BTN in nav */
+.nav-sub-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;border:1.5px solid var(--theme-primary);color:var(--theme-primary);background:var(--gold-light);cursor:pointer;font-size:11px;font-weight:800;font-family:'Tajawal',sans-serif;transition:all .2s;white-space:nowrap}
+.nav-sub-btn:hover{background:var(--theme-primary);color:var(--white)}
+.nav-sub-btn.subbed{background:var(--theme-primary);color:var(--white)}
+
+/* WISHLIST PANEL */
+.wish-panel-bg{display:none;position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.4)}
+.wish-panel-bg.show{display:block}
+.wish-panel{position:fixed;bottom:0;right:0;left:0;z-index:1600;background:var(--card-bg);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:16px 16px 28px;max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.wish-panel.open{transform:translateY(0)}
+.wish-item{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:10px;padding:10px;background:var(--cream);border-radius:10px;margin-bottom:7px;border:1px solid var(--border);cursor:pointer}
+.wish-item:hover{border-color:var(--theme-primary)}
+.wish-item-img{width:54px;height:54px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:var(--gold-light)}
+.wish-item-nm{font-size:13px;font-weight:700;color:var(--dark)}
+.wish-item-price{font-size:12px;color:var(--theme-primary);font-weight:800;margin-top:3px}
+.wish-remove{background:none;border:none;color:var(--gray2);cursor:pointer;font-size:17px;padding:4px;transition:color .2s}
+.wish-remove:hover{color:#c0392b}
+
 .fcolor-opt.sold-out{opacity:.5;cursor:not-allowed}
 .fcolor-opt.sold-out .fcolor-thumb-ph{position:relative}
 .fcolor-soldout-badge{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;letter-spacing:.3px}
@@ -278,7 +313,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
     <div class="fnav-store-sub" id="nav-store-sub"></div>
   </div>
   <div class="fnav-acts">
+    <button class="nav-wish-btn" onclick="openWish()" title="مفضلتي">
+      🤍
+      <span class="nav-wish-count" id="wishCount">0</span>
+    </button>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <button class="nav-sub-btn" id="navSubBtn" onclick="openSubModal()" style="display:none">
+      ⭐ <span class="lar">اشترك</span><span class="len" style="display:none">Subscribe</span>
+    </button>
     <button class="cart-btn" onclick="openCart()">
       🛒 <span class="lar">سلتي</span><span class="len" style="display:none">Cart</span>
       <span class="cart-count" id="cartCount">0</span>
@@ -390,6 +432,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   </div>
 </div>
 
+<!-- WISHLIST PANEL -->
+<div class="wish-panel-bg" id="wishBg" onclick="closeWish()"></div>
+<div class="wish-panel" id="wishPanel">
+  <div class="fcart-drag"></div>
+  <div class="fcart-hd">
+    <div class="fcart-title">🤍 <span class="lar">مفضلتي</span><span class="len" style="display:none">Wishlist</span></div>
+    <button class="fcart-close-x" onclick="closeWish()">✕</button>
+  </div>
+  <div id="wishList"></div>
+</div>
+
 <script>
 // ===== FIREBASE =====
 const firebaseConfig={
@@ -409,6 +462,8 @@ let isEn=false, activeBrand='all', activeSize='all', activeMaterial='all', MATER
 let cart=[], selColor={}, selSize={}, compareList=[];
 let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
 let currentPid=null, currentSlideIdx=0;
+// === جديد ===
+let wishlist=[], productLikes={}, currentSubscriber=null;
 
 const ALL_SIZES=[
   {id:'king',  ar:'كينج — نفرين',    en:'King Size'},
@@ -470,6 +525,129 @@ function applyTheme(m){
 }
 
 // ===== INIT =====
+// ===== WISHLIST (localStorage) =====
+function loadWishlist(){
+  const slug=getSlug()||'default';
+  const raw=localStorage.getItem('wish_'+slug);
+  wishlist=raw?JSON.parse(raw):[];
+  updateWishUI();
+}
+function saveWishlist(){
+  const slug=getSlug()||'default';
+  localStorage.setItem('wish_'+slug, JSON.stringify(wishlist));
+  updateWishUI();
+}
+function toggleWish(pid){
+  const idx=wishlist.indexOf(pid);
+  if(idx>=0){wishlist.splice(idx,1);toast(isEn?'Removed from wishlist':'✓ حُذف من المفضلة');}
+  else{wishlist.push(pid);toast(isEn?'Added to wishlist ❤️':'❤️ أضيف للمفضلة');}
+  saveWishlist();
+  // تحديث الأيقونات
+  document.querySelectorAll(`.like-btn[data-pid="${pid}"]`).forEach(b=>{
+    b.classList.toggle('liked',wishlist.includes(pid));
+    b.textContent=wishlist.includes(pid)?'❤️':'🤍';
+  });
+  // لو المودال مفتوح حدّثه
+  if(currentPid===pid) renderModal();
+}
+function updateWishUI(){
+  const cnt=wishlist.length;
+  const el=document.getElementById('wishCount');
+  if(el){el.textContent=cnt;el.classList.toggle('show',cnt>0);}
+  // أيقونة القلب في الـ nav
+  const btn=document.querySelector('.nav-wish-btn');
+  if(btn) btn.textContent=(cnt>0?'❤️':'🤍');
+  if(btn){
+    const span=document.getElementById('wishCount');
+    btn.textContent='';
+    btn.innerHTML=(cnt>0?'❤️':'🤍')+`<span class="nav-wish-count ${cnt>0?'show':''}" id="wishCount">${cnt}</span>`;
+  }
+}
+function openWish(){
+  document.getElementById('wishPanel').classList.add('open');
+  document.getElementById('wishBg').classList.add('show');
+  renderWishPanel();
+}
+function closeWish(){
+  document.getElementById('wishPanel').classList.remove('open');
+  document.getElementById('wishBg').classList.remove('show');
+}
+function renderWishPanel(){
+  const el=document.getElementById('wishList');
+  if(!wishlist.length){
+    el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--gray2);font-size:13px">${isEn?'Your wishlist is empty 🤍':'مفضلتك فارغة 🤍'}</div>`;
+    return;
+  }
+  el.innerHTML=wishlist.filter(pid=>PRODUCTS[pid]).map(pid=>{
+    const p=PRODUCTS[pid];
+    const img=(p.colors[0]?.imgs||[])[0]||'';
+    return`<div class="wish-item" onclick="closeWish();openModal('${pid}')">
+      ${img?`<img class="wish-item-img" src="${xe(img)}" onerror="this.style.display='none'">`:`<div class="wish-item-img" style="display:flex;align-items:center;justify-content:center;font-size:28px">${p.emoji||'🛋️'}</div>`}
+      <div>
+        <div class="wish-item-nm">${xe(isEn?p.nameEn:p.nameAr)}</div>
+        <div class="wish-item-price">${p.priceOnRequest?(isEn?'Price on Request':'حسب الطلب'):p.price+' KWD'}</div>
+      </div>
+      <button class="wish-remove" onclick="event.stopPropagation();toggleWish('${pid}');renderWishPanel()">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ===== LIKES (Firebase) =====
+function loadLikes(){
+  db.ref('likes').on('value', snap=>{
+    productLikes=snap.val()||{};
+    // تحديث عدادات اللايك في الكاردات
+    document.querySelectorAll('.like-btn').forEach(btn=>{
+      const pid=btn.dataset.pid;
+      if(!pid) return;
+      const cnt=productLikes[pid]||0;
+      const span=btn.querySelector('.like-count');
+      if(span) span.textContent=cnt>0?cnt:'';
+    });
+  });
+}
+function toggleLike(pid, e){
+  e.stopPropagation();
+  const isWished=wishlist.includes(pid);
+  // اللايك = مفضلة + زيادة العداد في Firebase
+  const wasLiked=wishlist.includes(pid);
+  toggleWish(pid);
+  // زيادة/نقصان العداد في Firebase
+  const ref=db.ref('likes/'+pid);
+  ref.transaction(cur=>(cur||0)+(wasLiked?-1:1));
+}
+
+// ===== SUBSCRIBE =====
+function openSubModal(){
+  const slug=getSlug();
+  if(currentSubscriber){
+    // مسجّل بالفعل — روّحه لحسابه
+    window.location.href=`customer.html?slug=${slug}`;
+    return;
+  }
+  // مش مسجّل — روّحه لصفحة التسجيل
+  window.location.href=`register.html?slug=${slug}`;
+}
+function closeSubModal(){
+  document.getElementById('subModalBg').classList.remove('open');
+}
+function checkExistingSubscriber(){
+  const slug=getSlug();
+  const raw=localStorage.getItem('cust_'+slug);
+  if(!raw) return;
+  try{
+    currentSubscriber=JSON.parse(raw);
+    updateSubBtn(true);
+  }catch(e){}
+}
+function updateSubBtn(subbed){
+  const btn=document.getElementById('navSubBtn');
+  if(!btn) return;
+  if(subbed){
+    btn.classList.add('subbed');
+    btn.innerHTML='👤 <span class="lar">حسابي</span><span class="len" style="display:none">My Account</span>';
+  }
+}
 function initStore(){
   document.getElementById('prodGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray2)">⏳ جاري التحميل...</div>';
   const slug=getSlug();
@@ -525,6 +703,11 @@ function loadMarketer(key, data){
   renderHeader();
   // PWA — تحديث manifest ديناميكي حسب بيانات المسوق
   updatePWA(STORE);
+  // جديد
+  loadWishlist();
+  loadLikes();
+  checkExistingSubscriber();
+  document.getElementById('navSubBtn').style.display='flex';
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value'), db.ref('materials').once('value')])
     .then(([bSnap,pSnap,mSnap])=>{
       BRANDS=bSnap.val()||{};
@@ -647,6 +830,10 @@ function renderProducts(){
         ${firstImg
           ?`<img class="fprod-img" src="${xe(firstImg)}" alt="${xe(p.nameAr)}" loading="lazy" onerror="this.style.display='none'">`
           :`<div class="fprod-img-ph">${p.emoji||'🛋️'}</div>`}
+        <button class="like-btn ${wishlist.includes(p.id)?'liked':''}" data-pid="${p.id}" onclick="toggleLike('${p.id}',event)">
+          ${wishlist.includes(p.id)?'❤️':'🤍'}
+          <span class="like-count">${productLikes[p.id]>0?productLikes[p.id]:''}</span>
+        </button>
         ${p.badge==='new'?`<div class="fprod-badge badge-new">${isEn?'NEW':'جديد'}</div>`:p.badge==='sale'?`<div class="fprod-badge badge-sale">${isEn?'SALE':'خصم'}</div>`:''}
         <div class="fprod-brand-tag">${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}</div>
         ${p.colors.length>1?`<div class="fprod-colors-row">${p.colors.slice(0,4).map(c=>`<div class="fprod-dot" style="background:${c.hex}"></div>`).join('')}</div>`:''}
@@ -760,6 +947,9 @@ function renderModal(){
         <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
           🔗 ${isEn?'Share Product':'مشاركة الطقم'}
         </button>
+        <button class="wishlist-btn ${wishlist.includes(pid)?'wishlisted':''}" onclick="toggleWish('${pid}');renderModal()">
+          ${wishlist.includes(pid)?(isEn?'❤️ Remove from Wishlist':'❤️ إزالة من المفضلة'):(isEn?'🤍 Save to Wishlist':'🤍 أضف للمفضلة')}
+        </button>
       </div>
 
       ${(p.descAr||p.descEn)?`<div class="fmodal-desc">${xe(isEn?p.descEn:p.descAr)}</div>`:''}
@@ -816,6 +1006,7 @@ function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal(
 window.addEventListener('popstate',()=>{
   if(document.getElementById('modalBg').classList.contains('open')){closeModal();return;}
   if(document.getElementById('cartPanel').classList.contains('open')){closeCart();return;}
+  if(document.getElementById('wishPanel').classList.contains('open')){closeWish();return;}
   if(document.getElementById('cmpBg').classList.contains('open')){closeCmp();}
 });
 
