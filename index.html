@@ -14,6 +14,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
+html,body{max-width:100%;overflow-x:hidden}
 :root{
   --cream:#faf8f5;--white:#fff;--gold:#b8934a;--gold2:#d4a85a;
   --gold-light:#fdf6e9;--gold-border:#e8d5b0;--dark:#1c1c1c;
@@ -260,9 +261,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .offers-badge{position:absolute;top:-5px;left:-5px;min-width:17px;height:17px;background:#e74c3c;color:#fff;border-radius:50px;font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--nav-bg);line-height:1}
 .offers-badge.show{display:flex}
 
-/* CUSTOMER PANEL */
-.cust-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3600;align-items:flex-end;justify-content:center}
-.cust-panel-bg.open{display:flex}
+/* CUSTOMER PANEL — hidden (not used) */
+.cust-panel-bg{display:none!important}
 .cust-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
 .cust-panel-hd{padding:10px 16px 0;flex-shrink:0}
 .cust-panel-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px}
@@ -535,31 +535,31 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 
     <!-- STEP 0: اختيار -->
     <div id="regStep0">
-      <div class="reg-title" style="text-align:center;margin-bottom:6px">⭐ حسابك في المتجر</div>
-      <div class="reg-sub" style="text-align:center">مشترك جديد أو عندك حساب بالفعل؟</div>
+      <div class="reg-title" style="text-align:center;margin-bottom:6px">⭐ <span class="lar">حسابك في المتجر</span><span class="len" style="display:none">Your Store Account</span></div>
+      <div class="reg-sub" style="text-align:center"><span class="lar">مشترك جديد أو عندك حساب بالفعل؟</span><span class="len" style="display:none">New subscriber or already have an account?</span></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
         <button onclick="regShowStep(1)" style="padding:18px 10px;border-radius:14px;background:var(--theme-primary);color:var(--dark);font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;flex-direction:column;align-items:center;gap:6px">
           <span style="font-size:28px">✨</span>
-          حساب جديد
+          <span class="lar">حساب جديد</span><span class="len" style="display:none">New Account</span>
         </button>
         <button onclick="regShowStep('login')" style="padding:18px 10px;border-radius:14px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:800;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;flex-direction:column;align-items:center;gap:6px">
           <span style="font-size:28px">👤</span>
-          تسجيل دخول
+          <span class="lar">تسجيل دخول</span><span class="len" style="display:none">Sign In</span>
         </button>
       </div>
-      <button class="reg-btn-sec" onclick="closeRegPanel()">إلغاء</button>
+      <button class="reg-btn-sec" onclick="closeRegPanel()"><span class="lar">إلغاء</span><span class="len" style="display:none">Cancel</span></button>
     </div>
 
     <!-- STEP LOGIN -->
     <div id="regStepLogin" style="display:none">
-      <div class="reg-title">👤 تسجيل الدخول</div>
-      <div class="reg-sub">أدخل رقم واتساب والـ PIN اللي اخترته</div>
+      <div class="reg-title">👤 <span class="lar">تسجيل الدخول</span><span class="len" style="display:none">Sign In</span></div>
+      <div class="reg-sub"><span class="lar">أدخل رقم واتساب والـ PIN اللي اخترته</span><span class="len" style="display:none">Enter your WhatsApp number and your PIN</span></div>
       <div class="reg-field">
-        <label class="reg-label">📱 رقم واتساب</label>
+        <label class="reg-label">📱 <span class="lar">رقم واتساب</span><span class="len" style="display:none">WhatsApp Number</span></label>
         <input class="reg-input ltr" id="rlWa" type="tel" placeholder="96512345678" maxlength="15" oninput="regClearErr()">
       </div>
       <div class="reg-field">
-        <label class="reg-label">🔑 الـ PIN</label>
+        <label class="reg-label">🔑 PIN</label>
         <input class="reg-input pin-inp ltr" id="rlPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rlPin','rlDots');regClearErr()" onkeydown="if(event.key==='Enter')regDoLogin()">
         <div class="reg-pin-dots" id="rlDots">
           <div class="reg-pin-dot" id="rld_1"></div><div class="reg-pin-dot" id="rld_2"></div>
@@ -567,44 +567,44 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
         </div>
       </div>
       <div class="reg-err" id="rlErr"></div>
-      <button class="reg-btn" id="rlLoginBtn" onclick="regDoLogin()">دخول ←</button>
-      <button class="reg-btn-sec" onclick="regShowStep(0)">← رجوع</button>
+      <button class="reg-btn" id="rlLoginBtn" onclick="regDoLogin()"><span class="lar">دخول ←</span><span class="len" style="display:none">Sign In →</span></button>
+      <button class="reg-btn-sec" onclick="regShowStep(0)"><span class="lar">← رجوع</span><span class="len" style="display:none">← Back</span></button>
     </div>
 
     <!-- STEP 1 -->
     <div id="regStep1">
       <div class="reg-steps">
-        <div class="reg-step active"><div class="reg-step-dot">1</div><div class="reg-step-lbl">معلوماتك</div></div>
-        <div class="reg-step"><div class="reg-step-dot">2</div><div class="reg-step-lbl">الـ PIN</div></div>
-        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">تم!</div></div>
+        <div class="reg-step active"><div class="reg-step-dot">1</div><div class="reg-step-lbl"><span class="lar">معلوماتك</span><span class="len" style="display:none">Your Info</span></div></div>
+        <div class="reg-step"><div class="reg-step-dot">2</div><div class="reg-step-lbl">PIN</div></div>
+        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl"><span class="lar">تم!</span><span class="len" style="display:none">Done!</span></div></div>
       </div>
-      <div class="reg-title">إنشاء حساب 👤</div>
-      <div class="reg-sub">سجّل بياناتك لتتابع طلباتك وتحفظ مفضلتك وتوصلك العروض</div>
+      <div class="reg-title"><span class="lar">إنشاء حساب 👤</span><span class="len" style="display:none">Create Account 👤</span></div>
+      <div class="reg-sub"><span class="lar">سجّل بياناتك لتتابع طلباتك وتحفظ مفضلتك وتوصلك العروض</span><span class="len" style="display:none">Register to track your orders, save favorites, and receive offers</span></div>
       <div class="reg-field">
-        <label class="reg-label">👤 اسمك الكريم</label>
+        <label class="reg-label">👤 <span class="lar">اسمك الكريم</span><span class="len" style="display:none">Your Name</span></label>
         <input class="reg-input" id="rName" placeholder="مثال: محمد الأحمد" maxlength="50" oninput="regClearErr()">
       </div>
       <div class="reg-field">
-        <label class="reg-label">📱 رقم واتساب</label>
+        <label class="reg-label">📱 <span class="lar">رقم واتساب</span><span class="len" style="display:none">WhatsApp Number</span></label>
         <input class="reg-input ltr" id="rWa" type="tel" placeholder="96512345678" maxlength="15" oninput="regClearErr()" onkeydown="if(event.key==='Enter')regGoStep2()">
-        <div class="reg-hint">أدخل الرقم بالصيغة الدولية بدون + أو مسافات</div>
+        <div class="reg-hint"><span class="lar">أدخل الرقم بالصيغة الدولية بدون + أو مسافات</span><span class="len" style="display:none">Enter number in international format without + or spaces</span></div>
       </div>
       <div class="reg-err" id="rErr1"></div>
-      <button class="reg-btn" onclick="regGoStep2()">التالي ←</button>
-      <button class="reg-btn-sec" onclick="closeRegPanel()">إلغاء</button>
+      <button class="reg-btn" onclick="regGoStep2()"><span class="lar">التالي ←</span><span class="len" style="display:none">Next →</span></button>
+      <button class="reg-btn-sec" onclick="closeRegPanel()"><span class="lar">إلغاء</span><span class="len" style="display:none">Cancel</span></button>
     </div>
 
     <!-- STEP 2 -->
     <div id="regStep2" style="display:none">
       <div class="reg-steps">
-        <div class="reg-step done"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">معلوماتك</div></div>
-        <div class="reg-step active"><div class="reg-step-dot">2</div><div class="reg-step-lbl">الـ PIN</div></div>
-        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">تم!</div></div>
+        <div class="reg-step done"><div class="reg-step-dot">✓</div><div class="reg-step-lbl"><span class="lar">معلوماتك</span><span class="len" style="display:none">Your Info</span></div></div>
+        <div class="reg-step active"><div class="reg-step-dot">2</div><div class="reg-step-lbl">PIN</div></div>
+        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl"><span class="lar">تم!</span><span class="len" style="display:none">Done!</span></div></div>
       </div>
-      <div class="reg-title">اختر PIN سري 🔒</div>
-      <div class="reg-sub">4 أرقام تحفظها — ستستخدمها لدخول حسابك لاحقاً</div>
+      <div class="reg-title"><span class="lar">اختر PIN سري 🔒</span><span class="len" style="display:none">Choose a Secret PIN 🔒</span></div>
+      <div class="reg-sub"><span class="lar">4 أرقام تحفظها — ستستخدمها لدخول حسابك لاحقاً</span><span class="len" style="display:none">4 digits to remember — you'll use this to sign in later</span></div>
       <div class="reg-field">
-        <label class="reg-label">🔑 الـ PIN (4 أرقام)</label>
+        <label class="reg-label">🔑 PIN (4 <span class="lar">أرقام</span><span class="len" style="display:none">digits</span>)</label>
         <input class="reg-input pin-inp ltr" id="rPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rPin','rDots1');regClearErr()">
         <div class="reg-pin-dots" id="rDots1">
           <div class="reg-pin-dot" id="rd1_1"></div><div class="reg-pin-dot" id="rd1_2"></div>
@@ -612,28 +612,28 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
         </div>
       </div>
       <div class="reg-field">
-        <label class="reg-label">🔑 تأكيد الـ PIN</label>
+        <label class="reg-label">🔑 <span class="lar">تأكيد الـ PIN</span><span class="len" style="display:none">Confirm PIN</span></label>
         <input class="reg-input pin-inp ltr" id="rPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rPin2','rDots2');regClearErr()" onkeydown="if(event.key==='Enter')regDoRegister()">
         <div class="reg-pin-dots" id="rDots2">
           <div class="reg-pin-dot" id="rd2_1"></div><div class="reg-pin-dot" id="rd2_2"></div>
           <div class="reg-pin-dot" id="rd2_3"></div><div class="reg-pin-dot" id="rd2_4"></div>
         </div>
       </div>
-      <div class="reg-hint" style="text-align:center;margin-bottom:14px">⚠️ احتفظ بالـ PIN — لا يمكن استرجاعه</div>
+      <div class="reg-hint" style="text-align:center;margin-bottom:14px">⚠️ <span class="lar">احتفظ بالـ PIN — لا يمكن استرجاعه</span><span class="len" style="display:none">Keep your PIN safe — it cannot be recovered</span></div>
       <div class="reg-err" id="rErr2"></div>
-      <button class="reg-btn" id="rSubmitBtn" onclick="regDoRegister()">إنشاء الحساب 🎉</button>
-      <button class="reg-btn-sec" onclick="regShowStep(1)">← رجوع</button>
+      <button class="reg-btn" id="rSubmitBtn" onclick="regDoRegister()"><span class="lar">إنشاء الحساب 🎉</span><span class="len" style="display:none">Create Account 🎉</span></button>
+      <button class="reg-btn-sec" onclick="regShowStep(1)"><span class="lar">← رجوع</span><span class="len" style="display:none">← Back</span></button>
     </div>
 
     <!-- SUCCESS -->
     <div id="regStepSuccess" style="display:none">
       <div class="reg-success">
         <div class="reg-success-icon">🎉</div>
-        <div class="reg-success-title">تم إنشاء حسابك!</div>
-        <div class="reg-success-sub">أهلاً <strong id="rSuccessName"></strong>!<br>حسابك جاهز — احتفظ برابطك الشخصي</div>
+        <div class="reg-success-title"><span class="lar">تم إنشاء حسابك!</span><span class="len" style="display:none">Account Created!</span></div>
+        <div class="reg-success-sub"><span class="lar">أهلاً <strong id="rSuccessName"></strong>!<br>حسابك جاهز — احتفظ برابطك الشخصي</span><span class="len" style="display:none">Welcome <strong id="rSuccessNameEn"></strong>!<br>Your account is ready — save your personal link</span></div>
         <div class="reg-link-box" id="rLinkBox" onclick="regCopyLink()">—</div>
-        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 نسخ رابط حسابي</button>
-        <button class="reg-btn-sec" onclick="closeRegPanel()">← العودة للمتجر</button>
+        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 <span class="lar">نسخ رابط حسابي</span><span class="len" style="display:none">Copy My Link</span></button>
+        <button class="reg-btn-sec" onclick="closeRegPanel()"><span class="lar">← العودة للمتجر</span><span class="len" style="display:none">← Back to Store</span></button>
       </div>
     </div>
 
@@ -642,11 +642,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
       <div style="text-align:center;padding:12px 0">
         <div style="font-size:44px;margin-bottom:12px">👤</div>
         <div class="reg-title" id="rAccName">—</div>
-        <div class="reg-sub" id="rAccSub">مشترك في المتجر</div>
+        <div class="reg-sub" id="rAccSub"><span class="lar">مشترك في المتجر</span><span class="len" style="display:none">Store Subscriber</span></div>
         <div class="reg-link-box" id="rAccLink" onclick="regCopyLink()" style="margin-bottom:16px">—</div>
-        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 نسخ رابط حسابي</button>
-        <button class="reg-btn-sec" onclick="closeRegPanel()">← العودة للمتجر</button>
-        <button onclick="regLogout()" style="width:100%;padding:11px;border-radius:12px;background:none;color:#c0392b;font-size:12px;font-weight:700;border:1.5px solid #f5c6c2;cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:8px">🚪 تسجيل الخروج</button>
+        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 <span class="lar">نسخ رابط حسابي</span><span class="len" style="display:none">Copy My Link</span></button>
+        <button class="reg-btn-sec" onclick="closeRegPanel()"><span class="lar">← العودة للمتجر</span><span class="len" style="display:none">← Back to Store</span></button>
+        <button onclick="regLogout()" style="width:100%;padding:11px;border-radius:12px;background:none;color:#c0392b;font-size:12px;font-weight:700;border:1.5px solid #f5c6c2;cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:8px">🚪 <span class="lar">تسجيل الخروج</span><span class="len" style="display:none">Sign Out</span></button>
       </div>
     </div>
 
