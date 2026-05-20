@@ -70,26 +70,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .ffilter-btn{padding:11px 16px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .ffilter-btn.on{color:var(--filter-on);border-bottom-color:var(--theme-primary);font-weight:800}
 
-/* MOBILE NAV FIX - إخفاء النصوص على الجوال وإظهار الأيقونات فقط */
-@media(max-width:640px){
-  .fnav-store-name{display:none}
-  .fnav-store-sub{display:none}
-  .fnav{gap:3px;padding:0 4px}
-  .lang-btn{padding:5px 6px;font-size:11px;border-radius:16px}
-  .lang-btn .lar{display:none}
-  .lang-btn .len{display:inline !important}
-  .cart-btn{padding:6px 6px;gap:2px}
-  .cart-btn .lar{display:none}
-  .cart-btn .len{display:inline !important}
-  .cart-btn span:not(.cart-count){font-size:16px;font-weight:400}
-  .nav-wish-btn{padding:6px 6px}
-  .nav-wish-btn .lar{display:none}
-  .nav-wish-btn .len{display:inline !important}
-  #navSubBtn{padding:6px 6px}
-  #navSubBtn .lar{display:none}
-  #navSubBtn .len{display:inline !important}
-}
-
 
 /* SEARCH */
 .fsearch-wrap{padding:10px 16px;background:var(--white);border-bottom:1px solid var(--border)}
@@ -394,6 +374,19 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* موبايل — إخفاء نص الأزرار وإبقاء الأيقونات فقط */
+@media (max-width:480px){
+  .cart-btn .lar,
+  .cart-btn .len{display:none !important}
+  .nav-sub-btn .lar,
+  .nav-sub-btn .len{display:none !important}
+  .lang-btn{padding:5px 9px;font-size:11px}
+  .cart-btn{padding:8px 9px;gap:3px}
+  .nav-sub-btn{padding:6px 9px;gap:3px;min-width:unset}
+  .nav-wish-btn{width:32px;height:32px;font-size:14px}
+  .fnav-store-name{font-size:13px}
+}
 
 /* إصلاح صورة الكارد — مربعة زي انستغرام */
 .fprod-img-wrap{position:relative;overflow:hidden;background:#f5f1eb;aspect-ratio:1/1;max-height:300px}
@@ -874,13 +867,17 @@ function cpShowLoggedIn(){
   document.getElementById('cpAvatar').textContent=name[0]||'👤';
   document.getElementById('cpHeaderName').textContent=name;
   document.getElementById('cpHeaderSub').textContent='مشترك في '+( STORE.name||'المتجر');
-  // جلب الطلبات — استخدام .on() بدلاً من .once() للتحديث التلقائي عند إضافة طلبات جديدة
-  db.ref('orders').orderByChild('marketer_id').equalTo(STORE.id).on('value',snap=>{
+  // جلب الطلبات
+  db.ref('orders').orderByChild('marketer_id').equalTo(STORE.id).once('value',snap=>{
     const data=snap.val()||{};
     cpOrders=Object.entries(data)
       .map(([k,v])=>({...v,id:k}))
-      .filter(o=>o.wa===currentSubscriber?.wa||o.phone===currentSubscriber?.wa)
+      .filter(o=>String(o.wa||'')=== String(currentSubscriber?.wa||'')||String(o.phone||'')=== String(currentSubscriber?.wa||''))
       .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    cpRender();
+  }).catch(err=>{
+    console.warn('orders read error (check Firebase rules):', err.message);
+    cpOrders=[];
     cpRender();
   });
   cpGoTab('home', document.querySelector('.cust-ptab'));
