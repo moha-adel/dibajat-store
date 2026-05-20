@@ -258,7 +258,46 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .nav-sub-btn:hover{background:var(--theme-primary);color:var(--white)}
 .nav-sub-btn.subbed{background:var(--theme-primary);color:var(--white)}
 
-/* REGISTER PANEL */
+/* CUSTOMER PANEL */
+.cust-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3600;align-items:flex-end;justify-content:center}
+.cust-panel-bg.open{display:flex}
+.cust-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+.cust-panel-hd{padding:10px 16px 0;flex-shrink:0}
+.cust-panel-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px}
+.cust-panel-tabs{display:flex;border-bottom:1px solid var(--border);gap:0;overflow-x:auto;scrollbar-width:none}
+.cust-panel-tabs::-webkit-scrollbar{display:none}
+.cust-ptab{flex:1;padding:11px 6px 9px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px}
+.cust-ptab.on{color:var(--theme-primary);border-bottom-color:var(--theme-primary)}
+.cust-ptab-icon{font-size:17px}
+.cust-panel-body{flex:1;overflow-y:auto;padding:14px 16px 32px}
+
+/* LOGIN INSIDE PANEL */
+.cust-login-wrap{padding:8px 0}
+.cust-login-icon{font-size:44px;text-align:center;margin-bottom:10px}
+.cust-login-title{font-size:17px;font-weight:900;color:var(--dark);margin-bottom:4px;text-align:center}
+.cust-login-sub{font-size:12px;color:var(--gray2);margin-bottom:20px;line-height:1.7;text-align:center}
+
+/* CUSTOMER STATS */
+.cust-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.cust-stat{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center}
+.cust-stat-val{font-size:20px;font-weight:900;color:var(--dark)}
+.cust-stat-lbl{font-size:10px;color:var(--gray2);margin-top:2px}
+
+/* WISH ITEMS IN PANEL */
+.cp-wish-item{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:9px;padding:9px;background:var(--cream);border-radius:10px;margin-bottom:7px;border:1px solid var(--border);cursor:pointer}
+.cp-wish-item:hover{border-color:var(--theme-primary)}
+.cp-wish-img{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:24px}
+.cp-wish-nm{font-size:12px;font-weight:700;color:var(--dark)}
+.cp-wish-brand{font-size:10px;color:var(--theme-primary);font-weight:700;margin-bottom:2px}
+.cp-wish-price{font-size:11px;color:var(--gray2);margin-top:2px}
+
+/* ORDERS IN PANEL */
+.cp-order{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.cp-order-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.cp-order-num{font-size:10px;font-weight:700;color:var(--gray2);background:var(--card-bg);border:1px solid var(--border);padding:2px 8px;border-radius:6px}
+.cp-order-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px}
+.cp-order-item:last-child{border:none}
+.cp-order-total{font-size:13px;font-weight:900;color:var(--dark);margin-top:7px;padding-top:7px;border-top:1px solid var(--border)}
 .reg-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3500;align-items:flex-end;justify-content:center}
 .reg-panel-bg.open{display:flex}
 .reg-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;padding:10px 20px 40px;max-height:92vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
@@ -573,6 +612,53 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   </div>
 </div>
 
+<!-- CUSTOMER PANEL -->
+<div class="cust-panel-bg" id="custPanelBg" onclick="if(event.target===this)closeCustPanel()">
+  <div class="cust-panel">
+    <div class="cust-panel-hd">
+      <div class="cust-panel-drag"></div>
+
+      <!-- LOGIN VIEW -->
+      <div id="cpLogin">
+        <div class="cust-login-icon">👤</div>
+        <div class="cust-login-title">تسجيل الدخول</div>
+        <div class="cust-login-sub">أدخل رقم واتساب والـ PIN اللي اخترته عند التسجيل</div>
+        <div class="reg-field">
+          <label class="reg-label">📱 رقم واتساب</label>
+          <input class="reg-input ltr" id="cpWa" type="tel" placeholder="96512345678" maxlength="15" oninput="cpClearErr()">
+        </div>
+        <div class="reg-field">
+          <label class="reg-label">🔑 الـ PIN</label>
+          <input class="reg-input pin-inp ltr" id="cpPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="cpClearErr()" onkeydown="if(event.key==='Enter')cpDoLogin()">
+        </div>
+        <div class="reg-err" id="cpErr"></div>
+        <button class="reg-btn" id="cpLoginBtn" onclick="cpDoLogin()">دخول ←</button>
+        <button class="reg-btn-sec" onclick="closeCustPanel()">إلغاء</button>
+      </div>
+
+      <!-- LOGGED IN HEADER -->
+      <div id="cpHeader" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <div style="width:38px;height:38px;border-radius:50%;background:var(--gold-light);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--theme-primary);flex-shrink:0" id="cpAvatar">👤</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:800;color:var(--dark)" id="cpHeaderName">—</div>
+            <div style="font-size:10px;color:var(--gray2)" id="cpHeaderSub">مشترك</div>
+          </div>
+          <button onclick="cpLogout()" style="padding:5px 10px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--gray2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">خروج</button>
+          <button onclick="closeCustPanel()" style="width:28px;height:28px;border-radius:50%;background:var(--cream);border:1px solid var(--border);color:var(--gray2);font-size:13px;cursor:pointer">✕</button>
+        </div>
+        <div class="cust-panel-tabs">
+          <button class="cust-ptab on" onclick="cpGoTab('home',this)"><span class="cust-ptab-icon">🏠</span>الرئيسية</button>
+          <button class="cust-ptab" onclick="cpGoTab('wishlist',this)"><span class="cust-ptab-icon">❤️</span>مفضلتي</button>
+          <button class="cust-ptab" onclick="cpGoTab('orders',this)"><span class="cust-ptab-icon">📦</span>طلباتي</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cust-panel-body" id="cpBody" style="display:none"></div>
+  </div>
+</div>
+
 <!-- WISHLIST PANEL -->
 <div class="wish-panel-bg" id="wishBg" onclick="closeWish()"></div>
 <div class="wish-panel" id="wishPanel">
@@ -666,7 +752,165 @@ function applyTheme(m){
 }
 
 // ===== INIT =====
-// ===== WISHLIST (localStorage) =====
+// ===== CUSTOMER PANEL =====
+let cpTab='home', cpOrders=[];
+
+function openCustPanel(){
+  document.getElementById('custPanelBg').classList.add('open');
+  if(currentSubscriber){
+    cpShowLoggedIn();
+  } else {
+    document.getElementById('cpLogin').style.display='block';
+    document.getElementById('cpHeader').style.display='none';
+    document.getElementById('cpBody').style.display='none';
+    setTimeout(()=>document.getElementById('cpWa')?.focus(),100);
+  }
+}
+function closeCustPanel(){
+  document.getElementById('custPanelBg').classList.remove('open');
+}
+function cpClearErr(){document.getElementById('cpErr').textContent='';}
+
+function cpDoLogin(){
+  const wa=document.getElementById('cpWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('cpPin').value.trim();
+  const errEl=document.getElementById('cpErr');
+  const btn=document.getElementById('cpLoginBtn');
+  if(!wa||wa.length<8){errEl.textContent='أدخل رقم واتساب صحيح';return;}
+  if(!pin||pin.length<4){errEl.textContent='الـ PIN 4 أرقام';return;}
+  btn.disabled=true;
+  btn.innerHTML='<span class="reg-loader"></span>';
+  db.ref(`marketers/${STORE.id}/subscribers/${wa}`).once('value',snap=>{
+    btn.disabled=false;
+    btn.innerHTML='دخول ←';
+    if(!snap.exists()){errEl.textContent='رقم الواتساب غير مسجّل في هذا المتجر';return;}
+    const sub=snap.val();
+    if(String(sub.pin)!==String(pin)){errEl.textContent='الـ PIN غير صحيح';return;}
+    const slug=getSlug()||(STORE&&STORE.slug)||'';
+    currentSubscriber={name:sub.name,wa,pin,mktId:STORE.id,joinedAt:sub.joinedAt};
+    localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
+    updateSubBtn(true);
+    // مزامنة المفضلة
+    if(sub.wishlist) wishlist=[...new Set([...wishlist,...(sub.wishlist||[])])];
+    cpShowLoggedIn();
+  }).catch(e=>{
+    btn.disabled=false;btn.innerHTML='دخول ←';
+    errEl.textContent='خطأ: '+e.message;
+  });
+}
+
+function cpShowLoggedIn(){
+  document.getElementById('cpLogin').style.display='none';
+  document.getElementById('cpHeader').style.display='block';
+  document.getElementById('cpBody').style.display='block';
+  const name=currentSubscriber?.name||'مشترك';
+  document.getElementById('cpAvatar').textContent=name[0]||'👤';
+  document.getElementById('cpHeaderName').textContent=name;
+  document.getElementById('cpHeaderSub').textContent='مشترك في '+( STORE.name||'المتجر');
+  // جلب الطلبات
+  db.ref('orders').orderByChild('marketer_id').equalTo(STORE.id).once('value',snap=>{
+    const data=snap.val()||{};
+    cpOrders=Object.entries(data)
+      .map(([k,v])=>({...v,id:k}))
+      .filter(o=>o.wa===currentSubscriber?.wa||o.phone===currentSubscriber?.wa)
+      .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    cpRender();
+  });
+  cpGoTab('home', document.querySelector('.cust-ptab'));
+}
+
+function cpGoTab(tab,el){
+  cpTab=tab;
+  document.querySelectorAll('.cust-ptab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  cpRender();
+}
+
+function cpRender(){
+  const el=document.getElementById('cpBody');
+  if(!el) return;
+  if(cpTab==='home') el.innerHTML=cpRenderHome();
+  else if(cpTab==='wishlist') el.innerHTML=cpRenderWishlist();
+  else if(cpTab==='orders') el.innerHTML=cpRenderOrders();
+}
+
+function cpRenderHome(){
+  const wishCount=wishlist.length;
+  const delivered=cpOrders.filter(o=>o.status==='delivered').length;
+  const pending=cpOrders.filter(o=>o.status==='new'||o.status==='confirmed').length;
+  return`
+  <div style="background:linear-gradient(135deg,var(--gold-light),var(--card-bg));border:1px solid var(--gold-border);border-radius:14px;padding:16px;margin-bottom:14px;text-align:center">
+    <div style="font-size:32px;margin-bottom:6px">👋</div>
+    <div style="font-size:16px;font-weight:900;color:var(--dark)">أهلاً ${xe(currentSubscriber?.name||'')}!</div>
+    <div style="font-size:12px;color:var(--gray2);margin-top:3px">مشترك في متجر ${xe(STORE.name||'')}</div>
+  </div>
+  <div class="cust-stats">
+    <div class="cust-stat"><div class="cust-stat-val">❤️ ${wishCount}</div><div class="cust-stat-lbl">مفضلة</div></div>
+    <div class="cust-stat"><div class="cust-stat-val">${delivered}</div><div class="cust-stat-lbl">مسلّمة</div></div>
+    <div class="cust-stat"><div class="cust-stat-val">${pending}</div><div class="cust-stat-lbl">نشطة</div></div>
+  </div>
+  ${wishCount?`
+    <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px">❤️ آخر المفضلة</div>
+    ${wishlist.slice(0,3).filter(pid=>PRODUCTS[pid]).map(pid=>cpWishItem(pid)).join('')}
+    ${wishCount>3?`<div style="text-align:center;font-size:12px;color:var(--theme-primary);cursor:pointer;font-weight:700;padding:6px" onclick="cpGoTab('wishlist',document.querySelectorAll('.cust-ptab')[1])">عرض الكل (${wishCount}) ←</div>`:''}
+  `:''}`;
+}
+
+function cpWishItem(pid){
+  const p=PRODUCTS[pid]; if(!p) return'';
+  const img=(p.colors?.[0]?.imgs||[])[0]||'';
+  const bid=p.brand_id||p.brand;
+  const brand=BRANDS?.[bid]||{};
+  return`<div class="cp-wish-item" onclick="closeCustPanel();openModal('${pid}')">
+    ${img?`<img class="cp-wish-img" src="${xe(img)}" onerror="this.innerHTML='🛋️'">`:`<div class="cp-wish-img">🛋️</div>`}
+    <div>
+      <div class="cp-wish-brand">${xe(brand.ar||brand.en||'')}</div>
+      <div class="cp-wish-nm">${xe(isEn?p.nameEn:p.nameAr)}</div>
+      <div class="cp-wish-price">${p.priceOnRequest?(isEn?'Price on Request':'حسب الطلب'):p.price+' KWD'}</div>
+    </div>
+    <div style="color:var(--theme-primary);font-size:18px">›</div>
+  </div>`;
+}
+
+function cpRenderWishlist(){
+  if(!wishlist.length) return`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">🤍<br>مفضلتك فارغة<br><span style="font-size:12px">أضف منتجات من المتجر</span></div>`;
+  return`<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px">❤️ مفضلتي <span style="background:var(--border);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--gray2)">${wishlist.length}</span></div>
+  ${wishlist.filter(pid=>PRODUCTS[pid]).map(pid=>cpWishItem(pid)).join('')}`;
+}
+
+function cpRenderOrders(){
+  if(!cpOrders.length) return`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">📦<br>لا توجد طلبات بعد</div>`;
+  const statusBadge=s=>{
+    const map={new:'🆕 جديد',confirmed:'✓ مؤكد',delivered:'✅ مسلّم',cancelled:'✕ ملغي'};
+    const cls={new:'badge-new',confirmed:'badge-confirmed',delivered:'badge-delivered',cancelled:'badge-cancelled'};
+    return`<span class="badge ${cls[s]||''}">${map[s]||s}</span>`;
+  };
+  return`<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px">📦 طلباتي <span style="background:var(--border);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--gray2)">${cpOrders.length}</span></div>
+  ${cpOrders.map((o,i)=>{
+    const items=o.items?Object.values(o.items):[];
+    return`<div class="cp-order">
+      <div class="cp-order-hd">
+        <span class="cp-order-num">طلب #${cpOrders.length-i}</span>
+        <div style="display:flex;gap:6px;align-items:center">${statusBadge(o.status)}<span style="font-size:10px;color:var(--gray2)">${o.date||''}</span></div>
+      </div>
+      ${items.map(item=>`<div class="cp-order-item">
+        <div><div style="font-weight:700">${xe(item.product||item.nameAr||'')}</div><div style="font-size:10px;color:var(--gray2)">${xe(item.colorAr||item.color||'')} × ${item.qty||1}</div></div>
+        <span style="font-weight:800;color:var(--theme-primary)">${(item.price||0)*(item.qty||1)} KWD</span>
+      </div>`).join('')}
+      <div class="cp-order-total">الإجمالي: ${o.total||0} KWD</div>
+    </div>`;
+  }).join('')}`;
+}
+
+function cpLogout(){
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  localStorage.removeItem('cust_'+slug);
+  currentSubscriber=null;
+  cpOrders=[];
+  updateSubBtn(false);
+  closeCustPanel();
+  toast('تم تسجيل الخروج');
+}
 function loadWishlist(){
   const slug=getSlug()||'default';
   const raw=localStorage.getItem('wish_'+slug);
@@ -905,7 +1149,12 @@ function updateSubBtn(subbed){
   if(!btn) return;
   if(subbed){
     btn.classList.add('subbed');
+    btn.onclick=()=>openCustPanel();
     btn.innerHTML='👤 <span class="lar">حسابي</span><span class="len" style="display:none">My Account</span>';
+  } else {
+    btn.classList.remove('subbed');
+    btn.onclick=()=>openSubModal();
+    btn.innerHTML='⭐ <span class="lar">اشترك</span><span class="len" style="display:none">Subscribe</span>';
   }
 }
 function initStore(){
@@ -1268,6 +1517,7 @@ window.addEventListener('popstate',()=>{
   if(document.getElementById('cartPanel').classList.contains('open')){closeCart();return;}
   if(document.getElementById('wishPanel').classList.contains('open')){closeWish();return;}
   if(document.getElementById('regPanelBg').classList.contains('open')){closeRegPanel();return;}
+  if(document.getElementById('custPanelBg').classList.contains('open')){closeCustPanel();return;}
   if(document.getElementById('cmpBg').classList.contains('open')){closeCmp();}
 });
 
