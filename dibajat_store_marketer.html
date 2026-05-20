@@ -164,7 +164,18 @@ main{padding:16px 16px 90px}
 .ref-badge-pending{background:var(--yellow-dim);color:var(--yellow)}
 .ref-badge-approved{background:var(--green-dim);color:var(--green)}
 .ref-badge-rejected{background:var(--red-dim);color:var(--red)}
-/* ===== STATS TAB ===== */
+/* ===== SUBSCRIBERS ===== */
+.sub-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.sub-item{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px}
+.sub-item-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.sub-item-name{font-size:13px;font-weight:800;color:var(--tx)}
+.sub-item-date{font-size:10px;color:var(--mt)}
+.sub-item-wa{font-size:12px;color:var(--blue);font-family:monospace;margin-bottom:6px}
+.sub-item-tags{display:flex;gap:6px;flex-wrap:wrap}
+.sub-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--mt);border:1px solid var(--bd)}
+.sub-tag.gold{background:var(--gold-dim);color:var(--gold);border-color:rgba(201,169,110,.3)}
+.sub-wa-btn{background:linear-gradient(135deg,#25d366,#1aab54);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif}
+
 .stats-section{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
 .stats-section-title{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:14px}
 .chart-wrap{position:relative;width:100%;height:200px}
@@ -229,6 +240,9 @@ main{padding:16px 16px 90px}
     <button class="nav-tab" onclick="goTab('store',this)" id="tab-store">
       <span class="nav-tab-icon">🔗</span>متجري
     </button>
+    <button class="nav-tab" onclick="goTab('subscribers',this)" id="tab-subscribers">
+      <span class="nav-tab-icon">👥</span>زبائني
+    </button>
     <button class="nav-tab" onclick="goTab('card',this)" id="tab-card">
       <span class="nav-tab-icon">🪪</span>بطاقتي
     </button>
@@ -244,7 +258,7 @@ firebase.initializeApp(FB);
 const db=firebase.database();
 
 const MKT_KEY='maf_mkt_id';
-let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, allRegistrations={}, currentTab='overview', orderFilter='all';
+let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, allRegistrations={}, allSubscribers={}, currentTab='overview', orderFilter='all';
 
 // ===== LOGIN =====
 function doLogin(){
@@ -318,6 +332,10 @@ function startApp(id, mkt){
     allRegistrations=snap.val()||{};
     if(currentTab==='card')renderTab();
   });
+  db.ref(`marketers/${id}/subscribers`).on('value',snap=>{
+    allSubscribers=snap.val()||{};
+    if(currentTab==='subscribers')renderTab();
+  });
 
   renderTab();
 }
@@ -334,8 +352,8 @@ function renderTab(){
   if(currentTab==='overview')c.innerHTML=renderOverview();
   else if(currentTab==='orders')c.innerHTML=renderOrders();
   else if(currentTab==='store')c.innerHTML=renderStore();
+  else if(currentTab==='subscribers')c.innerHTML=renderSubscribers();
   else if(currentTab==='card'){c.innerHTML=renderCard();buildQR();}
-
 }
 
 // ===== HELPERS =====
@@ -473,6 +491,63 @@ function updateOrder(id,status){
     const labels={confirmed:'✓ تم التأكيد',delivered:'🚚 تم التسليم',cancelled:'تم الإلغاء'};
     toast(labels[status]||'تم التحديث');
   }).catch(e=>toast('خطأ: '+e.message,false));
+}
+
+// ===== SUBSCRIBERS =====
+function renderSubscribers(){
+  const subs=Object.entries(allSubscribers).map(([wa,v])=>({...v,wa}))
+    .sort((a,b)=>(b.joinedAt||'').localeCompare(a.joinedAt||''));
+  const total=subs.length;
+  const withWish=subs.filter(s=>s.wishlist&&s.wishlist.length>0).length;
+  const storeUrl=`https://${currentMarketer.slug}.dibajat.store`;
+  return`
+  <div class="section-title">👥 زبائني <span class="count-badge">${total}</span></div>
+
+  <div class="sub-stat-grid" style="margin-bottom:16px">
+    <div class="stat-card green">
+      <div class="stat-label">إجمالي الزبائن</div>
+      <div class="stat-val">${total}</div>
+      <div class="stat-sub">مشترك</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">عندهم مفضلة</div>
+      <div class="stat-val">${withWish}</div>
+      <div class="stat-sub">زبون</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">هذا الشهر</div>
+      <div class="stat-val">${subs.filter(s=>{
+        if(!s.joinedAt)return false;
+        const d=new Date(s.joinedAt),n=new Date();
+        return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();
+      }).length}</div>
+      <div class="stat-sub">جديد</div>
+    </div>
+  </div>
+
+  ${!total?`<div class="empty">لا يوجد زبائن مشتركين بعد<br><span style="font-size:12px;margin-top:8px;display:block">شارك رابط متجرك وشجّع زبائنك على الاشتراك!</span></div>`:`
+  <div style="display:flex;flex-direction:column;gap:8px">
+  ${subs.map(s=>{
+    const wishCount=(s.wishlist||[]).length;
+    const joinDate=s.joinedAt?new Date(s.joinedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'';
+    return`<div class="sub-item">
+      <div class="sub-item-hd">
+        <span class="sub-item-name">👤 ${xe(s.name||'—')}</span>
+        <span class="sub-item-date">${joinDate}</span>
+      </div>
+      <div class="sub-item-wa">${xe(s.wa||'')}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="sub-item-tags">
+          ${wishCount>0?`<span class="sub-tag gold">❤️ مفضلة ${wishCount}</span>`:''}
+          <span class="sub-tag">📦 ${xe(s.ordersCount||0)} طلبات</span>
+        </div>
+        <button class="sub-wa-btn" onclick="window.open('https://wa.me/${s.wa}?text=${encodeURIComponent('مرحباً '+s.name+'! 👋\nعندنا عروض جديدة في متجرنا:\n'+storeUrl)}','_blank')">
+          📲 تواصل
+        </button>
+      </div>
+    </div>`;
+  }).join('')}
+  </div>`}`;
 }
 
 // ===== EARNINGS =====
