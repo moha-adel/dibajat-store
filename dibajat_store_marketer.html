@@ -341,6 +341,10 @@ function startApp(id, mkt){
     });
     allOrders=mine;
     if(currentTab==='orders'||currentTab==='overview')renderTab();
+  },err=>{
+    console.warn('orders read error (check Firebase rules):', err.message);
+    allOrders={};
+    if(currentTab==='orders'||currentTab==='overview')renderTab();
   });
   db.ref('products').on('value',snap=>{
     allProducts=snap.val()||{};
