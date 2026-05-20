@@ -258,7 +258,61 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .nav-sub-btn:hover{background:var(--theme-primary);color:var(--white)}
 .nav-sub-btn.subbed{background:var(--theme-primary);color:var(--white)}
 
-/* WISHLIST PANEL */
+/* REGISTER PANEL */
+.reg-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3500;align-items:flex-end;justify-content:center}
+.reg-panel-bg.open{display:flex}
+.reg-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;padding:10px 20px 40px;max-height:92vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.reg-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px}
+.reg-title{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:4px}
+.reg-sub{font-size:13px;color:var(--gray2);margin-bottom:20px;line-height:1.7}
+
+/* STEPS BAR */
+.reg-steps{display:flex;align-items:center;margin-bottom:22px;gap:0}
+.reg-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.reg-step:not(:last-child)::after{content:'';position:absolute;top:13px;left:0;width:50%;height:2px;background:var(--border);z-index:0}
+.reg-step:not(:first-child)::before{content:'';position:absolute;top:13px;right:0;width:50%;height:2px;background:var(--border);z-index:0}
+.reg-step.done::after,.reg-step.done::before,.reg-step.active::before{background:var(--theme-primary)}
+.reg-step-dot{width:26px;height:26px;border-radius:50%;background:var(--border);color:var(--gray2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;z-index:1;transition:all .3s}
+.reg-step.done .reg-step-dot{background:var(--theme-primary);color:#fff}
+.reg-step.active .reg-step-dot{background:var(--dark);color:#fff}
+.reg-step-lbl{font-size:10px;color:var(--gray2);font-weight:600;white-space:nowrap}
+.reg-step.active .reg-step-lbl{color:var(--dark);font-weight:800}
+.reg-step.done .reg-step-lbl{color:var(--theme-primary)}
+
+/* INPUTS */
+.reg-field{margin-bottom:13px}
+.reg-label{font-size:12px;font-weight:800;color:var(--dark);margin-bottom:6px;display:block}
+.reg-input{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--cream);color:var(--dark);font-size:15px;font-family:'Tajawal',sans-serif;outline:none;transition:border .2s;box-sizing:border-box}
+.reg-input:focus{border-color:var(--theme-primary)}
+.reg-input.ltr{direction:ltr;text-align:left}
+.reg-input.pin-inp{letter-spacing:8px;font-size:22px;font-weight:900;text-align:center}
+.reg-hint{font-size:11px;color:var(--gray2);margin-top:5px;line-height:1.6}
+
+/* PIN DOTS */
+.reg-pin-dots{display:flex;justify-content:center;gap:10px;margin-top:10px;margin-bottom:4px}
+.reg-pin-dot{width:12px;height:12px;border-radius:50%;background:var(--border);transition:all .2s}
+.reg-pin-dot.filled{background:var(--theme-primary)}
+
+/* BUTTONS */
+.reg-btn{width:100%;padding:14px;border-radius:12px;background:var(--theme-primary);color:var(--dark);font-size:15px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.reg-btn:hover{opacity:.88}
+.reg-btn:disabled{opacity:.5;cursor:not-allowed}
+.reg-btn-sec{width:100%;padding:12px;border-radius:12px;background:none;color:var(--gray);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:10px;transition:all .2s}
+.reg-btn-sec:hover{border-color:var(--theme-primary);color:var(--theme-primary)}
+.reg-err{font-size:12px;color:#c0392b;min-height:18px;margin-bottom:8px;font-weight:600}
+
+/* SUCCESS */
+.reg-success{text-align:center;padding:8px 0}
+.reg-success-icon{font-size:54px;margin-bottom:12px;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.5);opacity:.3}to{transform:scale(1);opacity:1}}
+.reg-success-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:6px}
+.reg-success-sub{font-size:13px;color:var(--gray2);line-height:1.8;margin-bottom:20px}
+.reg-link-box{background:var(--gold-light);border:1.5px solid var(--gold-border);border-radius:10px;padding:11px 14px;font-size:12px;color:var(--theme-primary);font-weight:700;word-break:break-all;direction:ltr;text-align:left;margin-bottom:14px;cursor:pointer}
+
+/* LOADER */
+.reg-loader{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(0,0,0,.2);border-top-color:var(--dark);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .wish-panel-bg{display:none;position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.4)}
 .wish-panel-bg.show{display:block}
 .wish-panel{position:fixed;bottom:0;right:0;left:0;z-index:1600;background:var(--card-bg);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:16px 16px 28px;max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
@@ -429,6 +483,93 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
       <button class="cmp-close" onclick="closeCmp()">✕</button>
     </div>
     <div id="cmpContent" style="padding:14px 16px"></div>
+  </div>
+</div>
+
+<!-- REGISTER PANEL -->
+<div class="reg-panel-bg" id="regPanelBg" onclick="if(event.target===this)closeRegPanel()">
+  <div class="reg-panel">
+    <div class="reg-drag"></div>
+
+    <!-- STEP 1 -->
+    <div id="regStep1">
+      <div class="reg-steps">
+        <div class="reg-step active"><div class="reg-step-dot">1</div><div class="reg-step-lbl">معلوماتك</div></div>
+        <div class="reg-step"><div class="reg-step-dot">2</div><div class="reg-step-lbl">الـ PIN</div></div>
+        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">تم!</div></div>
+      </div>
+      <div class="reg-title">إنشاء حساب 👤</div>
+      <div class="reg-sub">سجّل بياناتك لتتابع طلباتك وتحفظ مفضلتك وتوصلك العروض</div>
+      <div class="reg-field">
+        <label class="reg-label">👤 اسمك الكريم</label>
+        <input class="reg-input" id="rName" placeholder="مثال: محمد الأحمد" maxlength="50" oninput="regClearErr()">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">📱 رقم واتساب</label>
+        <input class="reg-input ltr" id="rWa" type="tel" placeholder="96512345678" maxlength="15" oninput="regClearErr()" onkeydown="if(event.key==='Enter')regGoStep2()">
+        <div class="reg-hint">أدخل الرقم بالصيغة الدولية بدون + أو مسافات</div>
+      </div>
+      <div class="reg-err" id="rErr1"></div>
+      <button class="reg-btn" onclick="regGoStep2()">التالي ←</button>
+      <button class="reg-btn-sec" onclick="closeRegPanel()">إلغاء</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="regStep2" style="display:none">
+      <div class="reg-steps">
+        <div class="reg-step done"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">معلوماتك</div></div>
+        <div class="reg-step active"><div class="reg-step-dot">2</div><div class="reg-step-lbl">الـ PIN</div></div>
+        <div class="reg-step"><div class="reg-step-dot">✓</div><div class="reg-step-lbl">تم!</div></div>
+      </div>
+      <div class="reg-title">اختر PIN سري 🔒</div>
+      <div class="reg-sub">4 أرقام تحفظها — ستستخدمها لدخول حسابك لاحقاً</div>
+      <div class="reg-field">
+        <label class="reg-label">🔑 الـ PIN (4 أرقام)</label>
+        <input class="reg-input pin-inp ltr" id="rPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rPin','rDots1');regClearErr()">
+        <div class="reg-pin-dots" id="rDots1">
+          <div class="reg-pin-dot" id="rd1_1"></div><div class="reg-pin-dot" id="rd1_2"></div>
+          <div class="reg-pin-dot" id="rd1_3"></div><div class="reg-pin-dot" id="rd1_4"></div>
+        </div>
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">🔑 تأكيد الـ PIN</label>
+        <input class="reg-input pin-inp ltr" id="rPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rPin2','rDots2');regClearErr()" onkeydown="if(event.key==='Enter')regDoRegister()">
+        <div class="reg-pin-dots" id="rDots2">
+          <div class="reg-pin-dot" id="rd2_1"></div><div class="reg-pin-dot" id="rd2_2"></div>
+          <div class="reg-pin-dot" id="rd2_3"></div><div class="reg-pin-dot" id="rd2_4"></div>
+        </div>
+      </div>
+      <div class="reg-hint" style="text-align:center;margin-bottom:14px">⚠️ احتفظ بالـ PIN — لا يمكن استرجاعه</div>
+      <div class="reg-err" id="rErr2"></div>
+      <button class="reg-btn" id="rSubmitBtn" onclick="regDoRegister()">إنشاء الحساب 🎉</button>
+      <button class="reg-btn-sec" onclick="regShowStep(1)">← رجوع</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="regStepSuccess" style="display:none">
+      <div class="reg-success">
+        <div class="reg-success-icon">🎉</div>
+        <div class="reg-success-title">تم إنشاء حسابك!</div>
+        <div class="reg-success-sub">أهلاً <strong id="rSuccessName"></strong>!<br>حسابك جاهز — احتفظ برابطك الشخصي</div>
+        <div class="reg-link-box" id="rLinkBox" onclick="regCopyLink()">—</div>
+        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 نسخ رابط حسابي</button>
+        <button class="reg-btn-sec" onclick="closeRegPanel()">← العودة للمتجر</button>
+      </div>
+    </div>
+
+    <!-- ACCOUNT (مسجّل بالفعل) -->
+    <div id="regAccount" style="display:none">
+      <div style="text-align:center;padding:12px 0">
+        <div style="font-size:44px;margin-bottom:12px">👤</div>
+        <div class="reg-title" id="rAccName">—</div>
+        <div class="reg-sub" id="rAccSub">مشترك في المتجر</div>
+        <div class="reg-link-box" id="rAccLink" onclick="regCopyLink()" style="margin-bottom:16px">—</div>
+        <button class="reg-btn" onclick="regCopyLink()" style="margin-bottom:10px">📋 نسخ رابط حسابي</button>
+        <button class="reg-btn-sec" onclick="closeRegPanel()">← العودة للمتجر</button>
+        <button onclick="regLogout()" style="width:100%;padding:11px;border-radius:12px;background:none;color:#c0392b;font-size:12px;font-weight:700;border:1.5px solid #f5c6c2;cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:8px">🚪 تسجيل الخروج</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -620,18 +761,134 @@ function toggleLike(pid, e){
 // ===== SUBSCRIBE =====
 function openSubModal(){
   const slug=getSlug()||(STORE&&STORE.slug)||'';
-  if(!slug){
-    toast('⚠️ تعذّر تحديد المتجر');
-    return;
-  }
+  if(!slug){ toast('⚠️ تعذّر تحديد المتجر'); return; }
   if(currentSubscriber){
-    window.location.href=`customer.html?slug=${slug}`;
+    openRegPanel('account');
     return;
   }
-  window.location.href=`register.html?slug=${slug}`;
+  openRegPanel('step1');
 }
 function closeSubModal(){
-  document.getElementById('subModalBg').classList.remove('open');
+  document.getElementById('subModalBg')?.classList.remove('open');
+}
+
+// ===== REGISTER PANEL =====
+let _regLink='';
+function openRegPanel(view){
+  document.getElementById('regPanelBg').classList.add('open');
+  regShowStep(view);
+  if(view==='account' && currentSubscriber){
+    const slug=getSlug()||(STORE&&STORE.slug)||'';
+    _regLink=`${location.origin}/customer.html?slug=${slug}`;
+    document.getElementById('rAccName').textContent='أهلاً '+( currentSubscriber.name||'');
+    document.getElementById('rAccSub').textContent='مشترك في متجر '+(STORE.name||slug);
+    document.getElementById('rAccLink').textContent=_regLink;
+  }
+}
+function closeRegPanel(){
+  document.getElementById('regPanelBg').classList.remove('open');
+}
+function regShowStep(s){
+  ['regStep1','regStep2','regStepSuccess','regAccount'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  const map={1:'regStep1',2:'regStep2',success:'regStepSuccess',account:'regAccount'};
+  const el=document.getElementById(map[s]||map[1]);
+  if(el) el.style.display='block';
+  if(s===1) setTimeout(()=>document.getElementById('rName')?.focus(),100);
+  if(s===2) setTimeout(()=>document.getElementById('rPin')?.focus(),100);
+}
+function regClearErr(){
+  document.getElementById('rErr1').textContent='';
+  document.getElementById('rErr2').textContent='';
+}
+function regUpdateDots(inputId, dotsId){
+  const val=document.getElementById(inputId).value;
+  const prefix=dotsId==='rDots1'?'rd1_':'rd2_';
+  for(let i=1;i<=4;i++){
+    const d=document.getElementById(prefix+i);
+    if(d) d.classList.toggle('filled', i<=val.length);
+  }
+}
+function regGoStep2(){
+  const name=document.getElementById('rName').value.trim();
+  const wa=document.getElementById('rWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const errEl=document.getElementById('rErr1');
+  if(!name||name.length<2){errEl.textContent='أدخل اسمك (حرفين على الأقل)';return;}
+  if(!wa||wa.length<8||!/^\d+$/.test(wa)){errEl.textContent='أدخل رقم واتساب صحيح بالأرقام فقط';return;}
+  errEl.textContent='⏳ جاري التحقق...';
+  db.ref(`marketers/${STORE.id}/subscribers/${wa}`).once('value', snap=>{
+    if(snap.exists()){
+      errEl.textContent='هذا الرقم مسجّل بالفعل ✓';
+      const sub=snap.val();
+      currentSubscriber={name:sub.name,wa,pin:sub.pin,mktId:STORE.id,joinedAt:sub.joinedAt};
+      const slug=getSlug()||(STORE&&STORE.slug)||'';
+      localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
+      updateSubBtn(true);
+      setTimeout(()=>openRegPanel('account'),1200);
+      return;
+    }
+    errEl.textContent='';
+    regShowStep(2);
+  }).catch(e=>{errEl.textContent='خطأ: '+e.message;});
+}
+function regDoRegister(){
+  const name=document.getElementById('rName').value.trim();
+  const wa=document.getElementById('rWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('rPin').value.trim();
+  const pin2=document.getElementById('rPin2').value.trim();
+  const errEl=document.getElementById('rErr2');
+  const btn=document.getElementById('rSubmitBtn');
+  if(!pin||pin.length<4){errEl.textContent='الـ PIN لازم 4 أرقام بالضبط';return;}
+  if(!/^\d+$/.test(pin)){errEl.textContent='الـ PIN أرقام فقط';return;}
+  if(pin!==pin2){errEl.textContent='الـ PIN غير متطابق — تأكد من التكرار';return;}
+  btn.disabled=true;
+  btn.innerHTML='<span class="reg-loader"></span>';
+  const subscriber={
+    name, wa, pin, slug:getSlug()||(STORE&&STORE.slug)||'',
+    marketer_id:STORE.id, joinedAt:new Date().toISOString(),
+    wishlist:wishlist||[], ordersCount:0
+  };
+  db.ref(`marketers/${STORE.id}/subscribers/${wa}`).set(subscriber)
+    .then(()=>{
+      const slug=getSlug()||(STORE&&STORE.slug)||'';
+      currentSubscriber={name,wa,pin,mktId:STORE.id,joinedAt:subscriber.joinedAt};
+      localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
+      // نقل المفضلة للـ Firebase
+      if(wishlist.length) db.ref(`marketers/${STORE.id}/subscribers/${wa}/wishlist`).set(wishlist);
+      updateSubBtn(true);
+      _regLink=`${location.origin}/customer.html?slug=${slug}`;
+      document.getElementById('rSuccessName').textContent=name;
+      document.getElementById('rLinkBox').textContent=_regLink;
+      regShowStep('success');
+    })
+    .catch(e=>{
+      errEl.textContent='خطأ في الحفظ: '+e.message;
+      btn.disabled=false;
+      btn.innerHTML='إنشاء الحساب 🎉';
+    });
+}
+function regCopyLink(){
+  const link=_regLink||(()=>{
+    const slug=getSlug()||(STORE&&STORE.slug)||'';
+    return `${location.origin}/customer.html?slug=${slug}`;
+  })();
+  navigator.clipboard.writeText(link)
+    .then(()=>toast('✓ تم نسخ الرابط'))
+    .catch(()=>{
+      const t=document.createElement('textarea');
+      t.value=link;document.body.appendChild(t);t.select();
+      document.execCommand('copy');document.body.removeChild(t);
+      toast('✓ تم نسخ الرابط');
+    });
+}
+function regLogout(){
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  localStorage.removeItem('cust_'+slug);
+  currentSubscriber=null;
+  updateSubBtn(false);
+  closeRegPanel();
+  toast('تم تسجيل الخروج');
 }
 function checkExistingSubscriber(){
   const slug=getSlug()||(STORE&&STORE.slug)||'';
@@ -1010,6 +1267,7 @@ window.addEventListener('popstate',()=>{
   if(document.getElementById('modalBg').classList.contains('open')){closeModal();return;}
   if(document.getElementById('cartPanel').classList.contains('open')){closeCart();return;}
   if(document.getElementById('wishPanel').classList.contains('open')){closeWish();return;}
+  if(document.getElementById('regPanelBg').classList.contains('open')){closeRegPanel();return;}
   if(document.getElementById('cmpBg').classList.contains('open')){closeCmp();}
 });
 
