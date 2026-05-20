@@ -62,21 +62,39 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .fhero-welcome{font-size:13px;color:var(--gray);max-width:360px;margin:0 auto 4px;line-height:1.7}
 .fhero-divider{width:40px;height:2px;background:var(--theme-primary);margin:12px auto 0;border-radius:2px}
 
-/* FILTERS */
+/* FILTERS — Dropdown Style */
 .ffilters-wrap{background:var(--white);border-bottom:1px solid var(--border)}
-.ffilter-row{overflow-x:auto;scrollbar-width:none;display:flex;gap:0;padding:0 16px}
-.ffilter-row::-webkit-scrollbar{display:none}
-.ffilter-label{font-size:10px;font-weight:700;color:var(--gray2);text-transform:uppercase;letter-spacing:.5px;padding:8px 16px 0;display:flex;align-items:center;gap:5px}
-.ffilter-btn{padding:11px 16px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.ffilter-btn.on{color:var(--filter-on);border-bottom-color:var(--theme-primary);font-weight:800}
 
-
-/* SEARCH */
-.fsearch-wrap{padding:10px 16px;background:var(--white);border-bottom:1px solid var(--border)}
+/* صف الـ search + زر التصفية */
+.fsearch-filter-row{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--white);border-bottom:1px solid var(--border)}
+.fsearch-wrap-inner{flex:1;position:relative}
+.fsearch-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;opacity:.4}
 .fsearch-input{width:100%;box-sizing:border-box;padding:10px 14px 10px 36px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;font-size:14px;background:var(--cream);color:var(--dark);outline:none;transition:border .2s}
 .fsearch-input:focus{border-color:var(--theme-primary)}
-.fsearch-wrap-inner{position:relative}
-.fsearch-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;opacity:.4}
+
+/* زر التصفية */
+.filter-toggle-btn{display:flex;align-items:center;gap:5px;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--cream);color:var(--gray);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;position:relative}
+.filter-toggle-btn.active{border-color:var(--theme-primary);color:var(--theme-primary);background:var(--gold-light)}
+.filter-badge{background:var(--theme-primary);color:var(--white);border-radius:50px;padding:1px 6px;font-size:10px;font-weight:900;min-width:16px;text-align:center;display:none}
+.filter-badge.show{display:inline-block}
+
+/* panel الـ dropdowns */
+.ffilter-panel{display:none;padding:10px 16px 12px;background:var(--white);border-bottom:2px solid var(--gold-border);gap:8px;flex-wrap:wrap;align-items:center}
+.ffilter-panel.open{display:flex}
+
+/* كل dropdown */
+.fdd-wrap{position:relative;flex:1;min-width:100px}
+.fdd-select{width:100%;padding:8px 28px 8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--gray);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;transition:all .2s;direction:rtl}
+.fdd-select.on{border-color:var(--theme-primary);color:var(--theme-primary);background:var(--gold-light);font-weight:800}
+.fdd-arrow{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:10px;pointer-events:none;opacity:.5;transition:transform .2s}
+.fdd-wrap:has(.fdd-select:focus) .fdd-arrow{transform:translateY(-50%) rotate(180deg)}
+
+/* زر إعادة تعيين */
+.ffilter-reset{padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);background:none;color:var(--gray2);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.ffilter-reset:hover{border-color:var(--red);color:var(--red)}
+
+
+/* SEARCH — now inside fsearch-filter-row above */
 
 /* PRODUCTS */
 .fprod-section{padding:14px}
@@ -456,24 +474,45 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   </div>
 </div>
 
-<!-- FILTERS -->
-<div class="ffilters-wrap">
-  <div class="ffilter-label">🏢 <span class="lar">الشركة</span><span class="len" style="display:none">Brand</span></div>
-  <div class="ffilter-row" id="brand-filter"></div>
-  <div class="ffilter-label" id="size-filter-label" style="display:none">📐 <span class="lar">المقاس</span><span class="len" style="display:none">Size</span></div>
-  <div class="ffilter-row" id="size-filter" style="display:none"></div>
-  <div class="ffilter-label" id="mat-filter-label" style="display:none">🧵 <span class="lar">الخامة</span><span class="len" style="display:none">Material</span></div>
-  <div class="ffilter-row" id="mat-filter" style="display:none"></div>
-</div>
-
-
-<!-- SEARCH -->
-<div class="fsearch-wrap">
+<!-- SEARCH + FILTER TOGGLE ROW -->
+<div class="fsearch-filter-row">
   <div class="fsearch-wrap-inner">
     <span class="fsearch-icon">🔍</span>
     <input class="fsearch-input" id="prodSearch" type="text"
       placeholder="ابحث عن منتج..." oninput="renderProducts()">
   </div>
+  <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterPanel()">
+    ⚙️ <span class="lar">تصفية</span><span class="len" style="display:none">Filter</span>
+    <span class="filter-badge" id="filterBadge">0</span>
+  </button>
+</div>
+
+<!-- FILTER PANEL -->
+<div class="ffilter-panel" id="filterPanel">
+  <!-- brand dropdown -->
+  <div class="fdd-wrap" id="brand-dd-wrap">
+    <select class="fdd-select" id="brand-dd" onchange="setBrand(this.value)">
+      <option value="all">🏢 الكل</option>
+    </select>
+    <span class="fdd-arrow">▾</span>
+  </div>
+  <!-- size dropdown -->
+  <div class="fdd-wrap" id="size-dd-wrap" style="display:none">
+    <select class="fdd-select" id="size-dd" onchange="setSize(this.value)">
+      <option value="all">📐 الكل</option>
+    </select>
+    <span class="fdd-arrow">▾</span>
+  </div>
+  <!-- material dropdown -->
+  <div class="fdd-wrap" id="mat-dd-wrap" style="display:none">
+    <select class="fdd-select" id="mat-dd" onchange="setMaterial(this.value)">
+      <option value="all">🧵 الكل</option>
+    </select>
+    <span class="fdd-arrow">▾</span>
+  </div>
+  <button class="ffilter-reset" onclick="resetFilters()">
+    <span class="lar">↺ تعيين</span><span class="len" style="display:none">↺ Reset</span>
+  </button>
 </div>
 
 <!-- PRODUCTS -->
@@ -1336,9 +1375,11 @@ function initStore(){
 
 function showHomePage(){
   const hero=document.querySelector('.fhero');
-  const filters=document.querySelector('.ffilters-wrap');
+  const filterRow=document.querySelector('.fsearch-filter-row');
+  const filterPanel=document.getElementById('filterPanel');
   if(hero) hero.style.display='none';
-  if(filters) filters.style.display='none';
+  if(filterRow) filterRow.style.display='none';
+  if(filterPanel) filterPanel.style.display='none';
   document.title='ديباجات — مفروشات راقية';
   document.getElementById('prodGrid').innerHTML=`
     <div style="grid-column:1/-1;text-align:center;padding:60px 20px">
@@ -1447,38 +1488,70 @@ function renderHeader(){
   document.title=(m.name||'متجر')+' — مفروشاتي';
 }
 
-// ===== FILTERS =====
+// ===== FILTERS (Dropdown) =====
+function toggleFilterPanel(){
+  const panel=document.getElementById('filterPanel');
+  const btn=document.getElementById('filterToggleBtn');
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('active',open);
+}
+
+function updateFilterBadge(){
+  const count=[activeBrand,activeSize,activeMaterial].filter(v=>v&&v!=='all').length;
+  const badge=document.getElementById('filterBadge');
+  const btn=document.getElementById('filterToggleBtn');
+  badge.textContent=count;
+  badge.classList.toggle('show',count>0);
+  btn.classList.toggle('active',count>0||document.getElementById('filterPanel').classList.contains('open'));
+}
+
+function resetFilters(){
+  activeBrand='all';activeSize='all';activeMaterial='all';
+  renderFilters();renderProducts();
+}
+
 function renderFilters(){
   const pa=prodsArr();
+
+  // --- Brand ---
   const brandIds=[...new Set(pa.map(p=>p.brand_id||p.brand).filter(Boolean))];
-  document.getElementById('brand-filter').innerHTML=
-    `<button class="ffilter-btn${activeBrand==='all'?' on':''}" onclick="setBrand('all')">${isEn?'All':'الكل'}</button>`
-    +brandIds.map(bid=>`<button class="ffilter-btn${activeBrand===bid?' on':''}" onclick="setBrand('${bid}')">
-      ${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}
-    </button>`).join('');
-  const sizeIds=[...new Set(pa.flatMap(p=>p.sizes||[]))];
-  const sfl=document.getElementById('size-filter-label');
-  const sfw=document.getElementById('size-filter');
-  if(sizeIds.length){
-    sfl.style.display='flex';sfw.style.display='flex';
-    sfw.innerHTML=`<button class="ffilter-btn${activeSize==='all'?' on':''}" onclick="setSize('all')">${isEn?'All':'الكل'}</button>`
-      +sizeIds.map(sid=>`<button class="ffilter-btn${activeSize===sid?' on':''}" onclick="setSize('${sid}')">
-        ${xe(isEn?gs(sid).en:gs(sid).ar)}
-      </button>`).join('');
-  } else {sfl.style.display='none';sfw.style.display='none';}
-  // Materials filter
-  const matIds=[...new Set(pa.flatMap(p=>p.materials||[]))];
-  const mfl=document.getElementById('mat-filter-label');
-  const mfw=document.getElementById('mat-filter');
-  if(mfl&&mfw){
-    if(matIds.length){
-      mfl.style.display='flex';mfw.style.display='flex';
-      mfw.innerHTML=`<button class="ffilter-btn${activeMaterial==='all'?' on':''}" onclick="setMaterial('all')">${isEn?'All':'الكل'}</button>`
-        +matIds.map(mid=>{const m=MATERIALS[mid]||{};return`<button class="ffilter-btn${activeMaterial===mid?' on':''}" onclick="setMaterial('${mid}')">
-          ${xe(isEn?(m.en||m.ar):(m.ar||m.en))}
-        </button>`;}).join('');
-    } else {mfl.style.display='none';mfw.style.display='none';}
+  const brandDd=document.getElementById('brand-dd');
+  if(brandDd){
+    brandDd.innerHTML=`<option value="all">${isEn?'🏢 All':'🏢 الكل'}</option>`
+      +brandIds.map(bid=>`<option value="${bid}">${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}</option>`).join('');
+    brandDd.value=activeBrand;
+    brandDd.classList.toggle('on',activeBrand!=='all');
   }
+
+  // --- Size ---
+  const sizeIds=[...new Set(pa.flatMap(p=>p.sizes||[]))];
+  const sizeDdWrap=document.getElementById('size-dd-wrap');
+  const sizeDd=document.getElementById('size-dd');
+  if(sizeDdWrap&&sizeDd){
+    if(sizeIds.length){
+      sizeDdWrap.style.display='';
+      sizeDd.innerHTML=`<option value="all">${isEn?'📐 All':'📐 الكل'}</option>`
+        +sizeIds.map(sid=>`<option value="${sid}">${xe(isEn?gs(sid).en:gs(sid).ar)}</option>`).join('');
+      sizeDd.value=activeSize;
+      sizeDd.classList.toggle('on',activeSize!=='all');
+    } else { sizeDdWrap.style.display='none'; }
+  }
+
+  // --- Material ---
+  const matIds=[...new Set(pa.flatMap(p=>p.materials||[]))];
+  const matDdWrap=document.getElementById('mat-dd-wrap');
+  const matDd=document.getElementById('mat-dd');
+  if(matDdWrap&&matDd){
+    if(matIds.length){
+      matDdWrap.style.display='';
+      matDd.innerHTML=`<option value="all">${isEn?'🧵 All':'🧵 الكل'}</option>`
+        +matIds.map(mid=>{const m=MATERIALS[mid]||{};return`<option value="${mid}">${xe(isEn?(m.en||m.ar):(m.ar||m.en))}</option>`;}).join('');
+      matDd.value=activeMaterial;
+      matDd.classList.toggle('on',activeMaterial!=='all');
+    } else { matDdWrap.style.display='none'; }
+  }
+
+  updateFilterBadge();
 }
 function setBrand(b){activeBrand=b;renderFilters();renderProducts();}
 function setMaterial(m){activeMaterial=m;renderFilters();renderProducts();}
@@ -1933,6 +2006,8 @@ function toggleLang(){
   document.body.style.direction=isEn?'ltr':'rtl';
   document.querySelectorAll('.lar').forEach(e=>e.style.display=isEn?'none':'');
   document.querySelectorAll('.len').forEach(e=>e.style.display=isEn?'':'none');
+  const si=document.getElementById('prodSearch');
+  if(si) si.placeholder=isEn?'Search products...':'ابحث عن منتج...';
   renderFilters();renderProducts();
 }
 
