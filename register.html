@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إنشاء حساب — مفروشاتي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf8f5;--white:#fff;--gold:#b8934a;
+  --gold-light:#fdf6e9;--gold-border:#e8d5b0;
+  --dark:#1c1c1c;--gray:#6b6b6b;--gray2:#9a9a9a;
+  --border:#e8e4de;--red:#c0392b;--green:#1a7a4a;
+  --shadow:0 4px 24px rgba(0,0,0,.08);
+  /* ثيم المسوق — يُطبّق ديناميكياً */
+  --theme-primary:#b8934a;
+}
+body{
+  font-family:'Tajawal',sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  min-height:100vh;
+  direction:rtl;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+
+/* CARD */
+.card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:32px 28px 28px;
+  width:min(420px,100%);
+  box-shadow:var(--shadow);
+}
+
+/* STORE HEADER */
+.store-hd{
+  display:flex;align-items:center;gap:12px;
+  background:var(--gold-light);border:1px solid var(--gold-border);
+  border-radius:14px;padding:12px 14px;margin-bottom:24px;
+}
+.store-logo{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--gold-light);border:1.5px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:var(--theme-primary);
+  overflow:hidden;flex-shrink:0;
+}
+.store-logo img{width:100%;height:100%;object-fit:cover}
+.store-nm{font-size:15px;font-weight:800;color:var(--dark)}
+.store-url{font-size:11px;color:var(--gray2);margin-top:1px}
+
+/* TITLE */
+.page-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--gray2);margin-bottom:24px;line-height:1.7}
+
+/* STEPS */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:24px}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.step:not(:last-child)::after{
+  content:'';position:absolute;top:14px;left:0;width:50%;height:2px;
+  background:var(--border);z-index:0;
+}
+.step:not(:first-child)::before{
+  content:'';position:absolute;top:14px;right:0;width:50%;height:2px;
+  background:var(--border);z-index:0;
+}
+.step.done::after,.step.done::before{background:var(--theme-primary)}
+.step.active::before{background:var(--theme-primary)}
+.step-dot{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--border);color:var(--gray2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;z-index:1;transition:all .3s;
+}
+.step.done .step-dot{background:var(--theme-primary);color:#fff}
+.step.active .step-dot{background:var(--dark);color:#fff}
+.step-lbl{font-size:10px;color:var(--gray2);font-weight:600;white-space:nowrap}
+.step.active .step-lbl{color:var(--dark);font-weight:800}
+.step.done .step-lbl{color:var(--theme-primary)}
+
+/* FORM */
+.field{margin-bottom:14px}
+.field-lbl{font-size:12px;font-weight:800;color:var(--dark);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.field-input{
+  width:100%;padding:13px 14px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--bg);
+  color:var(--dark);font-size:15px;font-family:'Tajawal',sans-serif;
+  outline:none;transition:border .2s;
+}
+.field-input:focus{border-color:var(--theme-primary)}
+.field-input.ltr{direction:ltr;text-align:left}
+.field-input.pin{letter-spacing:8px;font-size:22px;font-weight:900;text-align:center}
+.field-hint{font-size:11px;color:var(--gray2);margin-top:5px;line-height:1.6}
+
+/* PIN STRENGTH */
+.pin-dots{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.pin-dot{width:12px;height:12px;border-radius:50%;background:var(--border);transition:all .2s}
+.pin-dot.filled{background:var(--theme-primary)}
+
+/* ERR */
+.err-msg{font-size:12px;color:var(--red);min-height:18px;margin-bottom:8px;font-weight:600}
+
+/* BTNS */
+.btn-primary{
+  width:100%;padding:14px;border-radius:12px;
+  background:var(--theme-primary);color:#fff;
+  font-size:15px;font-weight:800;border:none;cursor:pointer;
+  font-family:'Tajawal',sans-serif;transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{
+  width:100%;padding:12px;border-radius:12px;
+  background:none;color:var(--gray);
+  font-size:13px;font-weight:700;border:1.5px solid var(--border);
+  cursor:pointer;font-family:'Tajawal',sans-serif;
+  margin-top:10px;transition:all .2s;
+}
+.btn-secondary:hover{border-color:var(--theme-primary);color:var(--theme-primary)}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:8px 0}
+.success-icon{font-size:56px;margin-bottom:14px;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.5);opacity:.3}to{transform:scale(1);opacity:1}}
+.success-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:6px}
+.success-sub{font-size:13px;color:var(--gray2);line-height:1.8;margin-bottom:20px}
+.link-box{
+  background:var(--gold-light);border:1.5px solid var(--gold-border);
+  border-radius:10px;padding:11px 14px;font-size:12px;
+  color:var(--theme-primary);font-weight:700;word-break:break-all;
+  direction:ltr;text-align:left;margin-bottom:14px;cursor:pointer;
+}
+.link-box:hover{border-color:var(--theme-primary)}
+.success-btns{display:flex;flex-direction:column;gap:8px}
+.btn-go{
+  width:100%;padding:14px;border-radius:12px;
+  background:var(--dark);color:#fff;
+  font-size:15px;font-weight:800;border:none;cursor:pointer;
+  font-family:'Tajawal',sans-serif;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .2s;
+}
+.btn-go:hover{opacity:.85}
+.btn-copy{
+  width:100%;padding:12px;border-radius:12px;
+  background:var(--gold-light);color:var(--theme-primary);
+  font-size:13px;font-weight:800;border:1.5px solid var(--gold-border);
+  cursor:pointer;font-family:'Tajawal',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-store-back{
+  width:100%;padding:12px;border-radius:12px;
+  background:none;color:var(--gray2);
+  font-size:13px;font-weight:700;border:1.5px solid var(--border);
+  cursor:pointer;font-family:'Tajawal',sans-serif;
+  text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+
+/* FOOTER */
+.page-foot{
+  margin-top:16px;font-size:11px;color:var(--gray2);text-align:center;
+}
+.page-foot span{color:var(--theme-primary);font-weight:700}
+
+/* LOADER */
+.loader{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:9px 22px;border-radius:50px;font-size:12px;font-weight:700;z-index:9999;display:none;white-space:nowrap;font-family:'Tajawal',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="card" id="card">
+
+  <!-- STORE HEADER -->
+  <div class="store-hd" id="storeHd" style="display:none">
+    <div class="store-logo" id="storeLogo">م</div>
+    <div>
+      <div class="store-nm" id="storeNm">جاري التحميل...</div>
+      <div class="store-url" id="storeUrl"></div>
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="loadingState" style="text-align:center;padding:40px 0">
+    <div style="font-size:36px;margin-bottom:12px">⏳</div>
+    <div style="font-size:13px;color:var(--gray2)">جاري تحميل المتجر...</div>
+  </div>
+
+  <!-- STEP 1: معلومات أساسية -->
+  <div id="step1" style="display:none">
+    <div class="steps" id="stepsBar">
+      <div class="step active" id="s1"><div class="step-dot">1</div><div class="step-lbl">معلوماتك</div></div>
+      <div class="step" id="s2"><div class="step-dot">2</div><div class="step-lbl">الـ PIN</div></div>
+      <div class="step" id="s3"><div class="step-dot">✓</div><div class="step-lbl">تم!</div></div>
+    </div>
+
+    <div class="page-title">إنشاء حساب 👤</div>
+    <div class="page-sub">سجّل بياناتك لتتابع طلباتك وتحفظ مفضلتك</div>
+
+    <div class="field">
+      <div class="field-lbl">👤 اسمك الكريم</div>
+      <input class="field-input" id="regName" type="text" placeholder="مثال: محمد الأحمد" maxlength="50" oninput="clearErr()">
+    </div>
+    <div class="field">
+      <div class="field-lbl">📱 رقم واتساب</div>
+      <input class="field-input ltr" id="regWa" type="tel" placeholder="96512345678" maxlength="15" oninput="clearErr()">
+      <div class="field-hint">أدخل الرقم بالصيغة الدولية بدون + أو مسافات</div>
+    </div>
+
+    <div class="err-msg" id="err1"></div>
+    <button class="btn-primary" onclick="goStep2()">التالي ←</button>
+    <a class="btn-secondary" id="backToStoreBtn1" href="#">← العودة للمتجر</a>
+  </div>
+
+  <!-- STEP 2: PIN -->
+  <div id="step2" style="display:none">
+    <div class="steps">
+      <div class="step done" id="s1b"><div class="step-dot">✓</div><div class="step-lbl">معلوماتك</div></div>
+      <div class="step active" id="s2b"><div class="step-dot">2</div><div class="step-lbl">الـ PIN</div></div>
+      <div class="step" id="s3b"><div class="step-dot">✓</div><div class="step-lbl">تم!</div></div>
+    </div>
+
+    <div class="page-title">اختر PIN سري 🔒</div>
+    <div class="page-sub">4 أرقام تحفظها — ستستخدمها لدخول حسابك لاحقاً</div>
+
+    <div class="field">
+      <div class="field-lbl">🔑 الـ PIN (4 أرقام)</div>
+      <input class="field-input pin ltr" id="regPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="updatePinDots('regPin','dots1');clearErr()">
+      <div class="pin-dots" id="dots1">
+        <div class="pin-dot" id="d1_1"></div>
+        <div class="pin-dot" id="d1_2"></div>
+        <div class="pin-dot" id="d1_3"></div>
+        <div class="pin-dot" id="d1_4"></div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-lbl">🔑 تأكيد الـ PIN</div>
+      <input class="field-input pin ltr" id="regPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="updatePinDots('regPin2','dots2');clearErr()" onkeydown="if(event.key==='Enter')doRegister()">
+      <div class="pin-dots" id="dots2">
+        <div class="pin-dot" id="d2_1"></div>
+        <div class="pin-dot" id="d2_2"></div>
+        <div class="pin-dot" id="d2_3"></div>
+        <div class="pin-dot" id="d2_4"></div>
+      </div>
+    </div>
+
+    <div class="field-hint" style="margin-bottom:14px;text-align:center">
+      ⚠️ احتفظ بالـ PIN — لا يمكن استرجاعه
+    </div>
+
+    <div class="err-msg" id="err2"></div>
+    <button class="btn-primary" id="registerBtn" onclick="doRegister()">إنشاء الحساب 🎉</button>
+    <button class="btn-secondary" onclick="showStep(1)">← رجوع</button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="stepSuccess" style="display:none">
+    <div class="success-wrap">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">تم إنشاء حسابك!</div>
+      <div class="success-sub">أهلاً <strong id="successName"></strong>!<br>حسابك جاهز في متجر <strong id="successStore"></strong></div>
+
+      <div class="link-box" id="myPageLink" onclick="copyLink()">
+        <!-- يُملأ ديناميكياً -->
+      </div>
+
+      <div class="success-btns">
+        <a class="btn-go" id="goToAccountBtn" href="#">
+          👤 افتح حسابي
+        </a>
+        <button class="btn-copy" onclick="copyLink()">
+          📋 نسخ رابط حسابي
+        </button>
+        <a class="btn-store-back" id="goToStoreBtn" href="#">
+          🛋️ العودة للمتجر
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-foot">بتشغيل <span>مفروشاتي — ديباجات</span></div>
+
+<script>
+const FB={
+  apiKey:"AIzaSyDz2PtMjNm4HlBCjS4GzuBdrVNdnMXhRNQ",
+  authDomain:"mafroshaty.firebaseapp.com",
+  databaseURL:"https://mafroshaty-default-rtdb.firebaseio.com",
+  projectId:"mafroshaty",
+  storageBucket:"mafroshaty.firebasestorage.app",
+  messagingSenderId:"933051451932",
+  appId:"1:933051451932:web:f694fa37b7548e0b746dd9"
+};
+firebase.initializeApp(FB);
+const db=firebase.database();
+
+// ===== STATE =====
+const params=new URLSearchParams(location.search);
+const SLUG=params.get('slug')||'';
+let MARKETER=null;
+let myLink='';
+
+// ===== INIT =====
+document.getElementById('backToStoreBtn1').href=SLUG?`https://${SLUG}.dibajat.store`:'./';
+
+if(!SLUG){
+  document.getElementById('loadingState').innerHTML=`
+    <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+    <div style="font-size:13px;color:var(--red);font-weight:700">رابط المتجر غير صحيح</div>
+    <a href="./" style="display:inline-block;margin-top:14px;font-size:12px;color:var(--gold)">العودة للرئيسية</a>`;
+} else {
+  // جلب بيانات المسوق
+  db.ref('marketers').orderByChild('slug').equalTo(SLUG).once('value', snap=>{
+    const data=snap.val()||{};
+    const entries=Object.entries(data);
+    if(!entries.length){
+      document.getElementById('loadingState').innerHTML=`
+        <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:13px;color:var(--red);font-weight:700">المتجر غير موجود</div>`;
+      return;
+    }
+    const [mktId, mkt]=entries[0];
+    MARKETER={...mkt, id:mktId};
+
+    // تطبيق ثيم المسوق
+    applyTheme(mkt);
+
+    // إظهار header المتجر
+    const logoEl=document.getElementById('storeLogo');
+    if(mkt.logo){
+      logoEl.innerHTML=`<img src="${xe(mkt.logo)}" onerror="this.innerHTML='م'">`;
+    } else {
+      logoEl.textContent=(mkt.name||'م')[0];
+    }
+    document.getElementById('storeNm').textContent=mkt.name||'المتجر';
+    document.getElementById('storeUrl').textContent=`${SLUG}.dibajat.store`;
+    document.getElementById('storeHd').style.display='flex';
+
+    // تحقق لو مسجّل بالفعل
+    const saved=localStorage.getItem('cust_'+SLUG);
+    if(saved){
+      try{
+        const u=JSON.parse(saved);
+        // مسجّل — روّحه لحسابه مباشرة
+        window.location.href=`customer.html?slug=${SLUG}`;
+        return;
+      }catch(e){}
+    }
+
+    // إظهار step 1
+    document.getElementById('loadingState').style.display='none';
+    showStep(1);
+  }).catch(e=>{
+    document.getElementById('loadingState').innerHTML=`
+      <div style="font-size:13px;color:var(--red)">خطأ في الاتصال: ${e.message}</div>`;
+  });
+}
+
+// ===== THEME =====
+function applyTheme(m){
+  const themes={
+    ivory:'#b8934a', midnight:'#c9a96e', arctic:'#0071e3',
+    blush:'#c4788a', walnut:'#8b5e3c', slate:'#94a3b8'
+  };
+  const primary=m.theme==='custom'?(m.colorPrimary||'#b8934a'):(themes[m.theme]||'#b8934a');
+  document.documentElement.style.setProperty('--theme-primary', primary);
+  if(['midnight','slate'].includes(m.theme)){
+    document.body.style.background='#0f0f0f';
+    document.documentElement.style.setProperty('--bg','#0f0f0f');
+    document.documentElement.style.setProperty('--white','#1a1a1a');
+    document.documentElement.style.setProperty('--border','#2e2e2e');
+    document.documentElement.style.setProperty('--dark','#f0e6d3');
+    document.documentElement.style.setProperty('--gray','#a09080');
+    document.documentElement.style.setProperty('--gray2','#7a6a5a');
+    document.documentElement.style.setProperty('--gold-light','#1e1a14');
+    document.documentElement.style.setProperty('--gold-border','#3d3018');
+  }
+}
+
+// ===== HELPERS =====
+function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2500);
+}
+function clearErr(){
+  document.getElementById('err1').textContent='';
+  document.getElementById('err2').textContent='';
+}
+
+// ===== PIN DOTS =====
+function updatePinDots(inputId, dotsId){
+  const val=document.getElementById(inputId).value;
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById(dotsId.replace('dots','d').replace('dots','').split('').join('')); 
+    const d=document.getElementById(dotsId==='dots1'?`d1_${i}`:`d2_${i}`);
+    if(d) d.classList.toggle('filled', i<=val.length);
+  }
+}
+
+// ===== STEPS =====
+function showStep(n){
+  document.getElementById('step1').style.display=n===1?'block':'none';
+  document.getElementById('step2').style.display=n===2?'block':'none';
+  document.getElementById('stepSuccess').style.display=n===3?'block':'none';
+}
+
+function goStep2(){
+  const name=document.getElementById('regName').value.trim();
+  const wa=document.getElementById('regWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const errEl=document.getElementById('err1');
+
+  if(!name||name.length<2){errEl.textContent='أدخل اسمك (حرفين على الأقل)';return;}
+  if(!wa||wa.length<8||!/^\d+$/.test(wa)){errEl.textContent='أدخل رقم واتساب صحيح بالأرقام فقط';return;}
+
+  // تحقق لو مسجّل بالفعل
+  errEl.textContent='⏳ جاري التحقق...';
+  db.ref(`marketers/${MARKETER.id}/subscribers/${wa}`).once('value', snap=>{
+    if(snap.exists()){
+      errEl.textContent='هذا الرقم مسجّل بالفعل — ادخل لحسابك مباشرة';
+      setTimeout(()=>{
+        window.location.href=`customer.html?slug=${SLUG}`;
+      }, 1800);
+      return;
+    }
+    errEl.textContent='';
+    showStep(2);
+    document.getElementById('regPin').focus();
+  }).catch(e=>{errEl.textContent='خطأ: '+e.message;});
+}
+
+function doRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const wa=document.getElementById('regWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('regPin').value.trim();
+  const pin2=document.getElementById('regPin2').value.trim();
+  const errEl=document.getElementById('err2');
+  const btn=document.getElementById('registerBtn');
+
+  if(!pin||pin.length<4){errEl.textContent='الـ PIN لازم 4 أرقام بالضبط';return;}
+  if(!/^\d+$/.test(pin)){errEl.textContent='الـ PIN أرقام فقط';return;}
+  if(pin!==pin2){errEl.textContent='الـ PIN غير متطابق — تأكد من التكرار';return;}
+
+  btn.disabled=true;
+  btn.innerHTML='<span class="loader"></span> جاري الحفظ...';
+  errEl.textContent='';
+
+  const subscriber={
+    name,
+    wa,
+    pin,
+    slug: SLUG,
+    marketer_id: MARKETER.id,
+    joinedAt: new Date().toISOString(),
+    wishlist: [],
+    ordersCount: 0
+  };
+
+  db.ref(`marketers/${MARKETER.id}/subscribers/${wa}`).set(subscriber)
+    .then(()=>{
+      // حفظ في localStorage
+      localStorage.setItem('cust_'+SLUG, JSON.stringify({name, wa, pin, mktId:MARKETER.id, joinedAt:subscriber.joinedAt}));
+
+      // نقل المفضلة المحفوظة محلياً (لو عنده)
+      const localWish=localStorage.getItem('wish_'+SLUG);
+      if(localWish){
+        try{
+          const wl=JSON.parse(localWish);
+          if(wl.length) db.ref(`marketers/${MARKETER.id}/subscribers/${wa}/wishlist`).set(wl);
+        }catch(e){}
+      }
+
+      // إظهار صفحة النجاح
+      myLink=`${location.origin}/customer.html?slug=${SLUG}`;
+      document.getElementById('successName').textContent=name;
+      document.getElementById('successStore').textContent=MARKETER.name||SLUG;
+      document.getElementById('myPageLink').textContent=myLink;
+      document.getElementById('goToAccountBtn').href=`customer.html?slug=${SLUG}`;
+      document.getElementById('goToStoreBtn').href=`https://${SLUG}.dibajat.store`;
+      showStep(3);
+    })
+    .catch(e=>{
+      errEl.textContent='خطأ في الحفظ: '+e.message;
+      btn.disabled=false;
+      btn.innerHTML='إنشاء الحساب 🎉';
+    });
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(myLink).then(()=>toast('✓ تم نسخ الرابط'))
+    .catch(()=>{
+      const t=document.createElement('textarea');
+      t.value=myLink;document.body.appendChild(t);t.select();
+      document.execCommand('copy');document.body.removeChild(t);
+      toast('✓ تم نسخ الرابط');
+    });
+}
+</script>
+</body>
+</html>
