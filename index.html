@@ -1360,13 +1360,14 @@ function loadMarketer(key, data){
   loadLikes();
   checkExistingSubscriber();
   document.getElementById('navSubBtn').style.display='flex';
+  // ملء فوري من البيانات المحملة مسبقاً (قبل ما الـ listener يرد)
+  if(data.offers) { allStoreOffers=data.offers; updateOffersBadge(); }
   // listener للعروض — realtime + badge
   db.ref(`marketers/${key}/offers`).on('value', snap=>{
     allStoreOffers=snap.val()||{};
     updateOffersBadge();
-    // لو تاب العروض مفتوح، أعد الرندر تلقائياً
     if(cpTab==='offers') cpRender();
-  });
+  }, err=>{ console.error('offers read error:', err.message); });
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value'), db.ref('materials').once('value')])
     .then(([bSnap,pSnap,mSnap])=>{
       BRANDS=bSnap.val()||{};
