@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حسابي — مفروشاتي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf8f5;--white:#fff;--gold:#b8934a;--gold2:#d4a85a;
+  --gold-light:#fdf6e9;--gold-border:#e8d5b0;--dark:#1c1c1c;
+  --gray:#6b6b6b;--gray2:#9a9a9a;--border:#e8e4de;
+  --green:#1a7a4a;--red:#c0392b;--shadow:0 2px 16px rgba(0,0,0,.07);
+}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;direction:rtl}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:36px 28px;width:min(380px,100%);text-align:center;box-shadow:var(--shadow)}
+.login-logo{width:64px;height:64px;background:var(--gold);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;margin:0 auto 14px}
+.login-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--gray2);margin-bottom:24px;line-height:1.6}
+.login-input{width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--dark);font-size:14px;font-family:'Tajawal',sans-serif;direction:ltr;text-align:center;outline:none;transition:border-color .2s;margin-bottom:10px}
+.login-input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:13px;border-radius:10px;background:var(--gold);color:#fff;font-size:15px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:opacity .2s;margin-top:4px}
+.login-btn:hover{opacity:.85}
+.login-err{color:var(--red);font-size:12px;min-height:18px;margin-bottom:8px}
+.login-hint{font-size:11px;color:var(--gray2);margin-bottom:14px}
+.back-link{display:inline-block;margin-top:14px;font-size:12px;color:var(--gold);text-decoration:none;font-weight:700}
+
+/* HEADER */
+.cust-header{background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.cust-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-light);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--gold);flex-shrink:0}
+.cust-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.cust-header-name{font-size:14px;font-weight:800;color:var(--dark)}
+.cust-header-sub{font-size:10px;color:var(--gray2)}
+.cust-header-acts{margin-right:auto;display:flex;gap:8px}
+.btn-store{padding:7px 14px;border-radius:20px;background:var(--gold-light);border:1.5px solid var(--gold-border);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;text-decoration:none}
+.btn-logout{padding:7px 12px;border-radius:20px;background:none;border:1.5px solid var(--border);color:var(--gray2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif}
+.btn-logout:hover{color:var(--red);border-color:var(--red)}
+
+/* NAV TABS */
+.cust-tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.cust-tabs::-webkit-scrollbar{display:none}
+.cust-tab{flex:1;padding:13px 8px 11px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cust-tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.cust-tab-icon{font-size:18px}
+
+/* MAIN */
+main{padding:16px;max-width:640px;margin:0 auto}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.stat-box{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center}
+.stat-box-val{font-size:22px;font-weight:900;color:var(--dark)}
+.stat-box-lbl{font-size:10px;color:var(--gray2);margin-top:3px}
+.stat-box.gold{border-color:var(--gold-border);background:var(--gold-light)}
+.stat-box.gold .stat-box-val{color:var(--gold)}
+
+/* SECTION */
+.section-hd{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cnt-badge{background:var(--border);color:var(--gray2);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+
+/* WISH ITEMS */
+.wish-item{display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:10px;padding:10px;background:var(--white);border-radius:12px;margin-bottom:8px;border:1px solid var(--border);cursor:pointer;transition:border-color .2s}
+.wish-item:hover{border-color:var(--gold)}
+.wish-img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:var(--gold-light)}
+.wish-nm{font-size:13px;font-weight:700;color:var(--dark)}
+.wish-brand{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.wish-price{font-size:12px;color:var(--gray);margin-top:3px}
+.wish-go{background:var(--gold-light);border:1.5px solid var(--gold-border);color:var(--gold);padding:7px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;white-space:nowrap}
+
+/* ORDERS */
+.order-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.order-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.order-num{font-size:11px;font-weight:700;color:var(--gray2);background:var(--bg);border:1px solid var(--border);padding:3px 9px;border-radius:8px}
+.order-date{font-size:11px;color:var(--gray2)}
+.order-item-row{padding:6px 0;border-bottom:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center}
+.order-item-row:last-child{border:none}
+.order-item-nm{font-size:12px;font-weight:700;color:var(--dark)}
+.order-item-sub{font-size:11px;color:var(--gray2);margin-top:1px}
+.order-item-price{font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap}
+.order-total{font-size:14px;font-weight:900;color:var(--dark);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800}
+.badge-new{background:#fef9e7;color:#d4ac0d}
+.badge-confirmed{background:#eaf4fe;color:#2980b9}
+.badge-delivered{background:#eafaf1;color:var(--green)}
+.badge-cancelled{background:#fdf2f0;color:var(--red)}
+
+/* OFFERS */
+.offer-card{background:var(--white);border:1px solid var(--gold-border);border-radius:12px;padding:16px;margin-bottom:10px;background:linear-gradient(135deg,#fff,var(--gold-light))}
+.offer-title{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px}
+.offer-desc{font-size:12px;color:var(--gray);line-height:1.7}
+.offer-date{font-size:10px;color:var(--gray2);margin-top:8px}
+
+/* PROFILE */
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+.profile-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.profile-row:last-child{border:none}
+.profile-lbl{font-size:12px;color:var(--gray2);font-weight:600}
+.profile-val{font-size:13px;font-weight:700;color:var(--dark)}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 16px;color:var(--gray2);font-size:13px;line-height:1.8}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:9px 22px;border-radius:50px;font-size:12px;font-weight:700;z-index:9999;display:none;white-space:nowrap;font-family:'Tajawal',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">👤</div>
+    <div class="login-title">حسابي</div>
+    <div class="login-sub">سجّل دخولك برقم واتساب والـ PIN اللي اخترته عند الاشتراك</div>
+    <input class="login-input" id="loginWa" type="tel" placeholder="رقم واتساب (مثال: 96512345678)" maxlength="15">
+    <input class="login-input" id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="PIN (4 أرقام)" style="letter-spacing:6px;font-size:20px;font-weight:900" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-hint">🔒 نفس الـ PIN اللي سجّلته أول مرة في المتجر</div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="login-btn" onclick="doLogin()">دخول ←</button>
+    <br>
+    <a class="back-link" id="backToStore" href="#">← العودة للمتجر</a>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header class="cust-header">
+    <div class="cust-avatar" id="custAvatar">👤</div>
+    <div>
+      <div class="cust-header-name" id="custName">—</div>
+      <div class="cust-header-sub" id="custSub">مفروشاتي</div>
+    </div>
+    <div class="cust-header-acts">
+      <a class="btn-store" id="storeLink" href="#">🛋️ المتجر</a>
+      <button class="btn-logout" onclick="doLogout()">خروج</button>
+    </div>
+  </header>
+
+  <div class="cust-tabs">
+    <button class="cust-tab on" onclick="goTab('home',this)">
+      <span class="cust-tab-icon">🏠</span>الرئيسية
+    </button>
+    <button class="cust-tab" onclick="goTab('wishlist',this)">
+      <span class="cust-tab-icon">❤️</span>مفضلتي
+    </button>
+    <button class="cust-tab" onclick="goTab('orders',this)">
+      <span class="cust-tab-icon">📦</span>طلباتي
+    </button>
+    <button class="cust-tab" onclick="goTab('offers',this)">
+      <span class="cust-tab-icon">🎁</span>العروض
+    </button>
+    <button class="cust-tab" onclick="goTab('profile',this)">
+      <span class="cust-tab-icon">⚙️</span>حسابي
+    </button>
+  </div>
+
+  <main id="mainContent"></main>
+</div>
+
+<script>
+const FB={apiKey:"AIzaSyDz2PtMjNm4HlBCjS4GzuBdrVNdnMXhRNQ",authDomain:"mafroshaty.firebaseapp.com",databaseURL:"https://mafroshaty-default-rtdb.firebaseio.com",projectId:"mafroshaty",storageBucket:"mafroshaty.firebasestorage.app",messagingSenderId:"933051451932",appId:"1:933051451932:web:f694fa37b7548e0b746dd9"};
+firebase.initializeApp(FB);
+const db=firebase.database();
+
+const p=new URLSearchParams(location.search);
+const SLUG=p.get('slug')||'';
+const STORE_URL=SLUG?`https://${SLUG}.dibajat.store`:'';
+let currentTab='home', currentUser=null, MARKETER=null, allProducts={}, allBrands={}, myOrders=[], myWishlist=[], myOffers=[];
+
+// ===== HELPERS =====
+function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2500);
+}
+function statusBadge(s){
+  if(s==='new')return'<span class="badge badge-new">🆕 جديد</span>';
+  if(s==='confirmed')return'<span class="badge badge-confirmed">✓ مؤكد</span>';
+  if(s==='delivered')return'<span class="badge badge-delivered">✅ مسلّم</span>';
+  return'<span class="badge badge-cancelled">✕ ملغي</span>';
+}
+
+// ===== BACK LINK =====
+document.getElementById('backToStore').href=STORE_URL||'/';
+
+// ===== LOGIN =====
+function doLogin(){
+  const wa=document.getElementById('loginWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('loginPin').value.trim();
+  const errEl=document.getElementById('loginErr');
+  if(!wa||wa.length<8){errEl.textContent='أدخل رقم واتساب صحيح';return;}
+  if(!pin||pin.length<4){errEl.textContent='الـ PIN 4 أرقام';return;}
+  errEl.textContent='⏳ جاري التحقق...';
+
+  // نبحث عن المسوق بالـ slug
+  if(!SLUG){errEl.textContent='رابط المتجر غير صحيح';return;}
+  db.ref('marketers').orderByChild('slug').equalTo(SLUG).once('value',snap=>{
+    const data=snap.val()||{};
+    const entries=Object.entries(data);
+    if(!entries.length){errEl.textContent='المتجر غير موجود';return;}
+    const [mktId, mkt]=entries[0];
+    MARKETER={...mkt, id:mktId};
+
+    // تحقق من المشترك
+    db.ref(`marketers/${mktId}/subscribers/${wa}`).once('value',subSnap=>{
+      if(!subSnap.exists()){errEl.textContent='رقم الواتساب غير مسجل في هذا المتجر';return;}
+      const sub=subSnap.val();
+      if(String(sub.pin)!==String(pin)){errEl.textContent='الـ PIN غير صحيح';return;}
+      // تسجيل دخول ناجح
+      currentUser={...sub, wa, mktId};
+      localStorage.setItem('cust_'+SLUG, JSON.stringify(currentUser));
+      startApp();
+    });
+  }).catch(e=>{errEl.textContent='خطأ: '+e.message;});
+}
+function doLogout(){
+  localStorage.removeItem('cust_'+SLUG);
+  currentUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+// ===== START APP =====
+function startApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('custName').textContent=currentUser.name||'مشترك';
+  document.getElementById('custSub').textContent=SLUG?SLUG+'.dibajat.store':'مفروشاتي';
+  document.getElementById('storeLink').href=STORE_URL||'/';
+
+  // جلب المنتجات والبراندات
+  db.ref('products').once('value',snap=>{allProducts=snap.val()||{};});
+  db.ref('brands').once('value',snap=>{allBrands=snap.val()||{};});
+
+  // مفضلة من Firebase
+  db.ref(`marketers/${currentUser.mktId}/subscribers/${currentUser.wa}/wishlist`).on('value',snap=>{
+    myWishlist=snap.val()||[];
+    if(currentTab==='wishlist')renderTab();
+  });
+
+  // طلبات الزبون (بناءً على رقم واتساب في ملاحظات الطلب لاحقاً — حالياً نعرض كل طلبات المسوق)
+  db.ref('orders').orderByChild('marketer_id').equalTo(currentUser.mktId).on('value',snap=>{
+    myOrders=snap.val()?Object.entries(snap.val()).map(([k,v])=>({...v,id:k})).sort((a,b)=>(b.date||'').localeCompare(a.date||'')):[];
+    if(currentTab==='orders')renderTab();
+  });
+
+  // عروض المسوق
+  db.ref(`marketers/${currentUser.mktId}/offers`).on('value',snap=>{
+    myOffers=snap.val()?Object.values(snap.val()):[];
+    if(currentTab==='offers')renderTab();
+  });
+
+  renderTab();
+}
+
+// ===== TABS =====
+function goTab(tab,el){
+  currentTab=tab;
+  document.querySelectorAll('.cust-tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  renderTab();
+}
+function renderTab(){
+  const c=document.getElementById('mainContent');
+  if(currentTab==='home')c.innerHTML=renderHome();
+  else if(currentTab==='wishlist')c.innerHTML=renderWishlist();
+  else if(currentTab==='orders')c.innerHTML=renderOrders();
+  else if(currentTab==='offers')c.innerHTML=renderOffers();
+  else if(currentTab==='profile')c.innerHTML=renderProfile();
+}
+
+// ===== HOME =====
+function renderHome(){
+  const delivered=myOrders.filter(o=>o.status==='delivered').length;
+  const pending=myOrders.filter(o=>o.status==='new'||o.status==='confirmed').length;
+  const storeLink=STORE_URL||'/';
+  return`
+  <div style="background:linear-gradient(135deg,var(--gold-light),#fff);border:1px solid var(--gold-border);border-radius:16px;padding:20px 16px;margin-bottom:18px;text-align:center">
+    <div style="font-size:40px;margin-bottom:8px">👋</div>
+    <div style="font-size:18px;font-weight:900;color:var(--dark);margin-bottom:4px">أهلاً ${xe(currentUser.name||'')}!</div>
+    <div style="font-size:12px;color:var(--gray2)">مرحباً في حسابك على متجر ${xe(MARKETER?.name||'')}</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box gold">
+      <div class="stat-box-val">❤️ ${myWishlist.length}</div>
+      <div class="stat-box-lbl">مفضلة</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val">${delivered}</div>
+      <div class="stat-box-lbl">طلبات مسلّمة</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val">${pending}</div>
+      <div class="stat-box-lbl">طلبات نشطة</div>
+    </div>
+  </div>
+
+  ${myWishlist.length?`
+  <div class="section-hd">❤️ آخر المفضلة <span class="cnt-badge">${myWishlist.length}</span></div>
+  ${myWishlist.slice(0,3).filter(pid=>allProducts[pid]).map(pid=>{
+    const p=allProducts[pid];
+    const img=(p.colors?.[0]?.imgs||[])[0]||'';
+    const bid=p.brand_id||p.brand;
+    const brand=allBrands[bid]||{};
+    return`<div class="wish-item" onclick="window.location.href='${xe(storeLink+'/product/'+pid)}'">
+      ${img?`<img class="wish-img" src="${xe(img)}" onerror="this.style.display='none'">`:`<div class="wish-img" style="display:flex;align-items:center;justify-content:center;font-size:28px">${p.emoji||'🛋️'}</div>`}
+      <div>
+        <div class="wish-brand">${xe(brand.ar||brand.en||'')}</div>
+        <div class="wish-nm">${xe(p.nameAr||'')}</div>
+        <div class="wish-price">${p.priceOnRequest?'حسب الطلب':p.price+' KWD'}</div>
+      </div>
+      <button class="wish-go">عرض ←</button>
+    </div>`;
+  }).join('')}
+  ${myWishlist.length>3?`<div style="text-align:center;padding:6px;font-size:12px;color:var(--gold);cursor:pointer;font-weight:700" onclick="goTab('wishlist',document.querySelectorAll('.cust-tab')[1])">عرض الكل ←</div>`:''}
+  `:''}
+
+  <div style="margin-top:18px">
+    <a href="${xe(storeLink)}" style="display:block;width:100%;padding:14px;border-radius:12px;background:var(--dark);color:#fff;font-size:14px;font-weight:800;text-align:center;text-decoration:none">
+      🛋️ تسوّق من المتجر
+    </a>
+  </div>`;
+}
+
+// ===== WISHLIST =====
+function renderWishlist(){
+  const storeLink=STORE_URL||'/';
+  if(!myWishlist.length) return`<div class="empty"><div class="empty-icon">🤍</div>مفضلتك فارغة<br><span style="font-size:12px">أضف منتجات من المتجر لتظهر هنا</span><br><a href="${xe(storeLink)}" style="display:inline-block;margin-top:14px;padding:10px 24px;background:var(--gold);color:#fff;border-radius:10px;font-weight:800;text-decoration:none">تسوّق الآن</a></div>`;
+  const prods=myWishlist.filter(pid=>allProducts[pid]);
+  return`
+  <div class="section-hd">❤️ مفضلتي <span class="cnt-badge">${prods.length}</span></div>
+  ${prods.map(pid=>{
+    const p=allProducts[pid];
+    const img=(p.colors?.[0]?.imgs||[])[0]||'';
+    const bid=p.brand_id||p.brand;
+    const brand=allBrands[bid]||{};
+    return`<div class="wish-item" onclick="window.location.href='${xe(storeLink+'/product/'+pid)}'">
+      ${img?`<img class="wish-img" src="${xe(img)}" onerror="this.style.display='none'">`:`<div class="wish-img" style="display:flex;align-items:center;justify-content:center;font-size:28px">${p.emoji||'🛋️'}</div>`}
+      <div>
+        <div class="wish-brand">${xe(brand.ar||brand.en||'')}</div>
+        <div class="wish-nm">${xe(p.nameAr||'')}</div>
+        <div class="wish-price">${p.priceOnRequest?'حسب الطلب':p.price+' KWD'}</div>
+      </div>
+      <a href="${xe(storeLink+'/product/'+pid)}" class="wish-go" onclick="event.stopPropagation()">عرض ←</a>
+    </div>`;
+  }).join('')}`;
+}
+
+// ===== ORDERS =====
+function renderOrders(){
+  if(!myOrders.length) return`<div class="empty"><div class="empty-icon">📦</div>لا توجد طلبات بعد<br><a href="${xe(STORE_URL||'/')}" style="display:inline-block;margin-top:14px;padding:10px 24px;background:var(--gold);color:#fff;border-radius:10px;font-weight:800;text-decoration:none">تسوّق الآن</a></div>`;
+  return`
+  <div class="section-hd">📦 طلباتي <span class="cnt-badge">${myOrders.length}</span></div>
+  ${myOrders.map((o,i)=>{
+    const items=o.items?Object.values(o.items):[];
+    return`<div class="order-card">
+      <div class="order-hd">
+        <span class="order-num">طلب #${myOrders.length-i}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${statusBadge(o.status)}
+          <span class="order-date">${xe(o.date||'')}</span>
+        </div>
+      </div>
+      <div style="margin:8px 0">
+        ${items.map(item=>`
+          <div class="order-item-row">
+            <div>
+              <div class="order-item-nm">${xe(item.product||item.nameAr||'')}</div>
+              <div class="order-item-sub">${xe(item.color||item.colorAr||'')}${item.size?' · '+xe(item.size):''} × ${item.qty||1}</div>
+            </div>
+            <span class="order-item-price">${(item.price||0)*(item.qty||1)} KWD</span>
+          </div>`).join('')}
+      </div>
+      <div class="order-total">الإجمالي: ${xe(o.total||0)} KWD</div>
+    </div>`;
+  }).join('')}`;
+}
+
+// ===== OFFERS =====
+function renderOffers(){
+  if(!myOffers.length) return`<div class="empty"><div class="empty-icon">🎁</div>لا توجد عروض حالياً<br><span style="font-size:12px">ترقّب العروض الخاصة من المسوق!</span></div>`;
+  return`
+  <div class="section-hd">🎁 العروض الخاصة <span class="cnt-badge">${myOffers.length}</span></div>
+  ${myOffers.map(o=>`<div class="offer-card">
+    <div class="offer-title">${xe(o.title||'')}</div>
+    <div class="offer-desc">${xe(o.desc||'')}</div>
+    ${o.date?`<div class="offer-date">📅 ${xe(o.date)}</div>`:''}
+    ${o.link?`<a href="${xe(o.link)}" style="display:inline-block;margin-top:10px;padding:8px 18px;background:var(--gold);color:#fff;border-radius:8px;font-size:12px;font-weight:800;text-decoration:none">عرض ←</a>`:''}
+  </div>`).join('')}`;
+}
+
+// ===== PROFILE =====
+function renderProfile(){
+  return`
+  <div class="section-hd">⚙️ معلومات حسابي</div>
+  <div class="profile-card">
+    <div class="profile-row">
+      <span class="profile-lbl">الاسم</span>
+      <span class="profile-val">${xe(currentUser.name||'—')}</span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-lbl">رقم واتساب</span>
+      <span class="profile-val" style="direction:ltr">${xe(currentUser.wa||'—')}</span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-lbl">المتجر</span>
+      <span class="profile-val" style="color:var(--gold)">${xe(MARKETER?.name||SLUG||'—')}</span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-lbl">تاريخ الاشتراك</span>
+      <span class="profile-val">${currentUser.joinedAt?new Date(currentUser.joinedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}):'—'}</span>
+    </div>
+  </div>
+
+  <button onclick="doLogout()" style="width:100%;padding:12px;border-radius:10px;background:none;color:var(--red);font-size:13px;font-weight:800;border:1.5px solid #f5c6c2;cursor:pointer;font-family:'Tajawal',sans-serif">
+    🚪 تسجيل الخروج
+  </button>
+
+  <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--gray2)">
+    بتشغيل <span style="color:var(--gold);font-weight:700">مفروشاتي — ديباجات</span>
+  </div>`;
+}
+
+// ===== INIT =====
+const savedUser=localStorage.getItem('cust_'+SLUG);
+if(savedUser){
+  try{
+    currentUser=JSON.parse(savedUser);
+    // إعادة جلب بيانات المسوق
+    db.ref('marketers').orderByChild('slug').equalTo(SLUG).once('value',snap=>{
+      const data=snap.val()||{};
+      const entries=Object.entries(data);
+      if(entries.length){
+        const [mktId,mkt]=entries[0];
+        MARKETER={...mkt,id:mktId};
+        currentUser.mktId=mktId;
+        startApp();
+      }
+    });
+  }catch(e){localStorage.removeItem('cust_'+SLUG);}
+}
+</script>
+</body>
+</html>
