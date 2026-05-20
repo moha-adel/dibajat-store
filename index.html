@@ -1395,9 +1395,14 @@ function loadMarketer(key, data){
       });
       renderFilters();
       renderProducts();
-      // فتح منتج تلقائياً لو جاي من رابط مباشر
+      // فتح منتج تلقائياً لو جاي من رابط مباشر /p/{slug}
       const autoPid = window.PRODUCT_PID;
-      if(autoPid && PRODUCTS[autoPid]){
+      const _pp = location.pathname.split('/');
+      if(_pp[1]==='p' && _pp[2]){
+        const _slug=_pp[2];
+        const _pid=Object.keys(PRODUCTS).find(k=>PRODUCTS[k].slug===_slug);
+        if(_pid) setTimeout(()=>openModal(_pid), 300);
+      } else if(autoPid && PRODUCTS[autoPid]){
         setTimeout(()=>openModal(autoPid), 300);
       }
     });
