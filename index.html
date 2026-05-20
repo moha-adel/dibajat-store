@@ -84,7 +84,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 
 /* كل dropdown */
 .fdd-wrap{position:relative;flex:1;min-width:100px}
-.fdd-select{width:100%;padding:8px 28px 8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--gray);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;transition:all .2s;direction:rtl}
+.fdd-select{width:100%;padding:10px 28px 10px 10px;min-height:42px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--gray);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;transition:all .2s;direction:rtl;line-height:1.4}
 .fdd-select.on{border-color:var(--theme-primary);color:var(--theme-primary);background:var(--gold-light);font-weight:800}
 .fdd-arrow{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:10px;pointer-events:none;opacity:.5;transition:transform .2s}
 .fdd-wrap:has(.fdd-select:focus) .fdd-arrow{transform:translateY(-50%) rotate(180deg)}
@@ -186,7 +186,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .compare-toggle::after{content:'';position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .2s}
 .compare-toggle.on::after{transform:translateX(-16px)}
 /* أزرار */
-.fmodal-btns{display:flex;flex-direction:column;gap:8px}
+.fmodal-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fmodal-btns .wa-btn,.fmodal-btns .add-cart-btn{width:100%;font-size:13px;padding:12px 8px}
+.fmodal-btn-secondary{padding:11px 8px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:12px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;width:100%}
+.fmodal-btn-secondary:hover{border-color:var(--theme-primary);color:var(--theme-primary)}
 .wa-btn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,#25d366,#1aab54);color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
 .wa-btn:hover{opacity:.9}
 .add-cart-btn{width:100%;padding:12px;border-radius:10px;background:var(--btn-dark);color:var(--white);font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
@@ -1701,17 +1704,17 @@ function renderModal(){
 
       <div class="fmodal-btns" style="margin-top:12px">
         <button class="wa-btn" onclick="waProduct('${pid}')">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-          ${isEn?'Order on WhatsApp':'اطلب الآن واتساب'}
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          ${isEn?'Order via WhatsApp':'اطلب واتساب'}
         </button>
         ${p.priceOnRequest
           ? '<button class="add-cart-btn" style="background:var(--theme-primary)" onclick="waProduct(currentPid)">📲 '+(isEn?'Contact for Price':'تواصل للسعر')+'</button>'
-          : `<button class="add-cart-btn" onclick="addCart('${pid}')">🛒 ${(isEn?'Add to Cart':'أضف للسلة')}</button>`}
-        <button style="width:100%;padding:11px;border-radius:10px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="shareProduct('${pid}')">
-          🔗 ${isEn?'Share Product':'مشاركة الطقم'}
+          : `<button class="add-cart-btn" onclick="addCart('${pid}')">🛒 ${isEn?'Add to Cart':'أضف للسلة'}</button>`}
+        <button class="fmodal-btn-secondary" onclick="shareProduct('${pid}')">
+          🔗 ${isEn?'Share':'مشاركة'}
         </button>
-        <button class="wishlist-btn ${wishlist.includes(pid)?'wishlisted':''}" onclick="toggleWish('${pid}');renderModal()">
-          ${wishlist.includes(pid)?(isEn?'❤️ Remove from Wishlist':'❤️ إزالة من المفضلة'):(isEn?'🤍 Save to Wishlist':'🤍 أضف للمفضلة')}
+        <button class="fmodal-btn-secondary ${wishlist.includes(pid)?'wishlisted':''}" style="${wishlist.includes(pid)?'background:#fff0f0;border-color:#ffb3b3;color:#c0392b':''}" onclick="toggleWish('${pid}');renderModal()">
+          ${wishlist.includes(pid)?(isEn?'❤️ Saved':'❤️ محفوظ'):(isEn?'🤍 Save':'🤍 المفضلة')}
         </button>
       </div>
 
