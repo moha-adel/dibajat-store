@@ -185,6 +185,23 @@ main{padding:16px 16px 90px}
 .top-product-rank.gold{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
 .top-product-rank.silver{background:rgba(139,148,158,.12);border-color:var(--mt);color:var(--mt)}
 .top-product-rank.bronze{background:rgba(210,147,71,.12);border-color:#d29347;color:#d29347}
+
+/* ===== OFFERS ===== */
+.offer-form{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.offer-label{font-size:12px;color:var(--mt);font-weight:700;display:block;margin-bottom:6px}
+.offer-input{width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid var(--bd);background:var(--bg3);color:var(--tx);font-size:14px;font-family:'Tajawal',sans-serif;outline:none;transition:border-color .2s;margin-bottom:12px;direction:rtl}
+.offer-input:focus{border-color:var(--gold)}
+textarea.offer-input{min-height:80px;resize:vertical}
+.offer-send-btn{width:100%;padding:12px;border-radius:10px;background:var(--gold);color:#0d1117;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:opacity .2s}
+.offer-send-btn:hover{opacity:.88}
+.offer-send-btn:disabled{opacity:.5;cursor:not-allowed}
+.offer-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.offer-card-title{font-size:14px;font-weight:800;color:var(--tx);margin-bottom:6px}
+.offer-card-desc{font-size:12px;color:var(--mt);line-height:1.7;margin-bottom:8px;white-space:pre-wrap}
+.offer-card-link{font-size:12px;color:var(--blue);word-break:break-all;direction:ltr;display:block;margin-bottom:8px}
+.offer-card-ft{display:flex;align-items:center;justify-content:space-between}
+.offer-card-date{font-size:11px;color:var(--mt)}
+.offer-del-btn{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);border-radius:7px;padding:4px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif}
 </style>
 </head>
 <body>
@@ -246,6 +263,9 @@ main{padding:16px 16px 90px}
     <button class="nav-tab" onclick="goTab('card',this)" id="tab-card">
       <span class="nav-tab-icon">🪪</span>بطاقتي
     </button>
+    <button class="nav-tab" onclick="goTab('offers',this)" id="tab-offers">
+      <span class="nav-tab-icon">🎁</span>عروضي
+    </button>
 
   </nav>
 </div>
@@ -258,7 +278,7 @@ firebase.initializeApp(FB);
 const db=firebase.database();
 
 const MKT_KEY='maf_mkt_id';
-let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, allRegistrations={}, allSubscribers={}, currentTab='overview', orderFilter='all';
+let currentMarketer=null, allOrders={}, allProducts={}, allBrands={}, allRegistrations={}, allSubscribers={}, allOffers={}, currentTab='overview', orderFilter='all';
 
 // ===== LOGIN =====
 function doLogin(){
@@ -336,6 +356,10 @@ function startApp(id, mkt){
     allSubscribers=snap.val()||{};
     if(currentTab==='subscribers')renderTab();
   });
+  db.ref(`marketers/${id}/offers`).on('value',snap=>{
+    allOffers=snap.val()||{};
+    if(currentTab==='offers')renderTab();
+  });
 
   renderTab();
 }
@@ -354,6 +378,7 @@ function renderTab(){
   else if(currentTab==='store')c.innerHTML=renderStore();
   else if(currentTab==='subscribers')c.innerHTML=renderSubscribers();
   else if(currentTab==='card'){c.innerHTML=renderCard();buildQR();}
+  else if(currentTab==='offers')c.innerHTML=renderOffers();
 }
 
 // ===== HELPERS =====
@@ -812,6 +837,69 @@ function toast(msg){
   el.textContent=msg;el.classList.add('show');
   clearTimeout(_toastTimer);
   _toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ===== OFFERS =====
+function renderOffers(){
+  const offersArr=Object.entries(allOffers)
+    .map(([k,v])=>({...v,id:k}))
+    .sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  return`
+  <div class="section-title">🎁 إرسال عرض جديد</div>
+  <div class="offer-form">
+    <label class="offer-label">📌 عنوان العرض <span style="color:var(--red)">*</span></label>
+    <input class="offer-input" id="offerTitle" placeholder="مثال: خصم 20% على طواقم الصيف" maxlength="120">
+    <label class="offer-label">📝 وصف العرض <span style="color:var(--red)">*</span></label>
+    <textarea class="offer-input" id="offerDesc" placeholder="اكتب تفاصيل العرض هنا...&#10;مثال: خصم خاص لعملائي على كل الطواقم حتى نهاية الشهر" maxlength="600"></textarea>
+    <label class="offer-label">🔗 رابط اختياري (صفحة منتج أو واتساب)</label>
+    <input class="offer-input" id="offerLink" placeholder="https://..." dir="ltr" style="text-align:left" maxlength="300">
+    <button class="offer-send-btn" id="offerSendBtn" onclick="sendOffer()">📤 نشر العرض</button>
+  </div>
+
+  <div class="section-title" style="margin-top:4px">📋 العروض المرسلة <span class="count-badge">${offersArr.length}</span></div>
+  ${offersArr.length===0
+    ?`<div class="empty">لا توجد عروض بعد — أرسل أول عرض لزبائنك!</div>`
+    :offersArr.map(o=>`
+    <div class="offer-card">
+      <div class="offer-card-title">${xe(o.title||'—')}</div>
+      <div class="offer-card-desc">${xe(o.desc||'')}</div>
+      ${o.link?`<a class="offer-card-link" href="${xe(o.link)}" target="_blank" rel="noopener">${xe(o.link)}</a>`:''}
+      <div class="offer-card-ft">
+        <span class="offer-card-date">${o.createdAt?new Date(o.createdAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):''}</span>
+        <button class="offer-del-btn" onclick="deleteOffer('${o.id}')">🗑 حذف</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+function sendOffer(){
+  const title=document.getElementById('offerTitle')?.value.trim();
+  const desc=document.getElementById('offerDesc')?.value.trim();
+  const link=document.getElementById('offerLink')?.value.trim();
+  if(!title){toast('⚠️ أدخل عنوان العرض');return;}
+  if(!desc){toast('⚠️ أدخل وصف العرض');return;}
+  const btn=document.getElementById('offerSendBtn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ جاري النشر...';}
+  const id=currentMarketer.id;
+  const offer={title,desc,createdAt:new Date().toISOString()};
+  if(link) offer.link=link;
+  db.ref(`marketers/${id}/offers`).push(offer)
+    .then(()=>{
+      toast('✅ تم نشر العرض بنجاح');
+      document.getElementById('offerTitle').value='';
+      document.getElementById('offerDesc').value='';
+      document.getElementById('offerLink').value='';
+    })
+    .catch(e=>toast('خطأ: '+e.message))
+    .finally(()=>{
+      if(btn){btn.disabled=false;btn.textContent='📤 نشر العرض';}
+    });
+}
+
+function deleteOffer(offerId){
+  if(!confirm('هل تريد حذف هذا العرض؟')) return;
+  db.ref(`marketers/${currentMarketer.id}/offers/${offerId}`).remove()
+    .then(()=>toast('🗑 تم حذف العرض'))
+    .catch(e=>toast('خطأ: '+e.message));
 }
 
 // ===== INIT =====
