@@ -254,9 +254,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .nav-wish-count.show{display:block}
 
 /* SUBSCRIBE BTN in nav */
-.nav-sub-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;border:1.5px solid var(--theme-primary);color:var(--theme-primary);background:var(--gold-light);cursor:pointer;font-size:11px;font-weight:800;font-family:'Tajawal',sans-serif;transition:all .2s;white-space:nowrap}
+.nav-sub-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;border:1.5px solid var(--theme-primary);color:var(--theme-primary);background:var(--gold-light);cursor:pointer;font-size:11px;font-weight:800;font-family:'Tajawal',sans-serif;transition:all .2s;white-space:nowrap;position:relative}
 .nav-sub-btn:hover{background:var(--theme-primary);color:var(--white)}
 .nav-sub-btn.subbed{background:var(--theme-primary);color:var(--white)}
+.offers-badge{position:absolute;top:-5px;left:-5px;min-width:17px;height:17px;background:#e74c3c;color:#fff;border-radius:50px;font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--nav-bg);line-height:1}
+.offers-badge.show{display:flex}
 
 /* CUSTOMER PANEL */
 .cust-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3600;align-items:flex-end;justify-content:center}
@@ -413,6 +415,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
     <button class="nav-sub-btn" id="navSubBtn" onclick="openSubModal()" style="display:none">
       ⭐ <span class="lar">اشترك</span><span class="len" style="display:none">Subscribe</span>
+      <span class="offers-badge" id="offersBadge"></span>
     </button>
     <button class="cart-btn" onclick="openCart()">
       🛒 <span class="lar">سلتي</span><span class="len" style="display:none">Cart</span>
@@ -730,6 +733,7 @@ let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
 let currentPid=null, currentSlideIdx=0;
 // === جديد ===
 let wishlist=[], productLikes={}, currentSubscriber=null;
+let allStoreOffers={}, _lastSeenOffersTs=0;
 
 const ALL_SIZES=[
   {id:'king',  ar:'كينج — نفرين',    en:'King Size'},
@@ -831,6 +835,8 @@ function cpDoLogin(){
     updateSubBtn(true);
     // مزامنة المفضلة
     if(sub.wishlist) wishlist=[...new Set([...wishlist,...(sub.wishlist||[])])];
+    _lastSeenOffersTs=parseInt(localStorage.getItem('offers_seen_'+slug)||'0');
+    updateOffersBadge();
     cpShowLoggedIn();
   }).catch(e=>{
     btn.disabled=false;btn.innerHTML='دخول ←';
@@ -871,7 +877,7 @@ function cpRender(){
   if(cpTab==='home') el.innerHTML=cpRenderHome();
   else if(cpTab==='wishlist') el.innerHTML=cpRenderWishlist();
   else if(cpTab==='orders') el.innerHTML=cpRenderOrders();
-  else if(cpTab==='offers') cpRenderOffers(el);
+  else if(cpTab==='offers'){markOffersAsSeen();cpRenderOffers(el);}
 }
 
 function cpRenderHome(){
@@ -953,34 +959,33 @@ function cpLogout(){
 }
 
 function cpRenderOffers(container){
-  container.innerHTML=`<div style="text-align:center;padding:24px;color:var(--gray2);font-size:13px">⏳ جاري تحميل العروض...</div>`;
-  if(!STORE.id){container.innerHTML=`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">🎁<br>لا توجد عروض حالياً</div>`;return;}
-  db.ref(`marketers/${STORE.id}/offers`).once('value',snap=>{
-    const data=snap.val()||{};
-    const offers=Object.entries(data)
-      .map(([k,v])=>({...v,id:k}))
-      .sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
-    if(!offers.length){
-      container.innerHTML=`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">🎁<br>لا توجد عروض حالياً<br><span style="font-size:12px;margin-top:6px;display:block">تابع متجرك لمعرفة أحدث العروض!</span></div>`;
-      return;
-    }
-    container.innerHTML=`
-      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:12px">🎁 عروض المتجر <span style="background:var(--border);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--gray2)">${offers.length}</span></div>
-      ${offers.map(o=>{
-        const dateStr=o.createdAt?new Date(o.createdAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'';
-        return`<div style="background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px">
-          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
-            <div style="font-size:22px;flex-shrink:0">🎁</div>
-            <div style="font-size:14px;font-weight:800;color:var(--dark);line-height:1.4">${xe(o.title||'—')}</div>
-          </div>
-          <div style="font-size:12px;color:var(--gray);line-height:1.8;margin-bottom:10px;white-space:pre-wrap">${xe(o.desc||'')}</div>
-          ${o.link?`<a href="${xe(o.link)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--gold-light);border:1.5px solid var(--gold-border);color:var(--theme-primary);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:8px">🔗 تفاصيل العرض ←</a>`:''}
-          <div style="font-size:10px;color:var(--gray2);margin-top:4px">📅 ${dateStr}</div>
-        </div>`;
-      }).join('')}`;
-  }).catch(()=>{
-    container.innerHTML=`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">⚠️ تعذّر تحميل العروض</div>`;
-  });
+  // نستخدم الـ cache اللي اشتركنا فيه realtime
+  const offers=Object.entries(allStoreOffers)
+    .map(([k,v])=>({...v,id:k}))
+    .sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  if(!offers.length){
+    container.innerHTML=`<div style="text-align:center;padding:36px;color:var(--gray2);font-size:13px">🎁<br>لا توجد عروض حالياً<br><span style="font-size:12px;margin-top:6px;display:block">تابع متجرك لمعرفة أحدث العروض!</span></div>`;
+    return;
+  }
+  const now=Date.now();
+  container.innerHTML=`
+    <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:12px">🎁 ${isEn?'Store Offers':'عروض المتجر'} <span style="background:var(--border);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--gray2)">${offers.length}</span></div>
+    ${offers.map(o=>{
+      const dateStr=o.createdAt?new Date(o.createdAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'';
+      const isNew=(o.createdAt&&(now-new Date(o.createdAt).getTime())<7*24*60*60*1000);
+      const title=isEn?(o.titleEn||o.titleAr||o.title||'—'):(o.titleAr||o.title||'—');
+      const desc=isEn?(o.descEn||o.descAr||o.desc||''):(o.descAr||o.desc||'');
+      return`<div style="background:var(--cream);border:1px solid ${isNew?'var(--theme-primary)':'var(--border)'};border-radius:12px;padding:14px;margin-bottom:10px;position:relative">
+        ${isNew?`<span style="position:absolute;top:10px;left:10px;background:var(--theme-primary);color:var(--white);font-size:9px;font-weight:900;padding:2px 8px;border-radius:20px">${isEn?'NEW':'جديد'}</span>`:''}
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+          <div style="font-size:22px;flex-shrink:0">🎁</div>
+          <div style="font-size:14px;font-weight:800;color:var(--dark);line-height:1.4;flex:1;padding-left:${isNew?'36px':'0'}">${xe(title)}</div>
+        </div>
+        <div style="font-size:12px;color:var(--gray);line-height:1.8;margin-bottom:10px;white-space:pre-wrap">${xe(desc)}</div>
+        ${o.link?`<a href="${xe(o.link)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--gold-light);border:1.5px solid var(--gold-border);color:var(--theme-primary);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:8px">${isEn?'🔗 View Offer →':'🔗 تفاصيل العرض ←'}</a>`:''}
+        <div style="font-size:10px;color:var(--gray2);margin-top:4px">📅 ${dateStr}</div>
+      </div>`;
+    }).join('')}`;
 }
 function loadWishlist(){
   const slug=getSlug()||'default';
@@ -1243,7 +1248,33 @@ function checkExistingSubscriber(){
   try{
     currentSubscriber=JSON.parse(raw);
     updateSubBtn(true);
+    // جلب الـ timestamp آخر مشاهدة للعروض
+    _lastSeenOffersTs=parseInt(localStorage.getItem('offers_seen_'+slug)||'0');
   }catch(e){}
+}
+function updateOffersBadge(){
+  // لو الزبون مسجّل دخول فقط نعرض الـ badge
+  if(!currentSubscriber) return;
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  const newCount=Object.values(allStoreOffers).filter(o=>{
+    const ts=o.createdAt?new Date(o.createdAt).getTime():0;
+    return ts > _lastSeenOffersTs;
+  }).length;
+  const badge=document.getElementById('offersBadge');
+  if(!badge) return;
+  if(newCount>0){
+    badge.textContent=newCount>9?'9+':newCount;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+function markOffersAsSeen(){
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  _lastSeenOffersTs=Date.now();
+  localStorage.setItem('offers_seen_'+slug, _lastSeenOffersTs);
+  const badge=document.getElementById('offersBadge');
+  if(badge) badge.classList.remove('show');
 }
 function updateSubBtn(subbed){
   const btn=document.getElementById('navSubBtn');
@@ -1251,11 +1282,12 @@ function updateSubBtn(subbed){
   if(subbed){
     btn.classList.add('subbed');
     btn.onclick=()=>openCustPanel();
-    btn.innerHTML='👤 <span class="lar">حسابي</span><span class="len" style="display:none">My Account</span>';
+    btn.innerHTML='👤 <span class="lar">حسابي</span><span class="len" style="display:none">My Account</span><span class="offers-badge" id="offersBadge"></span>';
+    updateOffersBadge();
   } else {
     btn.classList.remove('subbed');
     btn.onclick=()=>openSubModal();
-    btn.innerHTML='⭐ <span class="lar">اشترك</span><span class="len" style="display:none">Subscribe</span>';
+    btn.innerHTML='⭐ <span class="lar">اشترك</span><span class="len" style="display:none">Subscribe</span><span class="offers-badge" id="offersBadge"></span>';
   }
 }
 function initStore(){
@@ -1328,6 +1360,11 @@ function loadMarketer(key, data){
   loadLikes();
   checkExistingSubscriber();
   document.getElementById('navSubBtn').style.display='flex';
+  // listener للعروض — realtime + badge
+  db.ref(`marketers/${key}/offers`).on('value', snap=>{
+    allStoreOffers=snap.val()||{};
+    updateOffersBadge();
+  });
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value'), db.ref('materials').once('value')])
     .then(([bSnap,pSnap,mSnap])=>{
       BRANDS=bSnap.val()||{};
