@@ -619,20 +619,23 @@ function toggleLike(pid, e){
 
 // ===== SUBSCRIBE =====
 function openSubModal(){
-  const slug=getSlug();
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  if(!slug){
+    toast('⚠️ تعذّر تحديد المتجر');
+    return;
+  }
   if(currentSubscriber){
-    // مسجّل بالفعل — روّحه لحسابه
     window.location.href=`customer.html?slug=${slug}`;
     return;
   }
-  // مش مسجّل — روّحه لصفحة التسجيل
   window.location.href=`register.html?slug=${slug}`;
 }
 function closeSubModal(){
   document.getElementById('subModalBg').classList.remove('open');
 }
 function checkExistingSubscriber(){
-  const slug=getSlug();
+  const slug=getSlug()||(STORE&&STORE.slug)||'';
+  if(!slug) return;
   const raw=localStorage.getItem('cust_'+slug);
   if(!raw) return;
   try{
