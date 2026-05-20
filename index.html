@@ -283,7 +283,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 /* CUSTOMER PANEL — hidden (not used) */
 .cust-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3500;align-items:flex-end;justify-content:center}
 .cust-panel-bg.open{display:flex}
-.cust-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+.cust-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .28s cubic-bezier(.4,0,.2,1);direction:rtl;font-family:'Tajawal',sans-serif}
 .cust-panel-hd{padding:10px 16px 0;flex-shrink:0}
 .cust-panel-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px}
 .cust-panel-tabs{display:flex;border-bottom:1px solid var(--border);gap:0;overflow-x:auto;scrollbar-width:none}
@@ -322,7 +322,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .cp-order-total{font-size:13px;font-weight:900;color:var(--dark);margin-top:7px;padding-top:7px;border-top:1px solid var(--border)}
 .reg-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3500;align-items:flex-end;justify-content:center}
 .reg-panel-bg.open{display:flex}
-.reg-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;padding:10px 20px 40px;max-height:92vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+.reg-panel{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;padding:10px 20px 40px;max-height:92vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.4,0,.2,1);direction:rtl;font-family:'Tajawal',sans-serif}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .reg-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px}
 .reg-title{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:4px}
@@ -492,21 +492,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   <!-- brand dropdown -->
   <div class="fdd-wrap" id="brand-dd-wrap">
     <select class="fdd-select" id="brand-dd" onchange="setBrand(this.value)">
-      <option value="all">🏢 الكل</option>
+      <option value="all">🏢 الشركة</option>
     </select>
     <span class="fdd-arrow">▾</span>
   </div>
   <!-- size dropdown -->
   <div class="fdd-wrap" id="size-dd-wrap" style="display:none">
     <select class="fdd-select" id="size-dd" onchange="setSize(this.value)">
-      <option value="all">📐 الكل</option>
+      <option value="all">📐 المقاس</option>
     </select>
     <span class="fdd-arrow">▾</span>
   </div>
   <!-- material dropdown -->
   <div class="fdd-wrap" id="mat-dd-wrap" style="display:none">
     <select class="fdd-select" id="mat-dd" onchange="setMaterial(this.value)">
-      <option value="all">🧵 الكل</option>
+      <option value="all">🧵 الخامة</option>
     </select>
     <span class="fdd-arrow">▾</span>
   </div>
@@ -854,6 +854,7 @@ let cpTab='home', cpOrders=[];
 
 function openCustPanel(){
   document.getElementById('custPanelBg').classList.add('open');
+  document.body.style.overflow='hidden';
   if(currentSubscriber){
     cpShowLoggedIn();
   } else {
@@ -865,6 +866,7 @@ function openCustPanel(){
 }
 function closeCustPanel(){
   document.getElementById('custPanelBg').classList.remove('open');
+  document.body.style.overflow='';
 }
 function cpClearErr(){document.getElementById('cpErr').textContent='';}
 
@@ -1085,11 +1087,13 @@ function updateWishUI(){
 function openWish(){
   document.getElementById('wishPanel').classList.add('open');
   document.getElementById('wishBg').classList.add('show');
+  document.body.style.overflow='hidden';
   renderWishPanel();
 }
 function closeWish(){
   document.getElementById('wishPanel').classList.remove('open');
   document.getElementById('wishBg').classList.remove('show');
+  document.body.style.overflow='';
 }
 function renderWishPanel(){
   const el=document.getElementById('wishList');
@@ -1154,6 +1158,7 @@ function closeSubModal(){
 let _regLink='';
 function openRegPanel(view){
   document.getElementById('regPanelBg').classList.add('open');
+  document.body.style.overflow='hidden';
   regShowStep(view||0);
   if(view==='account' && currentSubscriber){
     const slug=getSlug()||(STORE&&STORE.slug)||'';
@@ -1165,6 +1170,7 @@ function openRegPanel(view){
 }
 function closeRegPanel(){
   document.getElementById('regPanelBg').classList.remove('open');
+  document.body.style.overflow='';
 }
 function regShowStep(s){
   ['regStep0','regStep1','regStep2','regStepSuccess','regAccount','regStepLogin'].forEach(id=>{
@@ -1517,7 +1523,7 @@ function renderFilters(){
   const brandIds=[...new Set(pa.map(p=>p.brand_id||p.brand).filter(Boolean))];
   const brandDd=document.getElementById('brand-dd');
   if(brandDd){
-    brandDd.innerHTML=`<option value="all">${isEn?'🏢 All':'🏢 الكل'}</option>`
+    brandDd.innerHTML=`<option value="all">${isEn?'🏢 Brand':'🏢 الشركة'}</option>`
       +brandIds.map(bid=>`<option value="${bid}">${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}</option>`).join('');
     brandDd.value=activeBrand;
     brandDd.classList.toggle('on',activeBrand!=='all');
@@ -1530,7 +1536,7 @@ function renderFilters(){
   if(sizeDdWrap&&sizeDd){
     if(sizeIds.length){
       sizeDdWrap.style.display='';
-      sizeDd.innerHTML=`<option value="all">${isEn?'📐 All':'📐 الكل'}</option>`
+      sizeDd.innerHTML=`<option value="all">${isEn?'📐 Size':'📐 المقاس'}</option>`
         +sizeIds.map(sid=>`<option value="${sid}">${xe(isEn?gs(sid).en:gs(sid).ar)}</option>`).join('');
       sizeDd.value=activeSize;
       sizeDd.classList.toggle('on',activeSize!=='all');
@@ -1544,7 +1550,7 @@ function renderFilters(){
   if(matDdWrap&&matDd){
     if(matIds.length){
       matDdWrap.style.display='';
-      matDd.innerHTML=`<option value="all">${isEn?'🧵 All':'🧵 الكل'}</option>`
+      matDd.innerHTML=`<option value="all">${isEn?'🧵 Material':'🧵 الخامة'}</option>`
         +matIds.map(mid=>{const m=MATERIALS[mid]||{};return`<option value="${mid}">${xe(isEn?(m.en||m.ar):(m.ar||m.en))}</option>`;}).join('');
       matDd.value=activeMaterial;
       matDd.classList.toggle('on',activeMaterial!=='all');
@@ -1620,7 +1626,7 @@ function openModal(pid){
   if(selColor[pid]==null) selColor[pid]=0;
   renderModal();
   document.getElementById('modalBg').classList.add('open');
-  // استخدم الـ slug لو موجود، وإلا pid
+  document.body.style.overflow='hidden';
   const p=PRODUCTS[pid];
   const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
   history.pushState({modal:true, pid},'',productPath);
@@ -1754,7 +1760,7 @@ function pickSize(pid,sid){selSize[pid]=sid;renderModal();}
 function getPrice(p,sid){return (p.sizePrices&&sid&&p.sizePrices[sid])||p.price;}
 function closeModal(){
   document.getElementById('modalBg').classList.remove('open');
-  // رجّع الـ URL للمتجر بدون المنتج
+  document.body.style.overflow='';
   history.replaceState({},'','/');
 }
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
@@ -1840,12 +1846,14 @@ function updateCartUI(){
 function openCart(){
   document.getElementById('cartPanel').classList.add('open');
   document.getElementById('cartBd').classList.add('show');
+  document.body.style.overflow='hidden';
   renderCart();
   history.pushState({modal:true},'','');
 }
 function closeCart(){
   document.getElementById('cartPanel').classList.remove('open');
   document.getElementById('cartBd').classList.remove('show');
+  document.body.style.overflow='';
 }
 function renderCart(){
   const list=document.getElementById('cartList'),foot=document.getElementById('cartFoot');
