@@ -70,6 +70,26 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .ffilter-btn{padding:11px 16px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .ffilter-btn.on{color:var(--filter-on);border-bottom-color:var(--theme-primary);font-weight:800}
 
+/* MOBILE NAV FIX - إخفاء النصوص على الجوال وإظهار الأيقونات فقط */
+@media(max-width:640px){
+  .fnav-store-name{display:none}
+  .fnav-store-sub{display:none}
+  .fnav{gap:3px;padding:0 4px}
+  .lang-btn{padding:5px 6px;font-size:11px;border-radius:16px}
+  .lang-btn .lar{display:none}
+  .lang-btn .len{display:inline !important}
+  .cart-btn{padding:6px 6px;gap:2px}
+  .cart-btn .lar{display:none}
+  .cart-btn .len{display:inline !important}
+  .cart-btn span:not(.cart-count){font-size:16px;font-weight:400}
+  .nav-wish-btn{padding:6px 6px}
+  .nav-wish-btn .lar{display:none}
+  .nav-wish-btn .len{display:inline !important}
+  #navSubBtn{padding:6px 6px}
+  #navSubBtn .lar{display:none}
+  #navSubBtn .len{display:inline !important}
+}
+
 
 /* SEARCH */
 .fsearch-wrap{padding:10px 16px;background:var(--white);border-bottom:1px solid var(--border)}
@@ -854,8 +874,8 @@ function cpShowLoggedIn(){
   document.getElementById('cpAvatar').textContent=name[0]||'👤';
   document.getElementById('cpHeaderName').textContent=name;
   document.getElementById('cpHeaderSub').textContent='مشترك في '+( STORE.name||'المتجر');
-  // جلب الطلبات
-  db.ref('orders').orderByChild('marketer_id').equalTo(STORE.id).once('value',snap=>{
+  // جلب الطلبات — استخدام .on() بدلاً من .once() للتحديث التلقائي عند إضافة طلبات جديدة
+  db.ref('orders').orderByChild('marketer_id').equalTo(STORE.id).on('value',snap=>{
     const data=snap.val()||{};
     cpOrders=Object.entries(data)
       .map(([k,v])=>({...v,id:k}))
