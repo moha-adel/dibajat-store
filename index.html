@@ -1160,15 +1160,25 @@ function updateSubBtn(subbed){
 function initStore(){
   document.getElementById('prodGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray2)">⏳ جاري التحميل...</div>';
   const slug=getSlug();
-  db.ref('marketers').once('value', snap=>{
+  if(!slug){showHomePage();return;}
+  // نقرأ بالـ slug مباشرة بدل ما نقرأ كل المسوقين
+  db.ref('marketers').orderByChild('slug').equalTo(slug).once('value', snap=>{
     const data=snap.val()||{};
     const entries=Object.entries(data);
-    if(!slug){showHomePage();return;}
-    if(!entries.length){showErr('لا يوجد متاجر');return;}
-    let found=null;
-    if(slug) found=entries.find(([k,v])=>v.slug===slug);
-    if(!found){showErr('المتجر غير موجود');return;}
-    loadMarketer(found[0], found[1]);
+    if(!entries.length){showErr('المتجر غير موجود');return;}
+    const [id, mkt]=entries[0];
+    loadMarketer(id, mkt);
+  }).catch(e=>{
+    // لو فيه permission error، نحاول بطريقة تانية
+    console.warn('Query failed, trying index lookup:', e.message);
+    db.ref('slugIndex/'+slug).once('value', snap2=>{
+      if(!snap2.exists()){showErr('المتجر غير موجود');return;}
+      const id=snap2.val();
+      db.ref('marketers/'+id).once('value', snap3=>{
+        if(!snap3.exists()){showErr('المتجر غير موجود');return;}
+        loadMarketer(id, snap3.val());
+      });
+    });
   });
 }
 
