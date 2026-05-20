@@ -893,7 +893,8 @@ function cpDoLogin(){
     localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
     updateSubBtn(true);
     // مزامنة المفضلة
-    if(sub.wishlist) wishlist=[...new Set([...wishlist,...(sub.wishlist||[])])];
+    if(sub.wishlist) wishlist=[...new Set(sub.wishlist)];
+    else wishlist=[];
     _lastSeenOffersTs=parseInt(localStorage.getItem('offers_seen_'+slug)||'0');
     updateOffersBadge();
     cpShowLoggedIn();
@@ -1014,9 +1015,13 @@ function cpRenderOrders(){
 function cpLogout(){
   const slug=getSlug()||(STORE&&STORE.slug)||'';
   localStorage.removeItem('cust_'+slug);
+  localStorage.removeItem('wish_'+slug);
   currentSubscriber=null;
+  wishlist=[];
   cpOrders=[];
   updateSubBtn(false);
+  updateWishUI();
+  renderProducts();
   closeCustPanel();
   toast('تم تسجيل الخروج');
 }
@@ -1204,7 +1209,8 @@ function regDoLogin(){
     const slug=getSlug()||(STORE&&STORE.slug)||'';
     currentSubscriber={name:sub.name,wa,pin,mktId:STORE.id,joinedAt:sub.joinedAt};
     localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
-    if(sub.wishlist) wishlist=[...new Set([...wishlist,...(sub.wishlist||[])])];
+    if(sub.wishlist) wishlist=[...new Set(sub.wishlist)];
+    else wishlist=[];
     updateSubBtn(true);
     saveWishlist();
     updateWishUI();
@@ -1299,8 +1305,12 @@ function regCopyLink(){
 function regLogout(){
   const slug=getSlug()||(STORE&&STORE.slug)||'';
   localStorage.removeItem('cust_'+slug);
+  localStorage.removeItem('wish_'+slug);
   currentSubscriber=null;
+  wishlist=[];
   updateSubBtn(false);
+  updateWishUI();
+  renderProducts();
   closeRegPanel();
   toast('تم تسجيل الخروج');
 }
