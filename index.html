@@ -530,6 +530,44 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
   <div class="reg-panel">
     <div class="reg-drag"></div>
 
+    <!-- STEP 0: اختيار -->
+    <div id="regStep0">
+      <div class="reg-title" style="text-align:center;margin-bottom:6px">⭐ حسابك في المتجر</div>
+      <div class="reg-sub" style="text-align:center">مشترك جديد أو عندك حساب بالفعل؟</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <button onclick="regShowStep(1)" style="padding:18px 10px;border-radius:14px;background:var(--theme-primary);color:var(--dark);font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;flex-direction:column;align-items:center;gap:6px">
+          <span style="font-size:28px">✨</span>
+          حساب جديد
+        </button>
+        <button onclick="regShowStep('login')" style="padding:18px 10px;border-radius:14px;background:var(--cream);color:var(--dark);font-size:13px;font-weight:800;border:1.5px solid var(--border);cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;flex-direction:column;align-items:center;gap:6px">
+          <span style="font-size:28px">👤</span>
+          تسجيل دخول
+        </button>
+      </div>
+      <button class="reg-btn-sec" onclick="closeRegPanel()">إلغاء</button>
+    </div>
+
+    <!-- STEP LOGIN -->
+    <div id="regStepLogin" style="display:none">
+      <div class="reg-title">👤 تسجيل الدخول</div>
+      <div class="reg-sub">أدخل رقم واتساب والـ PIN اللي اخترته</div>
+      <div class="reg-field">
+        <label class="reg-label">📱 رقم واتساب</label>
+        <input class="reg-input ltr" id="rlWa" type="tel" placeholder="96512345678" maxlength="15" oninput="regClearErr()">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">🔑 الـ PIN</label>
+        <input class="reg-input pin-inp ltr" id="rlPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" oninput="regUpdateDots('rlPin','rlDots');regClearErr()" onkeydown="if(event.key==='Enter')regDoLogin()">
+        <div class="reg-pin-dots" id="rlDots">
+          <div class="reg-pin-dot" id="rld_1"></div><div class="reg-pin-dot" id="rld_2"></div>
+          <div class="reg-pin-dot" id="rld_3"></div><div class="reg-pin-dot" id="rld_4"></div>
+        </div>
+      </div>
+      <div class="reg-err" id="rlErr"></div>
+      <button class="reg-btn" id="rlLoginBtn" onclick="regDoLogin()">دخول ←</button>
+      <button class="reg-btn-sec" onclick="regShowStep(0)">← رجوع</button>
+    </div>
+
     <!-- STEP 1 -->
     <div id="regStep1">
       <div class="reg-steps">
@@ -1007,10 +1045,10 @@ function openSubModal(){
   const slug=getSlug()||(STORE&&STORE.slug)||'';
   if(!slug){ toast('⚠️ تعذّر تحديد المتجر'); return; }
   if(currentSubscriber){
-    openRegPanel('account');
+    openCustPanel();
     return;
   }
-  openRegPanel('step1');
+  openRegPanel(0);
 }
 function closeSubModal(){
   document.getElementById('subModalBg')?.classList.remove('open');
@@ -1020,11 +1058,11 @@ function closeSubModal(){
 let _regLink='';
 function openRegPanel(view){
   document.getElementById('regPanelBg').classList.add('open');
-  regShowStep(view);
+  regShowStep(view||0);
   if(view==='account' && currentSubscriber){
     const slug=getSlug()||(STORE&&STORE.slug)||'';
     _regLink=`${location.origin}/customer.html?slug=${slug}`;
-    document.getElementById('rAccName').textContent='أهلاً '+( currentSubscriber.name||'');
+    document.getElementById('rAccName').textContent='أهلاً '+(currentSubscriber.name||'');
     document.getElementById('rAccSub').textContent='مشترك في متجر '+(STORE.name||slug);
     document.getElementById('rAccLink').textContent=_regLink;
   }
@@ -1033,14 +1071,44 @@ function closeRegPanel(){
   document.getElementById('regPanelBg').classList.remove('open');
 }
 function regShowStep(s){
-  ['regStep1','regStep2','regStepSuccess','regAccount'].forEach(id=>{
-    document.getElementById(id).style.display='none';
+  ['regStep0','regStep1','regStep2','regStepSuccess','regAccount','regStepLogin'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
   });
-  const map={1:'regStep1',2:'regStep2',success:'regStepSuccess',account:'regAccount'};
-  const el=document.getElementById(map[s]||map[1]);
+  const map={0:'regStep0',1:'regStep1',2:'regStep2',success:'regStepSuccess',account:'regAccount',login:'regStepLogin'};
+  const el=document.getElementById(map[s]||map[0]);
   if(el) el.style.display='block';
   if(s===1) setTimeout(()=>document.getElementById('rName')?.focus(),100);
   if(s===2) setTimeout(()=>document.getElementById('rPin')?.focus(),100);
+  if(s==='login') setTimeout(()=>document.getElementById('rlWa')?.focus(),100);
+}
+function regDoLogin(){
+  const wa=document.getElementById('rlWa').value.trim().replace(/\s+/g,'').replace(/^\+/,'');
+  const pin=document.getElementById('rlPin').value.trim();
+  const errEl=document.getElementById('rlErr');
+  const btn=document.getElementById('rlLoginBtn');
+  if(!wa||wa.length<8){errEl.textContent='أدخل رقم واتساب صحيح';return;}
+  if(!pin||pin.length<4){errEl.textContent='الـ PIN 4 أرقام';return;}
+  btn.disabled=true;
+  btn.innerHTML='<span class="reg-loader"></span>';
+  db.ref(`marketers/${STORE.id}/subscribers/${wa}`).once('value',snap=>{
+    btn.disabled=false; btn.innerHTML='دخول ←';
+    if(!snap.exists()){errEl.textContent='رقم الواتساب غير مسجّل في هذا المتجر';return;}
+    const sub=snap.val();
+    if(String(sub.pin)!==String(pin)){errEl.textContent='الـ PIN غير صحيح';return;}
+    const slug=getSlug()||(STORE&&STORE.slug)||'';
+    currentSubscriber={name:sub.name,wa,pin,mktId:STORE.id,joinedAt:sub.joinedAt};
+    localStorage.setItem('cust_'+slug, JSON.stringify(currentSubscriber));
+    if(sub.wishlist) wishlist=[...new Set([...wishlist,...(sub.wishlist||[])])];
+    updateSubBtn(true);
+    saveWishlist();
+    updateWishUI();
+    closeRegPanel();
+    toast(`✅ أهلاً ${sub.name||''}! تم الدخول`);
+  }).catch(e=>{
+    btn.disabled=false; btn.innerHTML='دخول ←';
+    errEl.textContent='خطأ: '+e.message;
+  });
 }
 function regClearErr(){
   document.getElementById('rErr1').textContent='';
@@ -1048,7 +1116,7 @@ function regClearErr(){
 }
 function regUpdateDots(inputId, dotsId){
   const val=document.getElementById(inputId).value;
-  const prefix=dotsId==='rDots1'?'rd1_':'rd2_';
+  const prefix=dotsId==='rDots1'?'rd1_':dotsId==='rDots2'?'rd2_':'rld_';
   for(let i=1;i<=4;i++){
     const d=document.getElementById(prefix+i);
     if(d) d.classList.toggle('filled', i<=val.length);
