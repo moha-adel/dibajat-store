@@ -1165,7 +1165,7 @@ function openRegPanel(view){
   regShowStep(view||0);
   if(view==='account' && currentSubscriber){
     const slug=getSlug()||(STORE&&STORE.slug)||'';
-    _regLink=`${location.origin}/customer.html?slug=${slug}`;
+    _regLink=`${location.origin}/`;
     document.getElementById('rAccName').textContent='أهلاً '+(currentSubscriber.name||'');
     document.getElementById('rAccSub').textContent='مشترك في متجر '+(STORE.name||slug);
     document.getElementById('rAccLink').textContent=_regLink;
@@ -1274,7 +1274,7 @@ function regDoRegister(){
       // نقل المفضلة للـ Firebase
       if(wishlist.length) db.ref(`marketers/${STORE.id}/subscribers/${wa}/wishlist`).set(wishlist);
       updateSubBtn(true);
-      _regLink=`${location.origin}/customer.html?slug=${slug}`;
+      _regLink=`${location.origin}/`;
       document.getElementById('rSuccessName').textContent=name;
       document.getElementById('rLinkBox').textContent=_regLink;
       regShowStep('success');
@@ -1286,10 +1286,7 @@ function regDoRegister(){
     });
 }
 function regCopyLink(){
-  const link=_regLink||(()=>{
-    const slug=getSlug()||(STORE&&STORE.slug)||'';
-    return `${location.origin}/customer.html?slug=${slug}`;
-  })();
+  const link=_regLink||`${location.origin}/`;
   navigator.clipboard.writeText(link)
     .then(()=>toast('✓ تم نسخ الرابط'))
     .catch(()=>{
