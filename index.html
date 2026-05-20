@@ -1364,6 +1364,8 @@ function loadMarketer(key, data){
   db.ref(`marketers/${key}/offers`).on('value', snap=>{
     allStoreOffers=snap.val()||{};
     updateOffersBadge();
+    // لو تاب العروض مفتوح، أعد الرندر تلقائياً
+    if(cpTab==='offers') cpRender();
   });
   Promise.all([db.ref('brands').once('value'), db.ref('products').once('value'), db.ref('materials').once('value')])
     .then(([bSnap,pSnap,mSnap])=>{
