@@ -1259,6 +1259,9 @@ const THEMES=[
   {id:'slate',   label:'Slate',   emoji:'🖤', primary:'#94a3b8', bg:'#0f172a', card:'#1e293b', text:'#e2e8f0', navBg:'#1e293b', navText:'#e2e8f0', desc:'رمادي داكن — Industrial'},
   {id:'crimson', label:'Crimson', emoji:'🔴', primary:'#e30713', bg:'#ffffff', card:'#ffffff', text:'#1a1a1a', navBg:'#e30713', navText:'#ffffff', desc:'أحمر وأبيض — Bold'},
   {id:'obsidian',label:'Obsidian',emoji:'⚫', primary:'#ffffff', bg:'#0a0a0a', card:'#111111', text:'#f5f5f5', navBg:'#111111', navText:'#ffffff', desc:'أسود وأبيض — Elegant'},
+  {id:'emerald', label:'Royal Emerald',emoji:'💚', primary:'#D4AF37', bg:'#1A1A1A', card:'#1e2820', text:'#F4F6F5', navBg:'#1B4332', navText:'#F4F6F5', desc:'زمرد ملكي — فاخر'},
+  {id:'linen',   label:'Desert Linen', emoji:'🏜️', primary:'#B98A73', bg:'#FDFBF7', card:'#ffffff', text:'#3E2723', navBg:'#FDFBF7', navText:'#3E2723', desc:'كتان صحراوي — بوهو'},
+  {id:'noir',    label:'Minimalist Noir',emoji:'🖤', primary:'#000000', bg:'#F9F9F9', card:'#ffffff', text:'#111111', navBg:'#000000', navText:'#F9F9F9', desc:'أسود مبسط — مودرن'},
   {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        navBg:'',       navText:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
@@ -1299,7 +1302,7 @@ function openMarketer(id){
   const pa=productsArr();
   // fallback للثيمات القديمة
   const _oldMap={luxury:'ivory',dark:'midnight',modern:'arctic',classic:'walnut',stone:'slate',sage:'walnut'};
-  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','custom'].includes(m.theme)?m.theme:'ivory' );
+  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','emerald','linen','noir','custom'].includes(m.theme)?m.theme:'ivory' );
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
