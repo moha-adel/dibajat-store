@@ -49,15 +49,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .cart-count{background:var(--theme-primary);color:var(--dark);border-radius:50px;padding:1px 7px;font-size:11px;font-weight:900;min-width:18px;text-align:center}
 
 /* HERO */
-/* HERO SLIDER */
-.fhero-slider{position:relative;width:100%;overflow:hidden;background:#000;border-bottom:1px solid var(--border)}
-.fhero-slides{display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform}
-.fhero-slide{min-width:100%;aspect-ratio:16/7;overflow:hidden;flex-shrink:0}
-@media(max-width:480px){.fhero-slide{aspect-ratio:4/3}}
-.fhero-slide img{width:100%;height:100%;object-fit:cover;display:block}
-.fhero-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
-.fhero-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;border:none;padding:0}
-.fhero-dot.active{background:#fff;width:20px;border-radius:4px}
+.fhero{background:var(--white);border-bottom:1px solid var(--border);overflow:hidden}
+.fhero-banner-wrap{width:100%;aspect-ratio:3/1;overflow:hidden;background:linear-gradient(135deg,var(--gold-light),#ede8e0)}
+@media(min-width:768px){.fhero-banner-wrap{aspect-ratio:5/1;max-height:260px}}
+.fhero-banner{width:100%;height:100%;object-fit:cover;display:block}
+.fhero-banner-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px}
+.fhero-body{padding:18px 16px 20px;text-align:center}
+.fhero-store-row{display:inline-flex;align-items:center;gap:10px;background:var(--cream);border:1px solid var(--border);border-radius:50px;padding:6px 16px 6px 6px;margin-bottom:12px}
+.fhero-welcome{font-size:13px;color:var(--gray);max-width:360px;margin:0 auto 4px;line-height:1.7}
+.fhero-divider{width:40px;height:2px;background:var(--theme-primary);margin:12px auto 0;border-radius:2px}
 .store-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold-light);border:1.5px solid var(--gold-border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--theme-primary)}
 .store-avatar img{width:100%;height:100%;object-fit:cover}
 .store-nm{font-size:13px;font-weight:700;color:var(--dark)}
@@ -467,10 +467,21 @@ body{padding-bottom:58px}
 </div>
 
 <!-- HERO -->
-<!-- HERO SLIDER -->
-<div class="fhero-slider" id="heroSlider" style="display:none">
-  <div class="fhero-slides" id="heroSlides"></div>
-  <div class="fhero-dots" id="heroDots"></div>
+<!-- HERO -->
+<div class="fhero">
+  <div class="fhero-banner-wrap"><div id="hero-banner" class="fhero-banner-ph">🛋️</div></div>
+  <div class="fhero-body">
+    <div class="fhero-store-row">
+      <div class="store-avatar" id="hero-avatar">م</div>
+      <div style="text-align:right">
+        <div class="store-nm" id="hero-store-name">...</div>
+        <div class="store-url" id="hero-store-url"></div>
+      </div>
+    </div>
+    <div class="fhero-welcome lar" id="hero-welcome-ar"></div>
+    <div class="fhero-welcome len" id="hero-welcome-en" style="display:none"></div>
+    <div class="fhero-divider"></div>
+  </div>
 </div>
 
 <!-- SEARCH + FILTER TOGGLE ROW -->
@@ -1412,7 +1423,7 @@ function initStore(){
 }
 
 function showHomePage(){
-  const hero=document.getElementById('heroSlider');
+  const hero=document.querySelector('.fhero');
   const filterRow=document.querySelector('.fsearch-filter-row');
   const filterPanel=document.getElementById('filterPanel');
   if(hero) hero.style.display='none';
@@ -1514,30 +1525,17 @@ function renderHeader(){
   document.getElementById('nav-store-name').textContent=m.name||'';
   const navStoreSub=document.getElementById('nav-store-sub');
   if(navStoreSub) navStoreSub.textContent=(m.slug||'')+'.dibajat.store';
-  document.title=(m.name||'متجر')+' — مفروشاتي';
-  renderHeroSlider(m.sliderImages||[]);
-}
-
-function renderHeroSlider(images){
-  const slider=document.getElementById('heroSlider');
-  const slidesEl=document.getElementById('heroSlides');
-  const dotsEl=document.getElementById('heroDots');
-  if(!slider||!slidesEl||!dotsEl) return;
-  if(!images||images.length===0){slider.style.display='none';return;}
-  slider.style.display='block';
-  let cur=0;
-  slidesEl.innerHTML=images.map(url=>`<div class="fhero-slide"><img src="${xe(url)}" alt="" loading="lazy"></div>`).join('');
-  dotsEl.innerHTML=images.length>1?images.map((_,i)=>`<button class="fhero-dot${i===0?' active':''}" onclick="goSlide(${i})"></button>`).join(''):'';
-  // auto-play
-  if(window._sliderTimer) clearInterval(window._sliderTimer);
-  if(images.length>1){
-    window._sliderTimer=setInterval(()=>{cur=(cur+1)%images.length;goSlide(cur);},4000);
+  // HERO
+  if(m.banner){
+    document.getElementById('hero-banner').outerHTML=`<img id="hero-banner" class="fhero-banner" src="${xe(m.banner)}" alt="" style="width:100%;height:100%;object-fit:cover">`;
   }
-  window.goSlide=function(i){
-    cur=i;
-    slidesEl.style.transform=`translateX(-${i*100}%)`;
-    dotsEl.querySelectorAll('.fhero-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
-  };
+  const av=document.getElementById('hero-avatar');
+  av.innerHTML=m.logo?`<img src="${xe(m.logo)}" alt="" style="width:100%;height:100%;object-fit:cover">`:(m.name||'م')[0];
+  document.getElementById('hero-store-name').textContent=m.name||'';
+  document.getElementById('hero-store-url').textContent=(m.slug||'')+'.dibajat.store';
+  document.getElementById('hero-welcome-ar').textContent=m.welcomeAr||'أهلاً بك في متجرنا';
+  document.getElementById('hero-welcome-en').textContent=m.welcomeEn||'Welcome to our store';
+  document.title=(m.name||'متجر')+' — مفروشاتي';
 }
 
 // ===== FILTERS (Dropdown) =====
