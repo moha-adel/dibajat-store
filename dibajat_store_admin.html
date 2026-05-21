@@ -1262,6 +1262,9 @@ const THEMES=[
   {id:'emerald', label:'Royal Emerald',emoji:'💚', primary:'#D4AF37', bg:'#1A1A1A', card:'#1e2820', text:'#F4F6F5', navBg:'#1B4332', navText:'#F4F6F5', desc:'زمرد ملكي — فاخر'},
   {id:'linen',   label:'Desert Linen', emoji:'🏜️', primary:'#B98A73', bg:'#FDFBF7', card:'#ffffff', text:'#3E2723', navBg:'#FDFBF7', navText:'#3E2723', desc:'كتان صحراوي — بوهو'},
   {id:'noir',    label:'Minimalist Noir',emoji:'🖤', primary:'#000000', bg:'#F9F9F9', card:'#ffffff', text:'#111111', navBg:'#000000', navText:'#F9F9F9', desc:'أسود مبسط — مودرن'},
+  {id:'nordic',  label:'Nordic Minimal', emoji:'🌿', primary:'#6B705C', bg:'#FCFAFA', card:'#ffffff', text:'#222222', navBg:'#FCFAFA', navText:'#222222', desc:'اسكندنافي هادئ'},
+  {id:'cinematic',label:'Cinematic Studio',emoji:'🎬', primary:'#C5A880', bg:'#0F0F11', card:'#18181A', text:'#F5F5F5', navBg:'#18181A', navText:'#F5F5F5', desc:'داكن فاخر — ستوديو'},
+  {id:'cashmere',label:'Cashmere & Clay', emoji:'🪵', primary:'#A67C52', bg:'#F5EFEB', card:'#FCF9F6', text:'#2B2623', navBg:'#FCF9F6', navText:'#2B2623', desc:'دفء طبيعي — خامات'},
   {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        navBg:'',       navText:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
@@ -1302,7 +1305,7 @@ function openMarketer(id){
   const pa=productsArr();
   // fallback للثيمات القديمة
   const _oldMap={luxury:'ivory',dark:'midnight',modern:'arctic',classic:'walnut',stone:'slate',sage:'walnut'};
-  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','emerald','linen','noir','custom'].includes(m.theme)?m.theme:'ivory' );
+  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','emerald','linen','noir','nordic','cinematic','cashmere','custom'].includes(m.theme)?m.theme:'ivory' );
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
