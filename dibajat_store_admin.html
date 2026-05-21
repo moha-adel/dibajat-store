@@ -1300,6 +1300,7 @@ function openMarketer(id){
   // fallback للثيمات القديمة
   const _oldMap={luxury:'ivory',dark:'midnight',modern:'arctic',classic:'walnut',stone:'slate',sage:'walnut'};
   _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','custom'].includes(m.theme)?m.theme:'ivory' );
+  window._sliderImgs=[...(m.sliderImages||[])];
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
@@ -1356,7 +1357,25 @@ function openMarketer(id){
           </div>
         </div>
       </div>
-      <div class="form-row" style="margin-top:10px">
+      <div class="form-row">
+        <label class="form-label">🖼️ صور السلايدر (الصفحة الرئيسية)</label>
+        <div id="m-slider-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+          ${(m.sliderImages||[]).map((url,i)=>`
+          <div id="m-slider-item-${i}" style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:6px 8px">
+            <img src="${xe(url)}" style="width:56px;height:32px;object-fit:cover;border-radius:5px;border:1px solid var(--bd);flex-shrink:0">
+            <span style="flex:1;font-size:10px;color:var(--mt);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${xe(url)}</span>
+            <button type="button" onclick="removeSliderImg(${i})" style="width:22px;height:22px;border-radius:50%;background:rgba(239,68,68,.15);border:none;color:#ef4444;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">×</button>
+          </div>`).join('')}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input class="form-input" id="m-slider-url-input" placeholder="رابط الصورة https://..." style="direction:ltr;font-size:10px;flex:1">
+          <button type="button" onclick="addSliderImgFromUrl()" style="padding:7px 12px;border-radius:7px;background:var(--bg3);border:1px dashed var(--bd);color:var(--gold);font-size:11px;font-weight:800;cursor:pointer;font-family:Tajawal,sans-serif;white-space:nowrap">+ رابط</button>
+          <button type="button" onclick="document.getElementById('m-slider-file').click()" style="padding:7px 12px;border-radius:7px;background:var(--bg3);border:1px dashed var(--bd);color:var(--mt);font-size:11px;font-weight:700;cursor:pointer;font-family:Tajawal,sans-serif;white-space:nowrap">📁 رفع</button>
+          <input type="file" id="m-slider-file" accept="image/*" style="display:none" onchange="addSliderImgFromFile(this)">
+        </div>
+        <div style="font-size:10px;color:var(--mt);margin-top:5px">💡 الصور بتتغير أوتوماتيك — لو فارغة السلايدر مش بيظهر</div>
+      </div>
+      <div class="form-row">
         <label class="form-label">🌐 صورة سوشيال ميديا (OG Image) <span style="color:var(--mt);font-weight:400;text-transform:none;letter-spacing:0">— تظهر عند المشاركة على واتساب وتويتر</span></label>
         <div style="display:flex;align-items:center;gap:10px">
           <div id="m-og-prev" style="width:80px;height:42px;border-radius:7px;border:1.5px solid var(--bd);background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${m.ogImage?`<img src="${xe(m.ogImage)}" style="width:100%;height:100%;object-fit:cover">`:'📷'}</div>
@@ -1475,6 +1494,46 @@ function openMarketer(id){
   openModal();
   setTimeout(()=>renderMarketerProds(pa, m.products||[], m.excluded||[]), 50);
 }
+function removeSliderImg(i){
+  if(!window._sliderImgs) return;
+  window._sliderImgs.splice(i,1);
+  renderSliderList();
+}
+function addSliderImgFromUrl(){
+  const inp=document.getElementById('m-slider-url-input');
+  if(!inp) return;
+  const url=inp.value.trim();
+  if(!url) return;
+  if(!window._sliderImgs) window._sliderImgs=[];
+  window._sliderImgs.push(url);
+  inp.value='';
+  renderSliderList();
+}
+function addSliderImgFromFile(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    if(!window._sliderImgs) window._sliderImgs=[];
+    window._sliderImgs.push(e.target.result);
+    renderSliderList();
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function renderSliderList(){
+  const el=document.getElementById('m-slider-list');
+  if(!el) return;
+  const imgs=window._sliderImgs||[];
+  el.innerHTML=imgs.length===0
+    ?`<div style="font-size:11px;color:var(--mt);padding:8px 0">لا توجد صور — أضف صورة بالرابط أو الرفع</div>`
+    :imgs.map((url,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:6px 8px">
+      <img src="${xe(url)}" style="width:56px;height:32px;object-fit:cover;border-radius:5px;border:1px solid var(--bd);flex-shrink:0" onerror="this.style.display='none'">
+      <span style="flex:1;font-size:10px;color:var(--mt);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${xe(url.length>50?url.slice(0,50)+'...':url)}</span>
+      <button type="button" onclick="removeSliderImg(${i})" style="width:22px;height:22px;border-radius:50%;background:rgba(239,68,68,.15);border:none;color:#ef4444;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">×</button>
+    </div>`).join('');
+}
 function selectTheme(id){
   _selectedTheme=id;
   THEMES.forEach(t=>{
@@ -1486,6 +1545,7 @@ function selectTheme(id){
   document.getElementById('custom-colors').style.display=id==='custom'?'grid':'none';
 }
 function saveMarketer(id){
+  window._sliderImgs=window._sliderImgs||[];
   const name=document.getElementById('m-name').value.trim();
   const slug=document.getElementById('m-slug').value.trim().toLowerCase();
   if(!name||!slug){toast('أدخل الاسم والرابط',false);return;}
@@ -1499,6 +1559,7 @@ function saveMarketer(id){
     pin:document.getElementById('m-pin').value.trim(),
     logo:document.getElementById('m-logo-url').value.trim(),
     banner:document.getElementById('m-banner-url').value.trim(),
+    sliderImages:window._sliderImgs||[],
     ogImage:document.getElementById('m-og-url').value.trim()||null,
     theme,
     colorPrimary:theme==='custom'?document.getElementById('m-c-primary').value:'',
