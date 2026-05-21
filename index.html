@@ -1303,6 +1303,7 @@ function regDoRegister(){
   const subscriber={
     name, wa, pin, slug:getSlug()||(STORE&&STORE.slug)||'',
     marketer_id:STORE.id, joinedAt:new Date().toISOString(),
+    createdAt:Date.now(),
     wishlist:wishlist||[], ordersCount:0
   };
   db.ref(`marketers/${STORE.id}/subscribers/${wa}`).set(subscriber)
@@ -2045,13 +2046,15 @@ function saveOrder(items){
     total,
     currency:'KWD',
     marketer: STORE.name||'',
+    marketerId: STORE.id||'',
     marketer_id: STORE.id||'',
     marketer_slug: STORE.slug||'',
     wa: custWa,
     phone: custWa,
     name: custName,
     status:'new',
-    date
+    date,
+    createdAt: Date.now()
   };
   db.ref('orders').push(order);
 }
