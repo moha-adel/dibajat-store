@@ -1251,13 +1251,15 @@ function toggleBrandProds(bid, show){
 
 // ===== MARKETERS =====
 const THEMES=[
-  {id:'ivory',   label:'Ivory',   emoji:'🪨', primary:'#b8934a', bg:'#faf8f5', card:'#ffffff', text:'#1a1a1a', desc:'بيج ذهبي — كلاسيك'},
-  {id:'midnight',label:'Midnight',emoji:'🌙', primary:'#c9a96e', bg:'#0f0f0f', card:'#1a1a1a', text:'#f0e6d3', desc:'أسود وذهبي — لوكشري'},
-  {id:'arctic',  label:'Arctic',  emoji:'🩵', primary:'#0071e3', bg:'#f5f5f7', card:'#ffffff', text:'#1d1d1f', desc:'أبيض وأزرق — Apple'},
-  {id:'blush',   label:'Blush',   emoji:'🌹', primary:'#c4788a', bg:'#fdf2f4', card:'#fffaf9', text:'#3d2028', desc:'وردي إيليجانت'},
-  {id:'walnut',  label:'Walnut',  emoji:'🟫', primary:'#8b5e3c', bg:'#f5ede3', card:'#fdf8f3', text:'#2c1a0e', desc:'بني دافي — West Elm'},
-  {id:'slate',   label:'Slate',   emoji:'🖤', primary:'#94a3b8', bg:'#0f172a', card:'#1e293b', text:'#e2e8f0', desc:'رمادي داكن — Industrial'},
-  {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        desc:'اختر ألوانك'},
+  {id:'ivory',   label:'Ivory',   emoji:'🪨', primary:'#b8934a', bg:'#faf8f5', card:'#ffffff', text:'#1a1a1a', navBg:'#ffffff', navText:'#1a1a1a', desc:'بيج ذهبي — كلاسيك'},
+  {id:'midnight',label:'Midnight',emoji:'🌙', primary:'#c9a96e', bg:'#0f0f0f', card:'#1a1a1a', text:'#f0e6d3', navBg:'#141414', navText:'#f0e6d3', desc:'أسود وذهبي — لوكشري'},
+  {id:'arctic',  label:'Arctic',  emoji:'🩵', primary:'#0071e3', bg:'#f5f5f7', card:'#ffffff', text:'#1d1d1f', navBg:'#ffffff', navText:'#1d1d1f', desc:'أبيض وأزرق — Apple'},
+  {id:'blush',   label:'Blush',   emoji:'🌹', primary:'#c4788a', bg:'#fdf2f4', card:'#fffaf9', text:'#3d2028', navBg:'#fffaf9', navText:'#3d2028', desc:'وردي إيليجانت'},
+  {id:'walnut',  label:'Walnut',  emoji:'🟫', primary:'#8b5e3c', bg:'#f5ede3', card:'#fdf8f3', text:'#2c1a0e', navBg:'#fdf8f3', navText:'#2c1a0e', desc:'بني دافي — West Elm'},
+  {id:'slate',   label:'Slate',   emoji:'🖤', primary:'#94a3b8', bg:'#0f172a', card:'#1e293b', text:'#e2e8f0', navBg:'#1e293b', navText:'#e2e8f0', desc:'رمادي داكن — Industrial'},
+  {id:'crimson', label:'Crimson', emoji:'🔴', primary:'#e30713', bg:'#ffffff', card:'#ffffff', text:'#1a1a1a', navBg:'#e30713', navText:'#ffffff', desc:'أحمر وأبيض — Bold'},
+  {id:'obsidian',label:'Obsidian',emoji:'⚫', primary:'#ffffff', bg:'#0a0a0a', card:'#111111', text:'#f5f5f5', navBg:'#111111', navText:'#ffffff', desc:'أسود وأبيض — Elegant'},
+  {id:'custom',  label:'مخصص',   emoji:'✏️', primary:'',        bg:'',         card:'',        text:'',        navBg:'',       navText:'',        desc:'اختر ألوانك'},
 ];
 function renderMarketers(){
   const sq=(document.getElementById('adminSearch')?.value||'').trim().toLowerCase();
@@ -1297,7 +1299,7 @@ function openMarketer(id){
   const pa=productsArr();
   // fallback للثيمات القديمة
   const _oldMap={luxury:'ivory',dark:'midnight',modern:'arctic',classic:'walnut',stone:'slate',sage:'walnut'};
-  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','custom'].includes(m.theme)?m.theme:'ivory' );
+  _selectedTheme=_oldMap[m.theme]||( ['ivory','midnight','arctic','blush','walnut','slate','crimson','obsidian','custom'].includes(m.theme)?m.theme:'ivory' );
   document.getElementById('modalTitle').textContent=isNew?'+ إضافة مسوق':'تعديل: '+m.name;
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-body">
