@@ -11,19 +11,6 @@
 <meta name="apple-mobile-web-app-title" content="ديباجات" id="pwa-apple-title">
 <meta name="theme-color" content="#b8934a" id="pwa-theme-color">
 <link rel="apple-touch-icon" href="/icon-192.png" id="pwa-apple-icon">
-<!-- Open Graph / Social Share -->
-<meta property="og:type" content="website" id="og-type">
-<meta property="og:site_name" content="ديباجات" id="og-site">
-<meta property="og:title" content="ديباجات" id="og-title">
-<meta property="og:description" content="متجر مفروشات راقية" id="og-desc">
-<meta property="og:image" content="" id="og-image">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:url" content="" id="og-url">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ديباجات" id="tw-title">
-<meta name="twitter:description" content="متجر مفروشات راقية" id="tw-desc">
-<meta name="twitter:image" content="" id="tw-image">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -456,7 +443,6 @@ body{padding-bottom:58px}
 .fmodal-arrow-next{left:10px}
 
 </style>
-</head>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -1556,20 +1542,6 @@ function renderHeader(){
   document.getElementById('hero-welcome-ar').textContent=m.welcomeAr||'أهلاً بك في متجرنا';
   document.getElementById('hero-welcome-en').textContent=m.welcomeEn||'Welcome to our store';
   document.title=(m.name||'متجر')+' — مفروشاتي';
-  // ===== تهيئة OG بيانات المتجر =====
-  const _sName=(m.name||'ديباجات')+' — مفروشاتي';
-  const _sImg=m.banner||m.logo||'';
-  const _sUrl=`https://${(m.slug||location.hostname)+'.dibajat.store'}`;
-  const _sDesc=m.welcomeAr||'متجر مفروشات راقية';
-  const setMeta=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.setAttribute('content',val);};
-  setMeta('og-title',_sName);
-  setMeta('og-desc',_sDesc);
-  setMeta('og-url',_sUrl);
-  setMeta('og-image',_sImg);
-  setMeta('og-site',m.name||'ديباجات');
-  setMeta('tw-title',_sName);
-  setMeta('tw-desc',_sDesc);
-  setMeta('tw-image',_sImg);
 }
 
 // ===== FILTERS (Dropdown) =====
@@ -1708,23 +1680,6 @@ function openModal(pid){
   const p=PRODUCTS[pid];
   const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
   history.pushState({modal:true, pid},'',productPath);
-  // ===== تحديث OG meta للشيل السوشيال =====
-  if(p){
-    const _ci=selColor[pid]||0;
-    const _img=(_ci>=0&&p.colors[_ci]?.imgs||[])[0]||(p.colors[0]?.imgs||[])[0]||STORE.banner||STORE.logo||'';
-    const _title=(isEn?p.nameEn:p.nameAr)+' — '+(STORE.name||'ديباجات');
-    const _desc=(isEn?'Price:':'السعر: ')+p.price+' KWD'+(p.descAr?` — ${isEn?p.descEn||p.descAr:p.descAr}`:'');
-    const _url=`https://${(STORE.slug||location.hostname)+'.dibajat.store'}${productPath}`;
-    const setMeta=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.setAttribute('content',val);};
-    setMeta('og-title',_title);
-    setMeta('og-desc',_desc);
-    setMeta('og-url',_url);
-    setMeta('og-image',_img);
-    setMeta('tw-title',_title);
-    setMeta('tw-desc',_desc);
-    setMeta('tw-image',_img);
-    document.title=_title;
-  }
 }
 function renderModal(){
   const pid=currentPid;
@@ -1857,19 +1812,6 @@ function closeModal(){
   document.getElementById('modalBg').classList.remove('open');
   document.body.style.overflow='';
   history.replaceState({},'','/');
-  // ===== reset OG للمتجر العام =====
-  const _storeName=(STORE.name||'ديباجات');
-  const _storeImg=STORE.banner||STORE.logo||'';
-  const _storeUrl=`https://${(STORE.slug||location.hostname)+'.dibajat.store'}`;
-  const setMeta=(id,val)=>{const el=document.getElementById(id);if(el)el.setAttribute('content',val);};
-  setMeta('og-title',_storeName+' — مفروشاتي');
-  setMeta('og-desc',STORE.welcomeAr||'متجر مفروشات راقية');
-  setMeta('og-url',_storeUrl);
-  setMeta('og-image',_storeImg);
-  setMeta('tw-title',_storeName);
-  setMeta('tw-desc',STORE.welcomeAr||'متجر مفروشات راقية');
-  setMeta('tw-image',_storeImg);
-  document.title=_storeName+' — مفروشاتي';
 }
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
 
