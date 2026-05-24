@@ -948,14 +948,15 @@ function renderProducts(){
       <div style="display:flex;gap:5px;flex-wrap:wrap">${filterBtns}</div>
     </div>
     <table class="tbl">
-      <tr><th></th><th>المنتج</th><th>الشركة</th><th>السعر</th><th>المقاسات</th><th>الألوان</th><th>الحالة</th><th>إجراءات</th></tr>
+      <tr><th></th><th>المنتج</th><th>الشركة</th><th>السعر</th><th>الفصل</th><th>المقاسات</th><th>الألوان</th><th>الحالة</th><th>إجراءات</th></tr>
       ${filtered.length===0
-        ?`<tr><td colspan="8" class="empty">لا توجد منتجات لهذه الشركة</td></tr>`
+        ?`<tr><td colspan="9" class="empty">لا توجد منتجات لهذه الشركة</td></tr>`
         :filtered.map(p=>`<tr>
           <td><div class="tbl-emoji">${p.emoji||'🛋️'}</div></td>
           <td><div class="tbl-name">${xe(p.nameAr)}</div><div class="tbl-sub">${xe(p.nameEn)}</div></td>
           <td>${xe(gb(p.brand_id||p.brand).ar)}</td>
           <td><span style="color:var(--gold);font-weight:800">${p.price}</span> <span style="color:var(--mt);font-size:10px">KWD</span>${p.oldPrice?`<div class="tbl-sub" style="text-decoration:line-through">${p.oldPrice}</div>`:''}</td>
+          <td><span style="font-size:13px">${p.season==='summer'?'☀️ صيفي':p.season==='winter'?'❄️ شتوي':'☀️❄️ الكل'}</span></td>
           <td><div style="display:flex;gap:3px;flex-wrap:wrap">${(p.sizes||[]).map(s=>{const si=ALL_SIZES.find(x=>x.id===s);return si?`<span style="font-size:9px;padding:1px 6px;border-radius:10px;background:var(--bg3);border:1px solid var(--bd);color:var(--mt)">${si.en}</span>`:''}).join('')||'<span style="color:var(--mt)">—</span>'}</div></td>
           <td><div class="color-dots">${Object.values(p.colors||{}).map(c=>`<div class="color-dot" style="background:${c.hex}"></div>`).join('')}</div></td>
           <td>${p.status==='active'?'<span class="badge badge-active">نشط</span>':'<span class="badge badge-suspended">مخفي</span>'}</td>
@@ -1019,6 +1020,14 @@ function openProduct(id){
             <option value="sale"${p.badge==='sale'?' selected':''}>خصم</option>
           </select>
         </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">🌡️ الفصل</label>
+        <select class="form-select" id="p-season">
+          <option value="all"${(!p.season||p.season==='all')?' selected':''}>☀️❄️ صيفي وشتوي (الكل)</option>
+          <option value="summer"${p.season==='summer'?' selected':''}>☀️ صيفي فقط</option>
+          <option value="winter"${p.season==='winter'?' selected':''}>❄️ شتوي فقط</option>
+        </select>
       </div>
       <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">📝 وصف الطقم</div>
       <div class="form-row"><label class="form-label">الوصف بالعربي</label><textarea class="form-input" id="p-desc-ar" rows="3" style="resize:vertical;line-height:1.6">${xe(p.descAr||'')}</textarea></div>
@@ -1197,6 +1206,7 @@ function saveProduct(id){
     commission:Number(document.getElementById('p-comm')?.value)||0,
     badge:document.getElementById('p-badge').value,
     emoji:document.getElementById('p-emoji').value||'🛋️',
+    season:document.getElementById('p-season').value||'all',
     status:document.getElementById('p-status').value,
     sizes,sizePrices,materials:mats,colors:colorsObj
   };
