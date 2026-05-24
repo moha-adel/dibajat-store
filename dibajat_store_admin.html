@@ -1024,9 +1024,8 @@ function openProduct(id){
       <div class="form-row">
         <label class="form-label">🌡️ الفصل</label>
         <select class="form-select" id="p-season">
-          <option value="all"${(!p.season||p.season==='all')?' selected':''}>☀️❄️ صيفي وشتوي (الكل)</option>
-          <option value="summer"${p.season==='summer'?' selected':''}>☀️ صيفي فقط</option>
-          <option value="winter"${p.season==='winter'?' selected':''}>❄️ شتوي فقط</option>
+          <option value="summer"${(!p.season||p.season==='all'||p.season==='summer')?' selected':''}>☀️ صيفي</option>
+          <option value="winter"${p.season==='winter'?' selected':''}>❄️ شتوي</option>
         </select>
       </div>
       <div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)">📝 وصف الطقم</div>
