@@ -1645,7 +1645,7 @@ function renderProducts(){
     if(activeBrand!=='all'&&bid!==activeBrand)return false;
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
     if(activeMaterial!=='all'&&!(p.materials||[]).includes(activeMaterial))return false;
-    if(activeSeason!=='all'){const ps=p.season||'all';if(ps!=='all'&&ps!==activeSeason)return false;}
+    if(activeSeason!=='all'){const ps=p.season&&p.season!=='all'?p.season:'summer';if(ps!==activeSeason)return false;}
     if(sq){
       const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
       if(!hay.toLowerCase().includes(sq))return false;
@@ -1673,7 +1673,7 @@ function renderProducts(){
           <span class="like-count">${productLikes[p.id]>0?productLikes[p.id]:''}</span>
         </button>
         ${p.badge==='new'?`<div class="fprod-badge badge-new">${isEn?'NEW':'جديد'}</div>`:p.badge==='sale'?`<div class="fprod-badge badge-sale">${isEn?'SALE':'خصم'}</div>`:''}
-        ${p.season&&p.season!=='all'?`<div class="fprod-season-tag">${p.season==='summer'?'☀️':'❄️'}</div>`:''}
+        <div class="fprod-season-tag">${(p.season&&p.season!=='all'?p.season:'summer')==='summer'?'☀️':'❄️'}</div>
         <div class="fprod-brand-tag">${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}</div>
         ${p.colors.length>1?`<div class="fprod-colors-row">${p.colors.slice(0,4).map(c=>`<div class="fprod-dot" style="background:${c.hex}"></div>`).join('')}</div>`:''}
       </div>
