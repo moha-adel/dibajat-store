@@ -117,6 +117,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--theme-bg);color:var(--dar
 .badge-new{background:var(--dark);color:var(--theme-primary)}
 .badge-sale{background:var(--red);color:#fff}
 .fprod-brand-tag{position:absolute;top:9px;left:9px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.92);color:var(--gray);border:1px solid var(--border)}
+.fprod-season-tag{position:absolute;bottom:9px;left:9px;font-size:14px;line-height:1;background:rgba(255,255,255,.88);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
 .fprod-colors-row{position:absolute;bottom:9px;right:9px;display:flex;gap:4px}
 .fprod-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .fprod-body{padding:10px 12px 12px}
@@ -520,6 +521,15 @@ body{padding-bottom:58px}
     </select>
     <span class="fdd-arrow">▾</span>
   </div>
+  <!-- season dropdown -->
+  <div class="fdd-wrap" id="season-dd-wrap">
+    <select class="fdd-select" id="season-dd" onchange="setSeason(this.value)">
+      <option value="all">🌡️ الفصل</option>
+      <option value="summer">☀️ صيفي</option>
+      <option value="winter">❄️ شتوي</option>
+    </select>
+    <span class="fdd-arrow">▾</span>
+  </div>
   <button class="ffilter-reset" onclick="resetFilters()">
     <span class="lar">↺ تعيين</span><span class="len" style="display:none">↺ Reset</span>
   </button>
@@ -809,7 +819,7 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
 // ===== STATE =====
-let isEn=false, activeBrand='all', activeSize='all', activeMaterial='all', MATERIALS={};
+let isEn=false, activeBrand='all', activeSize='all', activeMaterial='all', activeSeason='all', MATERIALS={};
 let cart=[], selColor={}, selSize={}, compareList=[];
 let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
 let currentPid=null, currentSlideIdx=0;
@@ -1554,7 +1564,7 @@ function toggleFilterPanel(){
 }
 
 function updateFilterBadge(){
-  const count=[activeBrand,activeSize,activeMaterial].filter(v=>v&&v!=='all').length;
+  const count=[activeBrand,activeSize,activeMaterial,activeSeason].filter(v=>v&&v!=='all').length;
   const badge=document.getElementById('filterBadge');
   const btn=document.getElementById('filterToggleBtn');
   badge.textContent=count;
@@ -1563,7 +1573,7 @@ function updateFilterBadge(){
 }
 
 function resetFilters(){
-  activeBrand='all';activeSize='all';activeMaterial='all';
+  activeBrand='all';activeSize='all';activeMaterial='all';activeSeason='all';
   renderFilters();renderProducts();
 }
 
@@ -1608,8 +1618,21 @@ function renderFilters(){
     } else { matDdWrap.style.display='none'; }
   }
 
+  // --- Season ---
+  const seasonDdWrap=document.getElementById('season-dd-wrap');
+  const seasonDd=document.getElementById('season-dd');
+  if(seasonDdWrap&&seasonDd){
+    seasonDd.innerHTML=`<option value="all">${isEn?'🌡️ Season':'🌡️ الفصل'}</option>`
+      +`<option value="summer">${isEn?'☀️ Summer':'☀️ صيفي'}</option>`
+      +`<option value="winter">${isEn?'❄️ Winter':'❄️ شتوي'}</option>`;
+    seasonDd.value=activeSeason;
+    seasonDd.classList.toggle('on',activeSeason!=='all');
+    seasonDdWrap.style.display='';
+  }
+
   updateFilterBadge();
 }
+function setSeason(s){activeSeason=s;renderFilters();renderProducts();}
 function setBrand(b){activeBrand=b;renderFilters();renderProducts();}
 function setMaterial(m){activeMaterial=m;renderFilters();renderProducts();}
 function setSize(s){activeSize=s;renderFilters();renderProducts();}
@@ -1622,6 +1645,7 @@ function renderProducts(){
     if(activeBrand!=='all'&&bid!==activeBrand)return false;
     if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
     if(activeMaterial!=='all'&&!(p.materials||[]).includes(activeMaterial))return false;
+    if(activeSeason!=='all'){const ps=p.season||'all';if(ps!=='all'&&ps!==activeSeason)return false;}
     if(sq){
       const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
       if(!hay.toLowerCase().includes(sq))return false;
@@ -1649,6 +1673,7 @@ function renderProducts(){
           <span class="like-count">${productLikes[p.id]>0?productLikes[p.id]:''}</span>
         </button>
         ${p.badge==='new'?`<div class="fprod-badge badge-new">${isEn?'NEW':'جديد'}</div>`:p.badge==='sale'?`<div class="fprod-badge badge-sale">${isEn?'SALE':'خصم'}</div>`:''}
+        ${p.season&&p.season!=='all'?`<div class="fprod-season-tag">${p.season==='summer'?'☀️':'❄️'}</div>`:''}
         <div class="fprod-brand-tag">${xe(isEn?(gb(bid).en||gb(bid).ar):(gb(bid).ar||gb(bid).en))}</div>
         ${p.colors.length>1?`<div class="fprod-colors-row">${p.colors.slice(0,4).map(c=>`<div class="fprod-dot" style="background:${c.hex}"></div>`).join('')}</div>`:''}
       </div>
