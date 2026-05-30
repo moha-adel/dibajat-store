@@ -821,6 +821,8 @@ const db=firebase.database();
 let isEn=false, activeBrand='all', activeSize='all', activeMaterial='all', activeSeason='all', MATERIALS={};
 let cart=[], selColor={}, selSize={}, compareList=[];
 let STORE={}, BRANDS={}, PRODUCTS={}, searchQ='';
+const ITEMS_PER_PAGE=12;
+let visibleCount=ITEMS_PER_PAGE;
 let currentPid=null, currentSlideIdx=0;
 // === جديد ===
 let wishlist=[], productLikes={}, currentSubscriber=null;
@@ -1637,32 +1639,11 @@ function setMaterial(m){activeMaterial=m;renderFilters();renderProducts();}
 function setSize(s){activeSize=s;renderFilters();renderProducts();}
 
 // ===== PRODUCTS GRID =====
-function renderProducts(){
-  const sq=(document.getElementById('prodSearch')?.value||'').trim().toLowerCase();
-  const vis=prodsArr().filter(p=>{
-    const bid=p.brand_id||p.brand;
-    if(activeBrand!=='all'&&bid!==activeBrand)return false;
-    if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
-    if(activeMaterial!=='all'&&!(p.materials||[]).includes(activeMaterial))return false;
-    if(activeSeason!=='all'){const ps=p.season&&p.season!=='all'?p.season:'summer';if(ps!==activeSeason)return false;}
-    if(sq){
-      const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
-      if(!hay.toLowerCase().includes(sq))return false;
-    }
-    return true;
-  }).sort((a,b)=>{
-    // الأحدث في الإضافة يظهر أولاً
-    const ta=a.createdAt?new Date(a.createdAt).getTime():0;
-    const tb=b.createdAt?new Date(b.createdAt).getTime():0;
-    return tb-ta;
-  });
-  document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
-  if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
-  document.getElementById('prodGrid').innerHTML=vis.map(p=>{
-    const bid=p.brand_id||p.brand;
-    const ci=selColor[p.id]||0;
-    const firstImg=(p.colors[ci]?.imgs||[])[0]||(p.colors[0]?.imgs||[])[0]||'';
-    return`<div class="fprod" onclick="openModal('${p.id}')">
+function prodCardHTML(p){
+  const bid=p.brand_id||p.brand;
+  const ci=selColor[p.id]||0;
+  const firstImg=(p.colors[ci]?.imgs||[])[0]||(p.colors[0]?.imgs||[])[0]||'';
+  return`<div class="fprod" onclick="openModal('${p.id}')">
       <div class="fprod-img-wrap">
         ${firstImg
           ?`<img class="fprod-img" src="${xe(firstImg)}" alt="${xe(p.nameAr)}" loading="lazy" onerror="this.style.display='none'">`
@@ -1691,7 +1672,79 @@ function renderProducts(){
         </div>
       </div>
     </div>`;
-  }).join('');
+}
+
+function getFilteredProducts(){
+  const sq=(document.getElementById('prodSearch')?.value||'').trim().toLowerCase();
+  return prodsArr().filter(p=>{
+    const bid=p.brand_id||p.brand;
+    if(activeBrand!=='all'&&bid!==activeBrand)return false;
+    if(activeSize!=='all'&&!(p.sizes||[]).includes(activeSize))return false;
+    if(activeMaterial!=='all'&&!(p.materials||[]).includes(activeMaterial))return false;
+    if(activeSeason!=='all'){const ps=p.season&&p.season!=='all'?p.season:'summer';if(ps!==activeSeason)return false;}
+    if(sq){
+      const hay=(p.nameAr||'')+(p.nameEn||'')+(gb(bid).ar||'')+(gb(bid).en||'');
+      if(!hay.toLowerCase().includes(sq))return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const ta=a.createdAt?new Date(a.createdAt).getTime():0;
+    const tb=b.createdAt?new Date(b.createdAt).getTime():0;
+    return tb-ta;
+  });
+}
+
+function renderProducts(){
+  visibleCount=ITEMS_PER_PAGE;
+  const vis=getFilteredProducts();
+  document.getElementById('prodCount').textContent=isEn?`${vis.length} products`:`${vis.length} منتج`;
+  if(!vis.length){showErr(isEn?'No products found':'لا توجد منتجات');return;}
+  const shown=vis.slice(0,visibleCount);
+  const grid=document.getElementById('prodGrid');
+  grid.innerHTML=shown.map(p=>prodCardHTML(p)).join('');
+  renderLoadMoreBtn(vis.length);
+}
+
+function loadMore(){
+  const vis=getFilteredProducts();
+  const prevCount=visibleCount;
+  visibleCount=Math.min(visibleCount+ITEMS_PER_PAGE, vis.length);
+  const newItems=vis.slice(prevCount, visibleCount);
+  const grid=document.getElementById('prodGrid');
+  // إضافة الكاردات الجديدة بدون إعادة رندر الكل
+  newItems.forEach(p=>{
+    const div=document.createElement('div');
+    div.innerHTML=prodCardHTML(p);
+    grid.appendChild(div.firstElementChild);
+  });
+  renderLoadMoreBtn(vis.length);
+}
+
+function renderLoadMoreBtn(total){
+  let btn=document.getElementById('loadMoreBtn');
+  if(visibleCount>=total){
+    if(btn) btn.remove();
+    return;
+  }
+  const remaining=total-visibleCount;
+  if(!btn){
+    btn=document.createElement('div');
+    btn.id='loadMoreBtn';
+    btn.style.cssText='grid-column:1/-1;text-align:center;padding:16px 0 4px';
+    document.getElementById('prodGrid').after(btn);
+  }
+  btn.innerHTML=`
+    <button onclick="loadMore()" style="
+      padding:13px 36px;border-radius:50px;
+      background:var(--card-bg);color:var(--dark);
+      font-size:14px;font-weight:800;
+      border:2px solid var(--border);
+      cursor:pointer;font-family:'Tajawal',sans-serif;
+      transition:all .2s;display:inline-flex;align-items:center;gap:8px;
+    " onmouseover="this.style.borderColor='var(--theme-primary)';this.style.color='var(--theme-primary)'"
+       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--dark)'">
+      ⬇️ ${isEn?`Load more (${remaining} left)`:`تحميل المزيد (${remaining} متبقي)`}
+    </button>`;
 }
 
 // ===== MODAL =====
