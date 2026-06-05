@@ -443,6 +443,39 @@ body{padding-bottom:58px}
 .fmodal-arrow-prev{right:10px}
 .fmodal-arrow-next{left:10px}
 
+/* ===== CHECKOUT PANEL ===== */
+.checkout-bd{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1700;opacity:0;pointer-events:none;transition:opacity .3s}
+.checkout-bd.show{opacity:1;pointer-events:all}
+.checkout-panel{position:fixed;bottom:0;right:0;left:0;z-index:1800;background:var(--card-bg);border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.checkout-panel.open{transform:translateY(0)}
+.checkout-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card-bg);z-index:2}
+.checkout-title{font-size:16px;font-weight:900;color:var(--dark)}
+.checkout-close{width:30px;height:30px;border-radius:50%;background:var(--cream);border:1px solid var(--border);cursor:pointer;color:var(--gray);font-size:14px;display:flex;align-items:center;justify-content:center}
+.checkout-body{padding:16px}
+.co-section{margin-bottom:18px}
+.co-section-title{font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.co-field{margin-bottom:12px}
+.co-label{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px;display:block}
+.co-input{width:100%;box-sizing:border-box;padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;font-size:14px;background:var(--cream);color:var(--dark);outline:none;transition:border .2s}
+.co-input:focus{border-color:var(--theme-primary)}
+.co-select{width:100%;box-sizing:border-box;padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;font-size:14px;background:var(--cream);color:var(--dark);outline:none;appearance:none;-webkit-appearance:none;transition:border .2s;cursor:pointer;direction:rtl}
+.co-select:focus{border-color:var(--theme-primary)}
+.co-select-wrap{position:relative}
+.co-select-wrap::after{content:'▾';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none;font-size:14px}
+.co-address-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.co-items-mini{background:var(--cream);border-radius:10px;padding:12px;margin-bottom:12px}
+.co-item-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px}
+.co-item-row:last-child{border:none}
+.co-total-row{display:flex;justify-content:space-between;font-size:15px;font-weight:900;color:var(--dark);margin-top:10px;padding-top:10px;border-top:2px solid var(--border)}
+.co-submit-btn{width:100%;padding:15px;background:var(--theme-primary);color:var(--dark);border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:900;cursor:pointer;transition:opacity .2s;margin-top:6px}
+.co-submit-btn:hover{opacity:.85}
+.co-success{text-align:center;padding:30px 20px}
+.co-success-icon{font-size:56px;margin-bottom:12px}
+.co-success-title{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:6px}
+.co-success-sub{font-size:13px;color:var(--gray);line-height:1.8}
+.co-or-divider{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--gray2);font-size:12px;font-weight:700}
+.co-or-divider::before,.co-or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
 </style>
 </head>
 </head>
@@ -597,6 +630,16 @@ body{padding-bottom:58px}
   </div>
   <div id="cartList"></div>
   <div id="cartFoot"></div>
+</div>
+
+<!-- CHECKOUT PANEL -->
+<div class="checkout-bd" id="checkoutBd" onclick="closeCheckout()"></div>
+<div class="checkout-panel" id="checkoutPanel">
+  <div class="checkout-hd">
+    <div class="checkout-title">📋 <span class="lar">إتمام الطلب</span><span class="len" style="display:none">Checkout</span></div>
+    <button class="checkout-close" onclick="closeCheckout()">✕</button>
+  </div>
+  <div class="checkout-body" id="checkoutBody"></div>
 </div>
 
 <!-- MODAL -->
@@ -1828,10 +1871,17 @@ function renderModal(){
 
 
       <div class="fmodal-btns" style="margin-top:12px">
-        <button class="wa-btn" onclick="waProduct('${pid}')">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-          ${isEn?'Order via WhatsApp':'اطلب واتساب'}
-        </button>
+        ${(()=>{
+          const mode = getOrderMode();
+          const wasvg = `<svg viewBox="0 0 24 24" width="15" height="15" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>`;
+          if(mode==='site'){
+            return `<button class="wa-btn" style="background:linear-gradient(135deg,var(--theme-primary),var(--theme-accent,#c8a96e));color:var(--dark)" onclick="addCart('${pid}');closeModal();openCart()">🛒 ${isEn?'Add & Checkout':'أضف وأكمل الطلب'}</button>`;
+          }
+          if(mode==='both'){
+            return `<button class="wa-btn" onclick="waProduct('${pid}')">${wasvg} ${isEn?'Order via WhatsApp':'اطلب واتساب'}</button>`;
+          }
+          return `<button class="wa-btn" onclick="waProduct('${pid}')">${wasvg} ${isEn?'Order via WhatsApp':'اطلب واتساب'}</button>`;
+        })()}
         ${p.priceOnRequest
           ? '<button class="add-cart-btn" style="background:var(--theme-primary)" onclick="waProduct(currentPid)">📲 '+(isEn?'Contact for Price':'تواصل للسعر')+'</button>'
           : `<button class="add-cart-btn" onclick="addCart('${pid}')">🛒 ${isEn?'Add to Cart':'أضف للسلة'}</button>`}
@@ -1897,6 +1947,7 @@ function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal(
 window.addEventListener('popstate',()=>{
   if(document.getElementById('modalBg').classList.contains('open')){closeModal();return;}
   if(document.getElementById('cartPanel').classList.contains('open')){closeCart();return;}
+  if(document.getElementById('checkoutPanel').classList.contains('open')){closeCheckout();return;}
   if(document.getElementById('wishPanel').classList.contains('open')){closeWish();return;}
   if(document.getElementById('regPanelBg').classList.contains('open')){closeRegPanel();return;}
   if(document.getElementById('custPanelBg').classList.contains('open')){closeCustPanel();return;}
@@ -2013,10 +2064,20 @@ function renderCart(){
       <span class="fcart-total-lbl">${isEn?'Total':'الإجمالي'}</span>
       <span class="fcart-total-val">${total} KWD</span>
     </div>
-    <button class="fcart-wa-btn" onclick="sendWA()">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-      ${isEn?'Send Order via WhatsApp':'إرسال الطلب عبر واتساب'}
-    </button>
+    ${(()=>{
+      const mode = getOrderMode();
+      const waBtn = `<button class="fcart-wa-btn" onclick="sendWA()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.27 6.27 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.855L.057 23.43a.75.75 0 0 0 .918.919l5.638-1.479A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.319-1.469l-.38-.227-3.946 1.034 1.053-3.838-.248-.396A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        ${isEn?'Send Order via WhatsApp':'إرسال الطلب عبر واتساب'}
+      </button>`;
+      const siteBtn = `<button class="co-submit-btn" onclick="closeCart();openCheckout()">
+        📋 ${isEn?'Complete Order on Site':'إتمام الطلب على الموقع'}
+      </button>`;
+      if(mode==='whatsapp') return waBtn;
+      if(mode==='site') return siteBtn;
+      // both
+      return siteBtn + `<div class="co-or-divider">${isEn?'or':'أو'}</div>` + waBtn;
+    })()}
     <button class="fcart-clr-btn" onclick="clearCart()">${isEn?'🗑️ Clear':'🗑️ إلغاء'}</button>`;
 }
 function removeItem(i){cart.splice(i,1);updateCartUI();renderCart();}
@@ -2184,6 +2245,180 @@ function shareProduct(pid){
       toast(isEn?'Link copied ✓':'✓ تم نسخ الرابط');
     });
   }
+}
+
+// ===== KUWAIT ADDRESS DATA =====
+const KUWAIT_AREAS = {
+  'العاصمة': ['الشويخ','الصليبية','الروضة','الأندلس','الفيحاء','الدسمة','السرة','الشامية','الصوابر','القادسية','الدعية','الفروانية','الخالدية','المنصورية','النزهة','الصليبخات','الكيفان','العديلية','اليرموك','الحرس الوطني'],
+  'حولي': ['حولي','الرميثية','السالمية','الجابرية','بيان','مشرف','الشعب','البدع','الزهراء','الشهداء','حطين','الإتحاد','النقرة','الفلاح','الصديق'],
+  'الفروانية': ['الفروانية','خيطان','العارضية','الرابية','الرهاب','الأندلس','جليب الشيوخ','الشعب','عبدالله المبارك','أبو فطيرة','الفردوس','الوسط'],
+  'الأحمدي': ['الأحمدي','المنقف','أبو حليفة','الفحيحيل','الصباحية','الجليعة','المهبولة','الرقة','هدية','الظهر','المقوع','البر','ضاحية جابر العلي'],
+  'الجهراء': ['الجهراء','الصليبية','النعيم','كاظمة','الوفرة','الأمغرة','تيماء','الوهبة'],
+  'مبارك الكبير': ['مبارك الكبير','المسيلة','صباح السالم','العقيلة','أبو الحصانية','الفنيطيس','القصور','الصباح الجديد','أدمج','ضاحية صباح السالم']
+};
+
+// ===== CHECKOUT =====
+function getOrderMode(){
+  return (STORE && STORE.orderMode) || 'whatsapp';
+}
+
+function openCheckout(){
+  if(!cart.length){ toast(isEn?'Cart is empty':'السلة فارغة'); return; }
+  renderCheckout();
+  document.getElementById('checkoutPanel').classList.add('open');
+  document.getElementById('checkoutBd').classList.add('show');
+  document.body.style.overflow='hidden';
+  history.pushState({modal:true},'','');
+}
+
+function closeCheckout(){
+  document.getElementById('checkoutPanel').classList.remove('open');
+  document.getElementById('checkoutBd').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function renderCheckout(){
+  const total = cart.reduce((s,x)=>s+x.price*x.qty, 0);
+  const govOptions = Object.keys(KUWAIT_AREAS).map(g=>`<option value="${g}">${g}</option>`).join('');
+  const ar = !isEn;
+  document.getElementById('checkoutBody').innerHTML = `
+    <!-- ملخص الطلب -->
+    <div class="co-section">
+      <div class="co-section-title">${ar?'🛒 ملخص الطلب':'🛒 Order Summary'}</div>
+      <div class="co-items-mini">
+        ${cart.map(item=>`
+          <div class="co-item-row">
+            <span>${ar?item.nameAr:item.nameEn} × ${item.qty}</span>
+            <span style="font-weight:800">${item.price*item.qty} KWD</span>
+          </div>`).join('')}
+        <div class="co-total-row">
+          <span>${ar?'الإجمالي':'Total'}</span>
+          <span>${total} KWD</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- بيانات العميل -->
+    <div class="co-section">
+      <div class="co-section-title">👤 ${ar?'بياناتك':'Your Info'}</div>
+      <div class="co-field">
+        <label class="co-label">${ar?'الاسم الكامل':'Full Name'} *</label>
+        <input class="co-input" id="co-name" type="text" placeholder="${ar?'مثال: أحمد الكويتي':'e.g. Ahmed Al-Kuwaiti'}">
+      </div>
+      <div class="co-field">
+        <label class="co-label">${ar?'رقم الواتساب / الجوال':'WhatsApp / Phone'} *</label>
+        <input class="co-input" id="co-phone" type="tel" placeholder="${ar?'مثال: 96512345678':'e.g. 96512345678'}" style="direction:ltr">
+      </div>
+    </div>
+
+    <!-- عنوان التوصيل -->
+    <div class="co-section">
+      <div class="co-section-title">📍 ${ar?'عنوان التوصيل':'Delivery Address'}</div>
+      <div class="co-field">
+        <label class="co-label">${ar?'المحافظة':'Governorate'} *</label>
+        <div class="co-select-wrap">
+          <select class="co-select" id="co-gov" onchange="updateAreas()">
+            <option value="">${ar?'اختر المحافظة...':'Select Governorate...'}</option>
+            ${govOptions}
+          </select>
+        </div>
+      </div>
+      <div class="co-field">
+        <label class="co-label">${ar?'المنطقة':'Area'} *</label>
+        <div class="co-select-wrap">
+          <select class="co-select" id="co-area">
+            <option value="">${ar?'اختر المنطقة...':'Select Area...'}</option>
+          </select>
+        </div>
+      </div>
+      <div class="co-address-grid">
+        <div class="co-field">
+          <label class="co-label">${ar?'القطعة':'Block'} *</label>
+          <input class="co-input" id="co-block" type="text" placeholder="${ar?'مثال: 5':'e.g. 5'}" style="direction:ltr">
+        </div>
+        <div class="co-field">
+          <label class="co-label">${ar?'الشارع':'Street'} *</label>
+          <input class="co-input" id="co-street" type="text" placeholder="${ar?'مثال: 12':'e.g. 12'}" style="direction:ltr">
+        </div>
+      </div>
+      <div class="co-field">
+        <label class="co-label">${ar?'رقم المنزل / الشقة':'House / Apt Number'} *</label>
+        <input class="co-input" id="co-house" type="text" placeholder="${ar?'مثال: منزل 3 أو شقة 5':'e.g. House 3 or Apt 5'}">
+      </div>
+      <div class="co-field">
+        <label class="co-label">${ar?'ملاحظات إضافية (اختياري)':'Notes (optional)'}</label>
+        <input class="co-input" id="co-notes" type="text" placeholder="${ar?'مثال: اتصل قبل التوصيل':'e.g. Call before delivery'}">
+      </div>
+    </div>
+
+    <button class="co-submit-btn" onclick="submitSiteOrder()">
+      ✅ ${ar?'تأكيد الطلب':'Confirm Order'}
+    </button>`;
+}
+
+function updateAreas(){
+  const gov = document.getElementById('co-gov').value;
+  const areaSelect = document.getElementById('co-area');
+  const areas = KUWAIT_AREAS[gov] || [];
+  const ar = !isEn;
+  areaSelect.innerHTML = `<option value="">${ar?'اختر المنطقة...':'Select Area...'}</option>` +
+    areas.map(a=>`<option value="${a}">${a}</option>`).join('');
+}
+
+function submitSiteOrder(){
+  const name = document.getElementById('co-name').value.trim();
+  const phone = document.getElementById('co-phone').value.trim();
+  const gov = document.getElementById('co-gov').value;
+  const area = document.getElementById('co-area').value;
+  const block = document.getElementById('co-block').value.trim();
+  const street = document.getElementById('co-street').value.trim();
+  const house = document.getElementById('co-house').value.trim();
+  const notes = document.getElementById('co-notes').value.trim();
+  const ar = !isEn;
+
+  if(!name || !phone){ toast(ar?'أدخل اسمك ورقمك':'Enter name & phone'); return; }
+  if(!gov || !area || !block || !street || !house){ toast(ar?'أكمل عنوان التوصيل':'Complete delivery address'); return; }
+
+  const now = new Date();
+  const date = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  const total = cart.reduce((s,x)=>s+x.price*x.qty, 0);
+  const orderItems = cart.map(item=>({
+    product: item.nameAr, productEn: item.nameEn||'',
+    color: item.colorAr||'', colorEn: item.colorEn||'',
+    size: item.size||'', price: item.price,
+    qty: item.qty||1, subtotal: item.price*(item.qty||1)
+  }));
+
+  const address = `${gov} - ${area} - قطعة ${block} - شارع ${street} - ${house}`;
+
+  const order = {
+    items: orderItems,
+    itemsCount: orderItems.length,
+    total, currency: 'KWD',
+    marketer: STORE.name||'',
+    marketerId: STORE.id||'',
+    marketer_id: STORE.id||'',
+    marketer_slug: STORE.slug||'',
+    name, phone, wa: phone,
+    address, gov, area, block, street, house, notes,
+    orderType: 'site',
+    status: 'new', date,
+    createdAt: Date.now()
+  };
+
+  db.ref('orders').push(order).then(()=>{
+    cart = [];
+    updateCartUI();
+    document.getElementById('checkoutBody').innerHTML = `
+      <div class="co-success">
+        <div class="co-success-icon">✅</div>
+        <div class="co-success-title">${ar?'تم استلام طلبك!':'Order Received!'}</div>
+        <div class="co-success-sub">
+          ${ar?`شكراً ${name}،<br>سيتواصل معك المتجر قريباً على رقم ${phone}`:`Thanks ${name},<br>The store will contact you soon at ${phone}`}
+        </div>
+      </div>`;
+    setTimeout(()=>closeCheckout(), 3500);
+  }).catch(e=>{ toast(ar?'خطأ في الإرسال':'Submit error'); console.error(e); });
 }
 
 initStore();
