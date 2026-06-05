@@ -2248,13 +2248,21 @@ function shareProduct(pid){
 }
 
 // ===== KUWAIT ADDRESS DATA =====
+const KUWAIT_GOVS = [
+  { ar:'العاصمة',     en:'Capital' },
+  { ar:'حولي',        en:'Hawalli' },
+  { ar:'الفروانية',   en:'Farwaniya' },
+  { ar:'الأحمدي',     en:'Ahmadi' },
+  { ar:'الجهراء',     en:'Jahra' },
+  { ar:'مبارك الكبير',en:'Mubarak Al-Kabeer' }
+];
 const KUWAIT_AREAS = {
-  'العاصمة': ['الشويخ','الصليبية','الروضة','الأندلس','الفيحاء','الدسمة','السرة','الشامية','الصوابر','القادسية','الدعية','الفروانية','الخالدية','المنصورية','النزهة','الصليبخات','الكيفان','العديلية','اليرموك','الحرس الوطني'],
-  'حولي': ['حولي','الرميثية','السالمية','الجابرية','بيان','مشرف','الشعب','البدع','الزهراء','الشهداء','حطين','الإتحاد','النقرة','الفلاح','الصديق'],
-  'الفروانية': ['الفروانية','خيطان','العارضية','الرابية','الرهاب','الأندلس','جليب الشيوخ','الشعب','عبدالله المبارك','أبو فطيرة','الفردوس','الوسط'],
-  'الأحمدي': ['الأحمدي','المنقف','أبو حليفة','الفحيحيل','الصباحية','الجليعة','المهبولة','الرقة','هدية','الظهر','المقوع','البر','ضاحية جابر العلي'],
-  'الجهراء': ['الجهراء','الصليبية','النعيم','كاظمة','الوفرة','الأمغرة','تيماء','الوهبة'],
-  'مبارك الكبير': ['مبارك الكبير','المسيلة','صباح السالم','العقيلة','أبو الحصانية','الفنيطيس','القصور','الصباح الجديد','أدمج','ضاحية صباح السالم']
+  'العاصمة': [{ar:'الشويخ',en:'Shuwaikh'},{ar:'الصليبية',en:'Sulaibiya'},{ar:'الروضة',en:'Rawda'},{ar:'الأندلس',en:'Andalus'},{ar:'الفيحاء',en:'Faiha'},{ar:'الدسمة',en:'Dasma'},{ar:'السرة',en:'Surra'},{ar:'الشامية',en:'Shamiya'},{ar:'الصوابر',en:'Sawaber'},{ar:'القادسية',en:'Qadisiya'},{ar:'الدعية',en:'Daiya'},{ar:'الخالدية',en:'Khalidiya'},{ar:'المنصورية',en:'Mansouriya'},{ar:'النزهة',en:'Nuzha'},{ar:'الصليبخات',en:'Sulaibikhat'},{ar:'الكيفان',en:'Kaifan'},{ar:'العديلية',en:'Adailiya'},{ar:'اليرموك',en:'Yarmouk'},{ar:'الحرس الوطني',en:'National Guard'}],
+  'حولي': [{ar:'حولي',en:'Hawalli'},{ar:'الرميثية',en:'Rumaithiya'},{ar:'السالمية',en:'Salmiya'},{ar:'الجابرية',en:'Jabriya'},{ar:'بيان',en:'Bayan'},{ar:'مشرف',en:'Mishref'},{ar:'الشعب',en:'Shaab'},{ar:'البدع',en:'Bidaa'},{ar:'الزهراء',en:'Zahra'},{ar:'الشهداء',en:'Shuhada'},{ar:'حطين',en:'Hittin'},{ar:'الإتحاد',en:'Ittihad'},{ar:'النقرة',en:'Nuqra'},{ar:'الفلاح',en:'Falah'},{ar:'الصديق',en:'Siddiq'}],
+  'الفروانية': [{ar:'الفروانية',en:'Farwaniya'},{ar:'خيطان',en:'Khaitan'},{ar:'العارضية',en:'Ardiya'},{ar:'الرابية',en:'Rabiya'},{ar:'الرهاب',en:'Rehab'},{ar:'الأندلس',en:'Andalus'},{ar:'جليب الشيوخ',en:'Jleeb Al-Shuyoukh'},{ar:'الشعب',en:'Shaab'},{ar:'عبدالله المبارك',en:'Abdullah Al-Mubarak'},{ar:'أبو فطيرة',en:'Abu Fatira'},{ar:'الفردوس',en:'Firdous'},{ar:'الوسط',en:'Wasat'}],
+  'الأحمدي': [{ar:'الأحمدي',en:'Ahmadi'},{ar:'المنقف',en:'Mangaf'},{ar:'أبو حليفة',en:'Abu Halifa'},{ar:'الفحيحيل',en:'Fahaheel'},{ar:'الصباحية',en:'Sabahiya'},{ar:'الجليعة',en:'Julaia'},{ar:'المهبولة',en:'Mahboula'},{ar:'الرقة',en:'Ruqa'},{ar:'هدية',en:'Hadiya'},{ar:'الظهر',en:'Dhaher'},{ar:'المقوع',en:'Miqwa'},{ar:'البر',en:'Barr'},{ar:'ضاحية جابر العلي',en:'Sabah Al-Ahmad'}],
+  'الجهراء': [{ar:'الجهراء',en:'Jahra'},{ar:'الصليبية',en:'Sulaibiya'},{ar:'النعيم',en:'Naeem'},{ar:'كاظمة',en:'Kazma'},{ar:'الوفرة',en:'Wafra'},{ar:'الأمغرة',en:'Amghara'},{ar:'تيماء',en:'Tayma'},{ar:'الوهبة',en:'Wahba'}],
+  'مبارك الكبير': [{ar:'مبارك الكبير',en:'Mubarak Al-Kabeer'},{ar:'المسيلة',en:'Masayel'},{ar:'صباح السالم',en:'Sabah Al-Salem'},{ar:'العقيلة',en:'Aqila'},{ar:'أبو الحصانية',en:'Abu Al-Hasaniya'},{ar:'الفنيطيس',en:'Fintas'},{ar:'القصور',en:'Qusor'},{ar:'الصباح الجديد',en:'New Sabah'},{ar:'ضاحية صباح السالم',en:'Sabah Al-Salem Suburb'}]
 };
 
 // ===== CHECKOUT =====
@@ -2279,7 +2287,7 @@ function closeCheckout(){
 
 function renderCheckout(){
   const total = cart.reduce((s,x)=>s+x.price*x.qty, 0);
-  const govOptions = Object.keys(KUWAIT_AREAS).map(g=>`<option value="${g}">${g}</option>`).join('');
+  const govOptions = KUWAIT_GOVS.map(g=>`<option value="${g.ar}">${isEn?g.en:g.ar}</option>`).join('');
   const ar = !isEn;
   document.getElementById('checkoutBody').innerHTML = `
     <!-- ملخص الطلب -->
@@ -2362,7 +2370,7 @@ function updateAreas(){
   const areas = KUWAIT_AREAS[gov] || [];
   const ar = !isEn;
   areaSelect.innerHTML = `<option value="">${ar?'اختر المنطقة...':'Select Area...'}</option>` +
-    areas.map(a=>`<option value="${a}">${a}</option>`).join('');
+    areas.map(a=>`<option value="${a.ar}">${ar?a.ar:a.en}</option>`).join('');
 }
 
 function submitSiteOrder(){
