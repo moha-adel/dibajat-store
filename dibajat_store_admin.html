@@ -1333,6 +1333,14 @@ function openMarketer(id){
         <div class="form-row"><label class="form-label">رقم واتساب المسوق</label><input class="form-input" id="m-wa" value="${xe(m.waNumber||'')}" style="direction:ltr"></div>
         <div class="form-row"><label class="form-label">PIN الدخول 🔐</label><input class="form-input" id="m-pin" type="text" inputmode="numeric" maxlength="6" value="${xe(m.pin||'')}" placeholder="مثال: 1234" style="direction:ltr;letter-spacing:4px;font-size:16px;font-weight:800" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><div style="font-size:10px;color:var(--mt);margin-top:4px">يُستخدم مع رقم الواتساب لتسجيل الدخول</div></div>
       </div>
+      <div class="form-row"><label class="form-label">🛒 طريقة استقبال الطلبات</label>
+        <select class="form-select" id="m-order-mode">
+          <option value="whatsapp"${(m.orderMode||'whatsapp')==='whatsapp'?' selected':''}>واتساب فقط</option>
+          <option value="both"${m.orderMode==='both'?' selected':''}>واتساب + الموقع</option>
+          <option value="site"${m.orderMode==='site'?' selected':''}>الموقع فقط</option>
+        </select>
+        <div style="font-size:10px;color:var(--mt);margin-top:4px">في حالة "الموقع" يملأ العميل فورم الشحن والطلب يُحفظ في Firebase</div>
+      </div>
       <div class="form-row"><label class="form-label">الحالة</label>
         <select class="form-select" id="m-status">
           <option value="active"${m.status==='active'?' selected':''}>نشط</option>
@@ -1526,6 +1534,7 @@ function saveMarketer(id){
     tiktok:document.getElementById('m-tiktok').value.trim(),
     snapchat:document.getElementById('m-snapchat').value.trim(),
     defaultLang:document.getElementById('m-default-lang').value,
+    orderMode:document.getElementById('m-order-mode').value,
     excluded:excludedProds,
     earnings:isNew?0:(marketers[id]?.earnings||0),
     status:document.getElementById('m-status').value,
@@ -1569,11 +1578,17 @@ function renderOrders(){
             <div style="display:flex;align-items:center;gap:8px">
               <span style="background:var(--bg3);color:var(--tx);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px">طلب #${num}</span>
               ${statusBadge(o.status)}
+              ${o.orderType==='site'?`<span style="background:rgba(37,99,235,.12);color:#3b82f6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px">🌐 موقع</span>`:`<span style="background:rgba(37,211,102,.12);color:#1aab54;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px">💬 واتساب</span>`}
               <span style="font-size:11px;color:var(--mt)">${xe(o.date)}</span>
             </div>
             <span style="color:var(--gold);font-weight:800">${total} KWD</span>
           </div>
-          <div style="font-size:12px;color:var(--mt);margin-bottom:10px">👤 ${xe(o.marketer||'—')}</div>
+          <div style="font-size:12px;color:var(--mt);margin-bottom:6px">👤 ${xe(o.marketer||'—')}</div>
+          ${o.name||o.phone?`<div style="font-size:12px;color:var(--tx);margin-bottom:6px;display:flex;gap:12px;flex-wrap:wrap">
+            ${o.name?`<span>🙋 ${xe(o.name)}</span>`:''}
+            ${o.phone?`<span>📱 <a href="https://wa.me/${o.phone}" target="_blank" style="color:var(--gold)">${xe(o.phone)}</a></span>`:''}
+          </div>`:''}
+          ${o.address?`<div style="font-size:12px;color:var(--tx);margin-bottom:8px;background:var(--bg3);border-radius:7px;padding:7px 10px">📍 ${xe(o.address)}${o.notes?`<br><span style="color:var(--mt)">📝 ${xe(o.notes)}</span>`:''}</div>`:''}
           ${Object.entries(groups).map(([brand,gitems])=>`
             <div style="border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:6px">
               <div style="background:var(--bg3);padding:5px 10px;font-size:11px;font-weight:800;color:var(--gold)">🏢 ${xe(brand)}</div>
