@@ -1731,8 +1731,8 @@ function getFilteredProducts(){
     }
     return true;
   }).sort((a,b)=>{
-    const ta=a.createdAt?new Date(a.createdAt).getTime():0;
-    const tb=b.createdAt?new Date(b.createdAt).getTime():0;
+    const ta=a.boostedAt?new Date(a.boostedAt).getTime():(a.createdAt?new Date(a.createdAt).getTime():0);
+    const tb=b.boostedAt?new Date(b.boostedAt).getTime():(b.createdAt?new Date(b.createdAt).getTime():0);
     return tb-ta;
   });
 }
