@@ -962,6 +962,7 @@ function renderProducts(){
           <td>${p.status==='active'?'<span class="badge badge-active">نشط</span>':'<span class="badge badge-suspended">مخفي</span>'}</td>
           <td><div class="actions">
             <button class="act-btn act-edit" onclick="openProduct('${p.id}')">تعديل</button>
+            <button class="act-btn" style="background:rgba(56,189,248,.08);color:#38bdf8;border-color:rgba(56,189,248,.25)" onclick="refreshProduct('${p.id}')">🔄 تجديد</button>
             <button class="act-btn act-del" onclick="delProduct('${p.id}')">حذف</button>
           </div></td>
         </tr>`).join('')}
@@ -1217,6 +1218,12 @@ function saveProduct(id){
 function delProduct(id){
   if(!confirm('حذف المنتج نهائياً؟'))return;
   db.ref('products/'+id).remove().then(()=>toast('تم الحذف')).catch(e=>toast('خطأ: '+e.message,false));
+}
+function refreshProduct(id){
+  if(!confirm('رفع الطقم لأول الصفحة؟ سيظهر للزبائن كأنه أضيف الآن.'))return;
+  db.ref('products/'+id).update({boostedAt: new Date().toISOString()})
+    .then(()=>toast('✅ تم رفع الطقم لأول الصفحة'))
+    .catch(e=>toast('خطأ: '+e.message,false));
 }
 
 // ===== MARKETER PRODUCTS PICKER =====
