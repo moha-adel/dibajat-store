@@ -1,30 +1,120 @@
 
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--font-sans);}
-.root{padding:24px 16px 32px;display:flex;flex-direction:column;align-items:center;gap:20px;}
-.top-label{font-size:22px;font-weight:500;color:var(--color-text-primary);text-align:center;}
-.sub-label{font-size:14px;color:var(--color-text-secondary);text-align:center;margin-top:4px;}
-.name-box{display:flex;align-items:center;justify-content:space-between;gap:12px;width:300px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:12px;padding:10px 16px;}
-.name-text{font-size:17px;font-weight:500;color:var(--color-text-primary);}
-.copy-btn{display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s;}
-.copy-btn:hover{color:var(--color-text-primary);border-color:var(--color-border-primary);}
-.copy-btn.ok{color:#0F6E56;border-color:#5DCAA5;background:#E1F5EE;}
-.phone-wrap{position:relative;width:280px;}
-.phone-shell{width:280px;height:560px;border-radius:36px;border:4px solid #555;background:#222;overflow:hidden;position:relative;}
-.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:64px;height:14px;background:#222;border-radius:10px;z-index:5;}
-.theme-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s;}
-.theme-img.fade{opacity:0;}
-.arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;color:#222;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.25);}
-.arrow:active{transform:translateY(-50%) scale(0.93);}
-.arrow-left{left:-22px;}
-.arrow-right{right:-22px;}
-.bottom-row{display:flex;flex-direction:column;align-items:center;gap:10px;}
-.counter{font-size:13px;color:var(--color-text-secondary);}
-.dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:300px;}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary);cursor:pointer;transition:all .2s;}
-.dot.on{background:var(--color-text-primary);transform:scale(1.4);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+font-family:Tajawal,Arial,sans-serif;
+background:linear-gradient(135deg,#f8fafc,#eef2ff);
+padding:30px 15px;
+}
+.root{
+max-width:1200px;
+margin:auto;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:24px;
+}
+.top-label{
+font-size:36px;
+font-weight:800;
+color:#111827;
+}
+.sub-label{
+font-size:16px;
+color:#6b7280;
+margin-top:8px;
+}
+.name-box{
+width:min(700px,100%);
+background:#fff;
+border:none;
+border-radius:20px;
+padding:16px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.name-text{
+font-size:24px;
+font-weight:700;
+color:#111827;
+}
+.copy-btn{
+border:none;
+border-radius:12px;
+padding:10px 18px;
+background:#4f46e5;
+color:#fff;
+cursor:pointer;
+}
+.phone-wrap{position:relative}
+.phone-shell{
+width:360px;
+height:720px;
+border-radius:40px;
+background:#111827;
+padding:10px;
+box-shadow:0 25px 60px rgba(0,0,0,.25);
+overflow:hidden;
+}
+.notch{
+position:absolute;
+top:18px;
+left:50%;
+transform:translateX(-50%);
+width:120px;
+height:24px;
+background:#111827;
+border-radius:20px;
+z-index:10;
+}
+.theme-img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:30px;
+}
+.arrow{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+width:56px;
+height:56px;
+border:none;
+border-radius:50%;
+background:#fff;
+font-size:24px;
+cursor:pointer;
+box-shadow:0 8px 25px rgba(0,0,0,.15);
+}
+.arrow-left{left:-28px}
+.arrow-right{right:-28px}
+.bottom-row{
+background:#fff;
+padding:18px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.counter{
+font-size:15px;
+font-weight:700;
+margin-bottom:10px;
+text-align:center;
+}
+.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.dot{
+width:10px;height:10px;border-radius:50%;
+background:#cbd5e1;
+cursor:pointer;
+}
+.dot.on{
+background:#4f46e5;
+transform:scale(1.4);
+}
 </style>
+
 
 <div class="root">
   <div>
