@@ -1,133 +1,133 @@
 
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.wrap { padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; font-family: var(--font-sans); }
-.title-area { text-align: center; }
-.title-area h2 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-.title-area p { font-size: 14px; color: var(--color-text-secondary); }
-.name-box { display: flex; align-items: center; gap: 10px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 10px 18px; min-width: 260px; justify-content: space-between; }
-.name-text { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
-.copy-btn { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 5px 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.copy-btn:hover { border-color: var(--color-border-primary); color: var(--color-text-primary); }
-.copy-btn.copied { color: #0F6E56; border-color: #5DCAA5; background: #E1F5EE; }
-.slider-row { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 420px; justify-content: center; }
-.nav-btn { flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; transition: background 0.15s, border-color 0.15s; }
-.nav-btn:hover { background: var(--color-background-secondary); border-color: var(--color-border-primary); }
-.nav-btn:active { transform: scale(0.94); }
-.phone-frame { position: relative; width: 240px; height: 520px; border-radius: 36px; border: 3px solid #888780; overflow: hidden; background: #2C2C2A; flex-shrink: 0; }
-.phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 60px; height: 12px; background: #2C2C2A; border-radius: 10px; z-index: 10; }
-.phone-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.22s ease; }
-.phone-img.fade { opacity: 0; }
-.dots { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; max-width: 320px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-secondary); cursor: pointer; transition: all 0.2s; }
-.dot.active { background: var(--color-text-primary); transform: scale(1.35); }
-.counter { font-size: 13px; color: var(--color-text-secondary); }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);}
+.root{padding:24px 16px 32px;display:flex;flex-direction:column;align-items:center;gap:20px;}
+.top-label{font-size:22px;font-weight:500;color:var(--color-text-primary);text-align:center;}
+.sub-label{font-size:14px;color:var(--color-text-secondary);text-align:center;margin-top:4px;}
+.name-box{display:flex;align-items:center;justify-content:space-between;gap:12px;width:300px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:12px;padding:10px 16px;}
+.name-text{font-size:17px;font-weight:500;color:var(--color-text-primary);}
+.copy-btn{display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.copy-btn:hover{color:var(--color-text-primary);border-color:var(--color-border-primary);}
+.copy-btn.ok{color:#0F6E56;border-color:#5DCAA5;background:#E1F5EE;}
+.phone-wrap{position:relative;width:280px;}
+.phone-shell{width:280px;height:560px;border-radius:36px;border:4px solid #555;background:#222;overflow:hidden;position:relative;}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:64px;height:14px;background:#222;border-radius:10px;z-index:5;}
+.theme-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s;}
+.theme-img.fade{opacity:0;}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;color:#222;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.25);}
+.arrow:active{transform:translateY(-50%) scale(0.93);}
+.arrow-left{left:-22px;}
+.arrow-right{right:-22px;}
+.bottom-row{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.counter{font-size:13px;color:var(--color-text-secondary);}
+.dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:300px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary);cursor:pointer;transition:all .2s;}
+.dot.on{background:var(--color-text-primary);transform:scale(1.4);}
 </style>
 
-<div class="wrap">
-  <div class="title-area">
-    <h2>معرض الثيمات</h2>
-    <p>اختر الثيم المناسب لمتجرك</p>
+<div class="root">
+  <div>
+    <div class="top-label">معرض الثيمات</div>
+    <div class="sub-label">اختر الثيم المناسب لمتجرك</div>
   </div>
 
   <div class="name-box">
-    <span class="name-text" id="themeName">Arctic</span>
-    <button class="copy-btn" id="copyBtn" onclick="copyName()">
+    <span class="name-text" id="tname">Arctic</span>
+    <button class="copy-btn" id="cbtn" onclick="doCopy()">
       <i class="ti ti-copy" aria-hidden="true"></i>
-      <span id="copyLabel">نسخ الاسم</span>
+      <span id="clabel">نسخ</span>
     </button>
   </div>
 
-  <div class="slider-row">
-    <button class="nav-btn" onclick="prev()" aria-label="السابق">
+  <div class="phone-wrap">
+    <div class="phone-shell">
+      <div class="notch"></div>
+      <img class="theme-img" id="timg" src="" alt="theme" />
+    </div>
+    <button class="arrow arrow-left" onclick="go(-1)" aria-label="السابق">
       <i class="ti ti-chevron-right" aria-hidden="true"></i>
     </button>
-
-    <div class="phone-frame">
-      <div class="phone-notch"></div>
-      <img class="phone-img" id="themeImg" src="" alt="theme preview" />
-    </div>
-
-    <button class="nav-btn" onclick="next()" aria-label="التالي">
+    <button class="arrow arrow-right" onclick="go(1)" aria-label="التالي">
       <i class="ti ti-chevron-left" aria-hidden="true"></i>
     </button>
   </div>
 
-  <span class="counter" id="counter">1 / 13</span>
-  <div class="dots" id="dots"></div>
+  <div class="bottom-row">
+    <div class="counter" id="cnt">1 / 13</div>
+    <div class="dots" id="dots"></div>
+  </div>
 </div>
 
 <script>
-const themes = [
-  { name: "Arctic", url: "https://blogger.googleusercontent.com/img/a/AVvXsEgSz-cMOTimjIvzcJsevlMQVoXevR_rNOOLzpoeaRKFwpcfkGNfnas756zCg2qM1MD3dJ7LsJFLES6inZeFHWQB_b-B0N0KdjQ7F5n8rSQG926yWsATsPwTPrzTLCr9CsoJ7Qgi_I2U8U9ynIE9aBVTTZbD6R7sbCe5rNnOJg6Qb5km0k4eRn0-D_UAym0=w288-h640" },
-  { name: "Blush", url: "https://blogger.googleusercontent.com/img/a/AVvXsEh2mBsVZ3lZLzVYNHPyXlnoyjHKznKxb-_RZKpkW18TlGBVtco97mwv_Ru8WPQp-IRHHFrVR7TuHnLLAUAfhVkoHRklBuF4pvwxhAMvy3-lmz9_WE0ZjOszzJeD5nv3zlyL6E6HZbtLVwDHXkmdC_phTvYG74Kp_6rVo6DrgywdfmRIaMuDOo6caZCczis=w288-h640" },
-  { name: "Cashmere & Clay", url: "https://blogger.googleusercontent.com/img/a/AVvXsEhvF5XbqlsURXLKo3Un7NPTamUIreu1lweKlRF3bw7u-BG3crb021wIdC7VCLoZcnmvRXiUYTxKVKGhKUUnqv3ou2gnJrk7xOfm9gqEpOnw5-U6WVQvBhjDCTz6wjO9Q-GMwgt79j1RZELtCSoKVEnK4Q6tJm3VjX94Yke4GrTYF52z-cYS2H0tmqCeLtM=w288-h640" },
-  { name: "Cinematic Studio", url: "https://blogger.googleusercontent.com/img/a/AVvXsEjEY1HYX5DsWyFdnAKSjamKmQ5fAx9rIXXEXS_OHTTuWWG5zjfWPPfNGbZKdEtrvOHmwmFc-rFeYBpHgrLKueMYHH7aOZ9U1ocf6OVBvy7W-GRIKbSF-Q9lWgPpC_yL2Y3zB5_jmPHR9uUsR0E0Cf8JUoFEBOkBqdDfInaJTDz2RnHhfX4P6M_B3QQEEA4=w288-h640" },
-  { name: "Crimson", url: "https://blogger.googleusercontent.com/img/a/AVvXsEg83pup4dpKl1If9JG1584MODk4_ED-_OSBOcTHnx3avY0fzeMsnRaYzijor7HaXJP_KQOd7SxAY9kfTHW1OJaj-8q1KRwIzeMfBSevqaP_9Tz4Ta-LW7vrgb7XS5d95Z-gMyD7WqmzbyN254RPV5WJsYOPxfHV-QVaVMT8bTa2exy8Jt_eCjVB5FPd-Do=w288-h640" },
-  { name: "Desert Linen", url: "https://blogger.googleusercontent.com/img/a/AVvXsEjjNUyVGaGqESxVsU3lJdEw05SEE89aORLH7MEMcQjwbyKrqL5gcoaTWhE3Ma8vgSz8F7gp58Om5xhy4fivei3_whekJqlozhK7riXpHx3xKMuuK8_7mLhPxeJ-0cTFMLsWqsvaef5LOLr53W9yFzQWTXlqIrTWIeFLKXEiEFp7iTVautxPkBnx3NTL_LI=w288-h640" },
-  { name: "Midnight", url: "https://blogger.googleusercontent.com/img/a/AVvXsEj34mc9cpHnFvf69nvTDhebry2ZkWeuHXivjw6ZIit2pHQfMi8IBOTHMYT4QLRlrfpOJzXNkf1joGvRJg7XdAfDwVx2Ga3EJbWOobNB9ukR3-6k86tVw6Sr4GVRfbbGFbyVIlOJrpnXrXLahZZmFPDfWxeUh8lBlVRcuQve1mvCMQ60mBTQrcbDnUm4OCU=w288-h640" },
-  { name: "Minimalist Noir", url: "https://blogger.googleusercontent.com/img/a/AVvXsEj3jcxmxEDjaDa4OhoPilobws8V2jBRDVAJAZENFSL5GFigmbFUh9Mw2cP_0Uy6V7zFg7o20HIniSIy4fn7Ep8VtgLN5eZiYwTt_bbb81TuW7AESJiicn5rG3HP1liMGa5Vct5DYYtON6uHCpaFauUL9TWi-HC5rVEPlZuXh2KvCSU3eJxB87Qmk9AVdvM=w288-h640" },
-  { name: "Norwich Minimal", url: "https://blogger.googleusercontent.com/img/a/AVvXsEivkIE8JrK-Hj7f-5RONDzSasg3Vrz1Y5kiuYU0B5Pgw1xm5sFkQH-1UB4yX2cO2qtusEIE_CoMD1gIC-Uv0HlFx86X8MMjq3dUlNU_EvOANtKJhbqgjj7oPZesLQY1DZF1OAlktRSkGGMdLTtnfUEehieEYQFe8nlp6L-XnDvM2AROnQAsOqTeAQLR99c=w288-h640" },
-  { name: "Obsidian", url: "https://blogger.googleusercontent.com/img/a/AVvXsEj2OTGt234cbThUvvDXBoxx_zbwnpuJxKpAedYd3ws8RI7oVaRMUFlUgbQ_a7SEtYAiXMi_Deu0IxugKmEeEwGk4p4cmmQY6PsmVW0YY9E7xouklgy0nykrBvmUGgkRxeVN68jIoJRaP-h-eJmGjxi3IFeL1Ya1V49BnmzcukwcuhIZyNX20Ni_pfhErYg=w288-h640" },
-  { name: "Royal Emerald", url: "https://blogger.googleusercontent.com/img/a/AVvXsEhkba6zBEJrExzq8aFnkX968kNr1vG0Mr0Xb0OQKiXE19zS6dFtDrpj9NrfixOGXt4kKHJylAqbxbCR4ctEv19JtBNWzoXZNvxYxCmBT7me0DctXfR1dj-5eD46rRLP5afQnOGhfC-reKXZt_N3us75cER6suClVkw2CTjadZ_Azs_5YcQkmAOSqwHwTqw=w288-h640" },
-  { name: "State", url: "https://blogger.googleusercontent.com/img/a/AVvXsEgc1n6JkyyQG-VtnsxOcQIXOeo8Hh-X2Cc8R_TGdewS3QihJwQphGrc4v3M6e8Ll1gkmz4UW_AF49RDG1ViKKgUfX7gWGL6v3BMNQltJv199J6xXmY1nakwNYA_yoRZXfa0g2oyZikQASXC-HoaNHPhx8ESx87uRimekQOPehFcr2Iwo6LVfJ337rT86-A=w288-h640" },
-  { name: "Walnut", url: "https://blogger.googleusercontent.com/img/a/AVvXsEhEvTwXVMuZJf-yQTInHFQwEbnBpytYG_yRvPBYJtMgp8qxHL9bJjKSEFbEMcsS-pNAYFfPg0C9KFkX_I3vj6J1QZjJXo_4AUMi0ktfAY4jhD2aD_XZURAyYZaB9_x3neCcAvAN6FcpgOyiBwGI7ZJeGk5piDgTgy3xKUzsxnx2JzLkXj-Zalp6l9UnLNc=w288-h640" },
+const T=[
+  {n:"Arctic",u:"https://blogger.googleusercontent.com/img/a/AVvXsEgSz-cMOTimjIvzcJsevlMQVoXevR_rNOOLzpoeaRKFwpcfkGNfnas756zCg2qM1MD3dJ7LsJFLES6inZeFHWQB_b-B0N0KdjQ7F5n8rSQG926yWsATsPwTPrzTLCr9CsoJ7Qgi_I2U8U9ynIE9aBVTTZbD6R7sbCe5rNnOJg6Qb5km0k4eRn0-D_UAym0=w288-h640"},
+  {n:"Blush",u:"https://blogger.googleusercontent.com/img/a/AVvXsEh2mBsVZ3lZLzVYNHPyXlnoyjHKznKxb-_RZKpkW18TlGBVtco97mwv_Ru8WPQp-IRHHFrVR7TuHnLLAUAfhVkoHRklBuF4pvwxhAMvy3-lmz9_WE0ZjOszzJeD5nv3zlyL6E6HZbtLVwDHXkmdC_phTvYG74Kp_6rVo6DrgywdfmRIaMuDOo6caZCczis=w288-h640"},
+  {n:"Cashmere & Clay",u:"https://blogger.googleusercontent.com/img/a/AVvXsEhvF5XbqlsURXLKo3Un7NPTamUIreu1lweKlRF3bw7u-BG3crb021wIdC7VCLoZcnmvRXiUYTxKVKGhKUUnqv3ou2gnJrk7xOfm9gqEpOnw5-U6WVQvBhjDCTz6wjO9Q-GMwgt79j1RZELtCSoKVEnK4Q6tJm3VjX94Yke4GrTYF52z-cYS2H0tmqCeLtM=w288-h640"},
+  {n:"Cinematic Studio",u:"https://blogger.googleusercontent.com/img/a/AVvXsEjEY1HYX5DsWyFdnAKSjamKmQ5fAx9rIXXEXS_OHTTuWWG5zjfWPPfNGbZKdEtrvOHmwmFc-rFeYBpHgrLKueMYHH7aOZ9U1ocf6OVBvy7W-GRIKbSF-Q9lWgPpC_yL2Y3zB5_jmPHR9uUsR0E0Cf8JUoFEBOkBqdDfInaJTDz2RnHhfX4P6M_B3QQEEA4=w288-h640"},
+  {n:"Crimson",u:"https://blogger.googleusercontent.com/img/a/AVvXsEg83pup4dpKl1If9JG1584MODk4_ED-_OSBOcTHnx3avY0fzeMsnRaYzijor7HaXJP_KQOd7SxAY9kfTHW1OJaj-8q1KRwIzeMfBSevqaP_9Tz4Ta-LW7vrgb7XS5d95Z-gMyD7WqmzbyN254RPV5WJsYOPxfHV-QVaVMT8bTa2exy8Jt_eCjVB5FPd-Do=w288-h640"},
+  {n:"Desert Linen",u:"https://blogger.googleusercontent.com/img/a/AVvXsEjjNUyVGaGqESxVsU3lJdEw05SEE89aORLH7MEMcQjwbyKrqL5gcoaTWhE3Ma8vgSz8F7gp58Om5xhy4fivei3_whekJqlozhK7riXpHx3xKMuuK8_7mLhPxeJ-0cTFMLsWqsvaef5LOLr53W9yFzQWTXlqIrTWIeFLKXEiEFp7iTVautxPkBnx3NTL_LI=w288-h640"},
+  {n:"Midnight",u:"https://blogger.googleusercontent.com/img/a/AVvXsEj34mc9cpHnFvf69nvTDhebry2ZkWeuHXivjw6ZIit2pHQfMi8IBOTHMYT4QLRlrfpOJzXNkf1joGvRJg7XdAfDwVx2Ga3EJbWOobNB9ukR3-6k86tVw6Sr4GVRfbbGFbyVIlOJrpnXrXLahZZmFPDfWxeUh8lBlVRcuQve1mvCMQ60mBTQrcbDnUm4OCU=w288-h640"},
+  {n:"Minimalist Noir",u:"https://blogger.googleusercontent.com/img/a/AVvXsEj3jcxmxEDjaDa4OhoPilobws8V2jBRDVAJAZENFSL5GFigmbFUh9Mw2cP_0Uy6V7zFg7o20HIniSIy4fn7Ep8VtgLN5eZiYwTt_bbb81TuW7AESJiicn5rG3HP1liMGa5Vct5DYYtON6uHCpaFauUL9TWi-HC5rVEPlZuXh2KvCSU3eJxB87Qmk9AVdvM=w288-h640"},
+  {n:"Norwich Minimal",u:"https://blogger.googleusercontent.com/img/a/AVvXsEivkIE8JrK-Hj7f-5RONDzSasg3Vrz1Y5kiuYU0B5Pgw1xm5sFkQH-1UB4yX2cO2qtusEIE_CoMD1gIC-Uv0HlFx86X8MMjq3dUlNU_EvOANtKJhbqgjj7oPZesLQY1DZF1OAlktRSkGGMdLTtnfUEehieEYQFe8nlp6L-XnDvM2AROnQAsOqTeAQLR99c=w288-h640"},
+  {n:"Obsidian",u:"https://blogger.googleusercontent.com/img/a/AVvXsEj2OTGt234cbThUvvDXBoxx_zbwnpuJxKpAedYd3ws8RI7oVaRMUFlUgbQ_a7SEtYAiXMi_Deu0IxugKmEeEwGk4p4cmmQY6PsmVW0YY9E7xouklgy0nykrBvmUGgkRxeVN68jIoJRaP-h-eJmGjxi3IFeL1Ya1V49BnmzcukwcuhIZyNX20Ni_pfhErYg=w288-h640"},
+  {n:"Royal Emerald",u:"https://blogger.googleusercontent.com/img/a/AVvXsEhkba6zBEJrExzq8aFnkX968kNr1vG0Mr0Xb0OQKiXE19zS6dFtDrpj9NrfixOGXt4kKHJylAqbxbCR4ctEv19JtBNWzoXZNvxYxCmBT7me0DctXfR1dj-5eD46rRLP5afQnOGhfC-reKXZt_N3us75cER6suClVkw2CTjadZ_Azs_5YcQkmAOSqwHwTqw=w288-h640"},
+  {n:"State",u:"https://blogger.googleusercontent.com/img/a/AVvXsEgc1n6JkyyQG-VtnsxOcQIXOeo8Hh-X2Cc8R_TGdewS3QihJwQphGrc4v3M6e8Ll1gkmz4UW_AF49RDG1ViKKgUfX7gWGL6v3BMNQltJv199J6xXmY1nakwNYA_yoRZXfa0g2oyZikQASXC-HoaNHPhx8ESx87uRimekQOPehFcr2Iwo6LVfJ337rT86-A=w288-h640"},
+  {n:"Walnut",u:"https://blogger.googleusercontent.com/img/a/AVvXsEhEvTwXVMuZJf-yQTInHFQwEbnBpytYG_yRvPBYJtMgp8qxHL9bJjKSEFbEMcsS-pNAYFfPg0C9KFkX_I3vj6J1QZjJXo_4AUMi0ktfAY4jhD2aD_XZURAyYZaB9_x3neCcAvAN6FcpgOyiBwGI7ZJeGk5piDgTgy3xKUzsxnx2JzLkXj-Zalp6l9UnLNc=w288-h640"},
 ];
+let c=0;
+const img=document.getElementById('timg');
+const nm=document.getElementById('tname');
+const cnt=document.getElementById('cnt');
+const dotsEl=document.getElementById('dots');
 
-let current = 0;
-const img = document.getElementById('themeImg');
-const nameEl = document.getElementById('themeName');
-const counterEl = document.getElementById('counter');
-const dotsEl = document.getElementById('dots');
-
-function buildDots() {
-  dotsEl.innerHTML = '';
-  themes.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === current ? ' active' : '');
-    d.onclick = () => goTo(i);
+function mkDots(){
+  dotsEl.innerHTML='';
+  T.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===c?' on':'');
+    d.onclick=()=>goTo(i);
     dotsEl.appendChild(d);
   });
 }
 
-function goTo(idx) {
+function goTo(idx){
   img.classList.add('fade');
-  setTimeout(() => {
-    current = (idx + themes.length) % themes.length;
-    img.src = themes[current].url;
-    nameEl.textContent = themes[current].name;
-    counterEl.textContent = (current + 1) + ' / ' + themes.length;
-    buildDots();
+  setTimeout(()=>{
+    c=(idx+T.length)%T.length;
+    img.src=T[c].u;
+    nm.textContent=T[c].n;
+    cnt.textContent=(c+1)+' / '+T.length;
+    mkDots();
     img.classList.remove('fade');
-  }, 200);
+  },200);
 }
 
-function next() { goTo(current + 1); }
-function prev() { goTo(current - 1); }
+function go(dir){goTo(c+dir);}
 
-function copyName() {
-  navigator.clipboard.writeText(themes[current].name).then(() => {
-    const btn = document.getElementById('copyBtn');
-    const label = document.getElementById('copyLabel');
-    btn.classList.add('copied');
-    label.textContent = '✓ تم النسخ';
-    setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'نسخ الاسم'; }, 1800);
+function doCopy(){
+  navigator.clipboard.writeText(T[c].n).then(()=>{
+    const b=document.getElementById('cbtn');
+    const l=document.getElementById('clabel');
+    b.classList.add('ok');
+    l.textContent='تم!';
+    setTimeout(()=>{b.classList.remove('ok');l.textContent='نسخ';},1800);
   });
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') prev();
-  if (e.key === 'ArrowLeft') next();
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')go(-1);
+  if(e.key==='ArrowLeft')go(1);
 });
 
-const frame = document.querySelector('.phone-frame');
-let tx = 0;
-frame.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
-frame.addEventListener('touchend', e => {
-  const diff = tx - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 40) diff > 0 ? next() : prev();
+const shell=document.querySelector('.phone-shell');
+let tx=0;
+shell.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+shell.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].clientX;
+  if(Math.abs(d)>40) go(d>0?1:-1);
 });
 
-img.src = themes[0].url;
-buildDots();
+img.src=T[0].u;
+mkDots();
 </script>
