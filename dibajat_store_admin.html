@@ -200,6 +200,7 @@ body{font-family:Tajawal,sans-serif;background:var(--bg);color:var(--tx);directi
     <button class="nav-item" id="nav-registrations" onclick="goTab('registrations',this)"><span class="nav-icon">📋</span> التسجيلات <span class="nav-badge-red" id="nb-registrations" style="display:none">0</span></button>
     <button class="nav-item" id="nav-subscribers" onclick="goTab('subscribers',this)"><span class="nav-icon">👥</span> المشتركون <span class="nav-badge" id="nb-subscribers">0</span></button>
     <button class="nav-item" id="nav-leaderboard" onclick="goTab('leaderboard',this)"><span class="nav-icon">🏆</span> Leaderboard</button>
+    <button class="nav-item" id="nav-visits" onclick="goTab('visits',this)"><span class="nav-icon">📈</span> الزيارات</button>
   </div>
   <div class="sidebar-footer">
     <div class="admin-user">
@@ -452,6 +453,7 @@ function render(){
   else if(currentTab==='registrations')c.innerHTML=renderRegistrations();
   else if(currentTab==='subscribers')c.innerHTML=renderSubscribers();
   else if(currentTab==='leaderboard')c.innerHTML=renderLeaderboard();
+  else if(currentTab==='visits'){renderVisitsTab();}
 }
 
 // ===== SUBSCRIBERS =====
@@ -1748,7 +1750,116 @@ function renderLeaderboard(){
   </div>`;
 }
 
-// ===== INITIAL LOADING STATE =====
+// ===== VISITS TAB =====
+let _statsData = {};
+function renderVisitsTab(){
+  const c = document.getElementById('content');
+  c.innerHTML = `<div class="section">
+    <div style="font-size:14px;font-weight:800;color:var(--mt);padding:20px;text-align:center">⏳ جاري تحميل الإحصائيات...</div>
+  </div>`;
+  db.ref('stats').once('value', snap => {
+    _statsData = snap.val() || {};
+    if(currentTab !== 'visits') return;
+    c.innerHTML = buildVisitsHTML();
+  });
+}
+
+function buildVisitsHTML(){
+  const entries = Object.entries(_statsData);
+  if(!entries.length) return `<div class="section"><div class="empty">لا توجد بيانات زيارات بعد</div></div>`;
+
+  // ترتيب المتاجر حسب الزيارات
+  const stores = entries.map(([slug, data])=>{
+    const visits = data.visits || 0;
+    const prods = data.products ? Object.entries(data.products).map(([pid, pd])=>({pid, views: pd.views||0})).sort((a,b)=>b.views-a.views) : [];
+    const totalViews = prods.reduce((s,p)=>s+p.views, 0);
+    return { slug, visits, prods, totalViews };
+  }).sort((a,b) => b.visits - a.visits);
+
+  const totalVisits = stores.reduce((s,st)=>s+st.visits, 0);
+  const totalViews = stores.reduce((s,st)=>s+st.totalViews, 0);
+
+  return `<div class="section">
+    <!-- ملخص عام -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--blue)">${totalVisits.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--mt)">إجمالي الزيارات</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--gold)">${totalViews.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--mt)">مشاهدات منتجات</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--green)">${stores.length}</div>
+        <div style="font-size:11px;color:var(--mt)">متجر نشط</div>
+      </div>
+    </div>
+
+    <!-- جدول المتاجر -->
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:18px">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:800;color:var(--blue)">🏪 الزيارات لكل متجر</div>
+      <table class="tbl" style="margin:0">
+        <tr><th>#</th><th>المتجر</th><th>الزيارات</th><th>مشاهدات المنتجات</th><th>أكثر منتج مشاهد</th></tr>
+        ${stores.map((st, i) => {
+          const topProd = st.prods[0];
+          const topProdName = topProd ? (products && products[topProd.pid] ? (products[topProd.pid].nameAr || products[topProd.pid].nameEn || topProd.pid) : topProd.pid) : '—';
+          const bar = totalVisits > 0 ? Math.round((st.visits/totalVisits)*100) : 0;
+          return `<tr>
+            <td style="color:var(--mt);font-size:12px">${i+1}</td>
+            <td>
+              <div style="font-size:13px;font-weight:800;color:var(--tx)">${xe(st.slug)}</div>
+              <div style="font-size:10px;color:var(--mt)">${xe(st.slug)}.dibajat.store</div>
+            </td>
+            <td>
+              <div style="font-size:15px;font-weight:900;color:var(--blue)">${st.visits.toLocaleString()}</div>
+              <div style="margin-top:4px;height:4px;background:var(--bg3);border-radius:2px;width:80px">
+                <div style="height:4px;background:var(--blue);border-radius:2px;width:${bar}%"></div>
+              </div>
+            </td>
+            <td style="font-size:14px;font-weight:800;color:var(--gold)">${st.totalViews.toLocaleString()}</td>
+            <td style="font-size:12px;color:var(--tx)">${topProd ? `${xe(topProdName)} <span style="color:var(--mt);font-size:10px">(${topProd.views} مرة)</span>` : '—'}</td>
+          </tr>`;
+        }).join('')}
+      </table>
+    </div>
+
+    <!-- أكثر المنتجات مشاهدة عبر كل المتاجر -->
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:800;color:var(--gold)">🔥 أكثر الديباجات مشاهدةً</div>
+      <table class="tbl" style="margin:0">
+        <tr><th>#</th><th>الديباجة</th><th>المشاهدات</th></tr>
+        ${(()=>{
+          const allProds = [];
+          stores.forEach(st => { st.prods.forEach(p => { 
+            const existing = allProds.find(x=>x.pid===p.pid);
+            if(existing) existing.views += p.views;
+            else allProds.push({pid:p.pid, views:p.views});
+          }); });
+          return allProds.sort((a,b)=>b.views-a.views).slice(0,20).map((p, i) => {
+            const pData = products && products[p.pid];
+            const name = pData ? (pData.nameAr||pData.nameEn||p.pid) : p.pid;
+            const emoji = pData ? (pData.emoji||'🛋️') : '🛋️';
+            const medals = ['🥇','🥈','🥉'];
+            return `<tr>
+              <td style="text-align:center;font-size:16px">${medals[i] || `<span style="color:var(--mt);font-size:12px">${i+1}</span>`}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:22px">${emoji}</span>
+                  <div>
+                    <div style="font-size:13px;font-weight:800;color:var(--tx)">${xe(name)}</div>
+                    <div style="font-size:10px;color:var(--mt)">${p.pid}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size:16px;font-weight:900;color:var(--gold)">${p.views.toLocaleString()}</span> <span style="font-size:10px;color:var(--mt)">مشاهدة</span></td>
+            </tr>`;
+          }).join('');
+        })()}
+      </table>
+    </div>
+  </div>`;
+}
 document.getElementById('content').innerHTML='<div class="empty" style="padding:60px;font-size:14px">⏳ جاري التحقق من الهوية...</div>';
 </script>
 </body>
