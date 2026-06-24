@@ -1529,6 +1529,8 @@ function loadMarketer(key, data){
   loadWishlist();
   loadLikes();
   checkExistingSubscriber();
+  // تتبع الزيارات
+  trackVisit(key);
   const _navSubBtn=document.getElementById('navSubBtn');
   if(_navSubBtn) _navSubBtn.style.display='flex';
   // ملء فوري من البيانات المحملة مسبقاً (قبل ما الـ listener يرد)
@@ -1801,6 +1803,8 @@ function openModal(pid){
   const p=PRODUCTS[pid];
   const productPath= p&&p.slug ? `/p/${p.slug}` : `/product/${pid}`;
   history.pushState({modal:true, pid},'',productPath);
+  // تتبع مشاهدة المنتج
+  if(STORE&&STORE.slug) trackProductView(STORE.slug, pid);
 }
 function renderModal(){
   const pid=currentPid;
@@ -2476,6 +2480,21 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
   });
+}
+
+// ===== VISIT & PRODUCT TRACKING =====
+function trackVisit(marketerKey){
+  try{
+    const slug = STORE&&STORE.slug ? STORE.slug : marketerKey;
+    if(!slug) return;
+    db.ref('stats/'+slug+'/visits').transaction(v=>(v||0)+1);
+  }catch(e){}
+}
+function trackProductView(slug, pid){
+  try{
+    if(!slug||!pid) return;
+    db.ref('stats/'+slug+'/products/'+pid+'/views').transaction(v=>(v||0)+1);
+  }catch(e){}
 }
 </script>
 </body>
